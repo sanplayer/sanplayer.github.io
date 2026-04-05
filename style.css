@@ -9,7 +9,7 @@
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
-  src: url('/fonts/roboto-v51-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('fonts/roboto-v51-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 /* roboto-500 - latin */
 @font-face {
@@ -17,7 +17,7 @@
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 500;
-  src: url('/fonts/roboto-v51-latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('fonts/roboto-v51-latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 /* roboto-600 - latin */
 @font-face {
@@ -25,7 +25,7 @@
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 600;
-  src: url('/fonts/roboto-v51-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('fonts/roboto-v51-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 /* roboto-700 - latin */
 @font-face {
@@ -33,7 +33,7 @@
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 700;
-  src: url('/fonts/roboto-v51-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+  src: url('fonts/roboto-v51-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 /* end fonts */
@@ -503,6 +503,11 @@ body {
 
 /* === MOBILE: GRID VÃDEO + PLAYLIST === */
 @media (max-width: 1023px) {
+    
+    .sidebar-nav li {
+    margin-bottom: var(--gap-sm);
+    }
+
     .app-main-grid {
         flex-direction: column;
         position: fixed;
@@ -732,7 +737,8 @@ body {
     .modal-body button {
         color: inherit;
         border: 1px solid var(--border-rgba);
-        border-radius: 20px;
+        border-radius: 2rem;
+        padding: clamp(0.5rem, 1vw, 0.75rem) clamp(1rem, 2vw, 1.5rem);
         transition: background 0.2s ease, border-color 0.2s ease;
         cursor: pointer;
     }
@@ -1248,6 +1254,365 @@ img {
     height: 0.75rem;
     margin-left: auto;
     border-radius: 4px;
+}
+
+/* ==========================================================================
+   4.5 EFEITO EXPLOSÃO DE CORAÇÕES - FAVORITAR
+   ========================================================================== */
+
+/* ==========================================================================
+   SISTEMA DE PARTÍCULAS NATIVO - FAVORITAR (Samsung/One UI)
+   ========================================================================== */
+
+/**
+ * Animação natural de partículas com movimento fluido
+ * 
+ * Características:
+ * - Translate suave com easing ease-out
+ * - Scale de tamanho variável (independente por partícula)
+ * - Rotação progressiva (spin effect)
+ * - Opacity fade out
+ * - Transform-only (GPU accelerated, sem reflow)
+ * 
+ * Timing: 600ms-900ms (definido via JS)
+ */
+@keyframes particle-float {
+    0% {
+        /* Nasce no centro do botão */
+        transform: 
+            translate(0, 0) 
+            scale(var(--scale-start)) 
+            rotate(0deg);
+        opacity: 1;
+    }
+    
+    /* Movimento ativo - 70% da duração */
+    70% {
+        opacity: 0.8;
+    }
+    
+    /* Fim - partícula atinge destino com fade out */
+    100% {
+        transform: 
+            translate(var(--end-x), var(--end-y)) 
+            scale(var(--scale-end)) 
+            rotate(var(--rotation));
+        opacity: 0;
+    }
+}
+
+/**
+ * Container para as partículas
+ * Posicionado DENTRO do botão (position: relative pai)
+ */
+.particle-container {
+    /* Posicionamento absoluto relativo ao pai (button) */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* Dimensões - cobre o botão */
+    width: 100%;
+    height: 100%;
+    
+    /* Não interfere em cliques */
+    pointer-events: none;
+    
+    /* Garante que partículas apareçam acima do ícone */
+    z-index: 1001;
+    
+    /* Performance */
+    will-change: transform;
+}
+
+/**
+ * Cada partícula de coração
+ * 
+ * Variáveis dinâmicas (via JS):
+ * --end-x: coordenada X final (px)
+ * --end-y: coordenada Y final (px)
+ * --scale-start: escala inicial (0.8-1.3)
+ * --scale-end: escala final (0.1-0.3)
+ * --rotation: rotação final (0-360deg)
+ * 
+ * Animação:
+ * - duration: 600-900ms (via JS)
+ * - delay: stagger 0-300ms+ (via JS)
+ * - easing: cubic-bezier(0.25, 0.46, 0.45, 0.94) = ease-out smooth
+ */
+.heart-particle {
+    /* Posicionamento dentro do container */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    
+    /* Emoji do coração */
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    font-size: 20px;
+    
+    /* Não interfere em eventos */
+    pointer-events: none;
+    user-select: none;
+    
+    /* Animação - configurações base */
+    animation: particle-float forwards;
+    
+    /* Performance - GPU acceleration */
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    -webkit-font-smoothing: antialiased;
+    
+    /* Suavidade */
+    transform: translate(-50%, -50%);
+}
+
+/* ==========================================================================
+   ANIMAÇÃO DE PULSE - MICROINTERAÇÃO DO BOTÃO FAVORITAR 
+   ========================================================================== */
+
+/**
+ * Animação de pulse suave para o botão de favoritar
+ * Inspirado em Samsung Music (One UI)
+ * 
+ * Timing: 250ms - 320ms (cubic-bezier suave)
+ * Escala: 1 → 1.25 → 1
+ * Ideal para feedback visual de clique
+ */
+@keyframes favorite-pulse {
+    0% {
+        transform: scale(1);
+    }
+    
+    /* Pico da animação no meio */
+    50% {
+        transform: scale(1.25);
+    }
+    
+    /* Volta ao estado original */
+    100% {
+        transform: scale(1);
+    }
+}
+
+/**
+ * Classe de botão para favoritar
+ * 
+ * Estados:
+ * - .favorite-btn: estado padrão
+ * - .favorite-btn.active: favoritado
+ * - .favorite-btn.pulse: animação ativa (remover após ciclo)
+ */
+.favorite-btn {
+    /* Estilo base */
+    background: none;
+    border: none;
+    padding: clamp(0.5rem, 1vw, 0.75rem);
+    cursor: pointer;
+    font-size: var(--icon-size);
+    color: var(--text-dim);
+    
+    /* Transição suave de cor */
+    transition: color 0.2s ease, filter 0.2s ease;
+    
+    /* Performance */
+    will-change: color, transform;
+    transform-origin: center;
+    -webkit-user-select: none;
+    user-select: none;
+    
+    /* Acessibilidade */
+    outline-offset: 2px;
+}
+
+/**
+ * Hover state (feedback visual sem pulse)
+ * Apenas muda cor levemente
+ */
+.favorite-btn:hover {
+    color: var(--text-main);
+    filter: brightness(1.1);
+}
+
+/**
+ * Estado favoritado
+ * Ícone fica branco após favoritar
+ */
+.favorite-btn.active {
+    color: var(--text-main);
+}
+
+.favorite-btn.active:hover {
+    color: var(--text-main);
+    filter: brightness(1.15);
+}
+
+/**
+ * Animação de pulse disparada pela classe .pulse
+ * Aplicada dinamicamente via JavaScript
+ * 
+ * Easing: cubic-bezier(0.34, 1.56, 0.64, 1)
+ * Esse cubic-bezier cria um efeito "springy" natural e orgânico
+ * Similar ao utilizado no Material Design e Samsung One UI
+ */
+.favorite-btn.pulse {
+    animation: 
+        favorite-pulse 
+        300ms 
+        cubic-bezier(0.34, 1.56, 0.64, 1) 
+        1;
+}
+
+/**
+ * Focus visible para acessibilidade
+ * Importante para navegação via teclado
+ */
+.favorite-btn:focus-visible {
+    outline: 2px solid var(--accent-red);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/**
+ * Estado active (aria-pressed=true)
+ * Garante que leitores de tela reconheçam o estado
+ */
+.favorite-btn[aria-pressed="true"] {
+    color: var(--accent-text-main);
+}
+
+.indicator-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(20px, 5vw, 24px);
+    height: clamp(20px, 5vw, 24px);
+    min-width: clamp(20px, 5vw, 24px);
+    flex-shrink: 0;
+}
+
+.playing-now-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.equalizer-icon {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Animações independentes e assimétricas para cada barra do equalizador */
+
+/* Barra 0: Pica até 80%, volta rápido (duração 0.6s) */
+@keyframes eq-bar-0-pulse {
+    0% {
+        transform: scaleY(0.3);
+    }
+    40% {
+        transform: scaleY(0.8);
+    }
+    60% {
+        transform: scaleY(0.35);
+    }
+    100% {
+        transform: scaleY(0.3);
+    }
+}
+
+/* Barra 1: Pica até 40%, volta lento (duração 0.8s) */
+@keyframes eq-bar-1-pulse {
+    0% {
+        transform: scaleY(0.3);
+    }
+    35% {
+        transform: scaleY(0.4);
+    }
+    70% {
+        transform: scaleY(0.32);
+    }
+    100% {
+        transform: scaleY(0.3);
+    }
+}
+
+/* Barra 2: Pica até 100%, volta normal (duração 0.7s) */
+@keyframes eq-bar-2-pulse {
+    0% {
+        transform: scaleY(0.3);
+    }
+    45% {
+        transform: scaleY(1);
+    }
+    65% {
+        transform: scaleY(0.33);
+    }
+    100% {
+        transform: scaleY(0.3);
+    }
+}
+
+/* Barra 3: Pica até 60%, volta muito rápido (duração 0.5s) */
+@keyframes eq-bar-3-pulse {
+    0% {
+        transform: scaleY(0.3);
+    }
+    38% {
+        transform: scaleY(0.6);
+    }
+    55% {
+        transform: scaleY(0.31);
+    }
+    100% {
+        transform: scaleY(0.3);
+    }
+}
+
+/* Aplicar animações e performance */
+.indicator-container.playing .eq-bar-0 {
+    animation: eq-bar-0-pulse 0.6s ease-in-out infinite;
+    transform-origin: bottom center;
+    will-change: transform;
+}
+
+.indicator-container.playing .eq-bar-1 {
+    animation: eq-bar-1-pulse 0.8s ease-in-out infinite;
+    animation-delay: 0.05s;
+    transform-origin: bottom center;
+    will-change: transform;
+}
+
+.indicator-container.playing .eq-bar-2 {
+    animation: eq-bar-2-pulse 0.7s ease-in-out infinite;
+    animation-delay: 0.12s;
+    transform-origin: bottom center;
+    will-change: transform;
+}
+
+.indicator-container.playing .eq-bar-3 {
+    animation: eq-bar-3-pulse 0.5s ease-in-out infinite;
+    animation-delay: 0.08s;
+    transform-origin: bottom center;
+    will-change: transform;
+}
+
+/* Quando não está tocando (paused), congelar a animação */
+.indicator-container.playing .eq-bar {
+    animation-play-state: running;
+}
+
+.indicator-container:not(.playing) .eq-bar {
+    animation-play-state: paused;
+    transform: scaleY(0.3) !important;
+    transform-origin: center center;
+    display: none;
 }
 
 /* ==========================================================================

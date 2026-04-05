@@ -28,8 +28,6 @@ const player = {
 // ============================================================================
 
 const playlistCache = new Map();    // Map<url, playlistData>
-let playlistLoadController = null;  // AbortController para requisições de playlist
-let allPlaylistsLoadController = null; // AbortController para carregar todos os playlists
 
 let ytPlayer = null;
 let ytPlayerInitialized = false;
@@ -128,15 +126,6 @@ async function loadAllPlaylists() {
 }
 
 /**
- * Busca uma playlist por ID no index
- * @param {String} playlistId - ID da playlist
- * @returns {Object|null}
- */
-function findPlaylistMetaById(playlistId) {
-    return player.playlistsIndex.find(pl => pl.id === playlistId) || null;
-}
-
-/**
  * Busca um vídeo por ID em todas as playlists carregadas (cache + index)
  * @param {String} videoId - ID do vídeo
  * @returns {Promise<Object>} {playlist, video, playlistIndex}
@@ -224,9 +213,62 @@ function renderCard(data) {
  * @param {Number} index - índice na lista
  * @returns {HTMLElement}
  */
+/**
+ * Cria um SVG animado de equalizador (mini-indicador)
+ * @returns {SVGElement} Elemento SVG com viewBox="0 0 24 24"
+ */
+function createEqualizerSVG() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', '18');
+    svg.setAttribute('height', '18');
+    svg.setAttribute('class', 'equalizer-icon');
+    
+    // Criar 4 barras do equalizador com cantos arredondados
+    // Sem gradiente ou filtro - apenas cor vermelha sólida
+    const barData = [
+        { x: 3 },
+        { x: 8 },
+        { x: 13 },
+        { x: 18 }
+    ];
+    
+    barData.forEach((bar, idx) => {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', `eq-bar eq-bar-${idx}`);
+        g.setAttribute('data-bar-index', idx);
+        
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', bar.x);
+        rect.setAttribute('y', '8');
+        rect.setAttribute('width', '4');
+        rect.setAttribute('height', '12');
+        rect.setAttribute('rx', '2');
+        rect.setAttribute('ry', '2');
+        rect.setAttribute('fill', '#ff2e2e');
+        
+        g.appendChild(rect);
+        svg.appendChild(g);
+    });
+    
+    return svg;
+}
+
+/**
+ * Cria o container do indicador com o SVG
+ * @returns {HTMLElement} Elemento div com classe playing-now-indicator
+ */
+function createPlayingIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'playing-now-indicator';
+    indicator.appendChild(createEqualizerSVG());
+    return indicator;
+}
+
 function renderPlaylistItem(video, index) {
     const item = document.createElement('div');
     item.className = 'playlist-item';
+    item.setAttribute('data-video-index', index);
     
     const img = document.createElement('img');
     img.src = getArtistCoverUrl(video.artist);
@@ -248,6 +290,10 @@ function renderPlaylistItem(video, index) {
     info.appendChild(titleEl);
     info.appendChild(artistEl);
     
+    // Container para o indicador (preenchido por updateActivePlaylistItem)
+    const indicatorContainer = document.createElement('div');
+    indicatorContainer.className = 'indicator-container';
+    
     const kebabBtn = document.createElement('button');
     kebabBtn.className = 'kebab-btn';
     kebabBtn.setAttribute('data-index', index);
@@ -259,6 +305,7 @@ function renderPlaylistItem(video, index) {
     
     item.appendChild(img);
     item.appendChild(info);
+    item.appendChild(indicatorContainer);
     item.appendChild(kebabBtn);
     
     return item;
@@ -705,7 +752,11 @@ function initPlayerUI() {
     
     const favButton = document.createElement('button');
     favButton.id = 'favButton';
+    favButton.className = 'favorite-btn';
     favButton.setAttribute('aria-label', 'Adicionar aos favoritos');
+    favButton.setAttribute('aria-pressed', 'false');
+    favButton.type = 'button';
+    
     const favIcon = document.createElement('i');
     favIcon.className = 'material-icons';
     favIcon.id = 'favIcon';
@@ -728,7 +779,6 @@ function initPlayerUI() {
     blockInfo.appendChild(currentActions);
     
     document.getElementById('favButton').addEventListener('click', toggleFavorite);
-    document.getElementById('shareButton').addEventListener('click', shareMusic);
 }
 
 async function handleHashNavigation() {
@@ -1305,65 +1355,6 @@ function closeItemOptionsModal() {
     document.getElementById('itemOptionsModal').classList.remove('show');
 }
 
-// Ao clicar em "Adicionar a playlist"
-function addToPlaylistOption() {
-    const userList = getUserPlaylists();
-    
-    if (userList.length === 0) {
-        // Mostrar toast e fechar modal
-        closeItemOptionsModal();
-        showToast('Crie uma playlist');
-        return;
-    }
-    
-    // Mostrar lista de playlists
-    const modal = document.getElementById('itemOptionsModal');
-    const body = document.getElementById('itemOptionsBody');
-    body.innerHTML = '';
-    
-    // Botão voltar
-    const backRow = document.createElement('div');
-    backRow.className = 'option-row';
-    const backIconDiv = document.createElement('div');
-    backIconDiv.className = 'option-icon';
-    const backIcon = document.createElement('i');
-    backIcon.className = 'material-icons';
-    backIcon.textContent = 'arrow_back';
-    backIconDiv.appendChild(backIcon);
-    const backTextDiv = document.createElement('div');
-    backTextDiv.className = 'option-text';
-    backTextDiv.textContent = 'Voltar';
-    backRow.appendChild(backIconDiv);
-    backRow.appendChild(backTextDiv);
-    backRow.classList.add('is-clickable');
-    backRow.addEventListener('click', () => openItemOptionsModal(currentKebabIndex));
-    body.appendChild(backRow);
-    
-    const hr1 = document.createElement('div');
-    hr1.className = 'option-separator';
-    body.appendChild(hr1);
-    
-    // Listar playlists
-    userList.forEach((pl, idx) => {
-        const row = document.createElement('div');
-        row.className = 'option-row';
-        const rowIconDiv = document.createElement('div');
-        rowIconDiv.className = 'option-icon';
-        const rowIcon = document.createElement('i');
-        rowIcon.className = 'material-icons';
-        rowIcon.textContent = 'library_music';
-        rowIconDiv.appendChild(rowIcon);
-        const rowTextDiv = document.createElement('div');
-        rowTextDiv.className = 'option-text';
-        rowTextDiv.textContent = pl.name;
-        row.appendChild(rowIconDiv);
-        row.appendChild(rowTextDiv);
-        row.classList.add('is-clickable');
-        row.addEventListener('click', () => addItemToUserPlaylist(idx));
-        body.appendChild(row);
-    });
-}
-
 function addItemToUserPlaylist(playlistIdx) {
     const list = getUserPlaylists();
     
@@ -1710,12 +1701,14 @@ function onPlayerStateChange(event) {
         updatePlayPauseButton();
         updateProgressBar();
         updateActivePlaylistItem();
+        updatePlayingIndicatorAnimationState();
     } else if (state === YT.PlayerState.PAUSED) {
         player.isPlaying = false;
         player.currentTime = ytPlayer.getCurrentTime();
         updatePlayPauseButton();
         updateProgressBar();
         updateActivePlaylistItem();
+        updatePlayingIndicatorAnimationState();
     } else if (state === YT.PlayerState.CUED) {
         // Player entrou em CUED após cueVideoById()
         // Se shouldPlayOnReady for true, é o momento correto para chamar playVideo()
@@ -1727,6 +1720,7 @@ function onPlayerStateChange(event) {
         player.isPlaying = false;
         updatePlayPauseButton();
         updateProgressBar();
+        updatePlayingIndicatorAnimationState();
 
         if (player.repeatMode === 2) {
             // Repetir a música atual
@@ -1798,6 +1792,54 @@ function updateActivePlaylistItem() {
 
     // Detectar se o texto transborda
     checkIfTitleNeedsTruncation(cTitle);
+    
+    // Atualizar indicador visual de "tocando agora"
+    updatePlayingNowIndicator();
+}
+
+/**
+ * Atualiza o indicador visual de "tocando agora"
+ * Remove indicador antigo e adiciona ao item ativo
+ */
+function updatePlayingNowIndicator() {
+    // Remover indicador de todas as faixas
+    const allIndicatorContainers = document.querySelectorAll('.indicator-container');
+    allIndicatorContainers.forEach(container => {
+        container.innerHTML = '';
+        container.classList.remove('playing');
+    });
+    
+    // Adicionar indicador ao item ativo
+    const activeItem = document.querySelector(
+        `.playlist-item[data-video-index="${player.currentVideoIndex}"]`
+    );
+    if (activeItem) {
+        const indicatorContainer = activeItem.querySelector('.indicator-container');
+        if (indicatorContainer) {
+            indicatorContainer.appendChild(createPlayingIndicator());
+            // Usar classe 'playing' para controlar animation-play-state
+            if (player.isPlaying) {
+                indicatorContainer.classList.add('playing');
+            }
+        }
+    }
+}
+
+/**
+ * Atualiza estado de pausa/reprodução do indicador
+ * Chamado quando player muda de estado
+ */
+function updatePlayingIndicatorAnimationState() {
+    const indicatorContainer = document.querySelector(
+        `.playlist-item[data-video-index="${player.currentVideoIndex}"] .indicator-container`
+    );
+    if (indicatorContainer) {
+        if (player.isPlaying) {
+            indicatorContainer.classList.add('playing');
+        } else {
+            indicatorContainer.classList.remove('playing');
+        }
+    }
 }
 
 function checkIfTitleNeedsTruncation(element) {
@@ -1986,35 +2028,107 @@ function formatTime(seconds) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function seekProgress(e) {
-    // O progresso agora é via range input (progressBar), então esta função pode ser mantida por compatibilidade,
-    // mas aqui é apenas uma ponte para o handler do input
-    const progressBar = document.getElementById('progressBar');
-    if (!progressBar || player.currentDuration === 0) return;
-
-    const rect = progressBar.getBoundingClientRect();
-    let percentage = ((e.clientX - rect.left) / rect.width) * 100;
-    percentage = Math.max(0, Math.min(100, percentage));
-
-    progressBar.value = percentage;
-    const seekTime = (player.currentDuration * percentage) / 100;
-    player.currentTime = seekTime;
-
-    if (player.ytReady && ytPlayer) {
-        ytPlayer.seekTo(seekTime, true);
-    }
-
-    updateProgressBar();
-}
-
 // ============================================================================
 // FAVORITOS
 // ============================================================================
 
-function toggleFavorite() {
+/**
+ * Sistema de Partículas Nativo - Explosão de Corações ao Favoritar
+ * Microinteração de app nativo (Samsung/One UI)
+ * 
+ * Características:
+ * - Cada partícula com variação independente (ângulo, distância, escala, rotação)
+ * - Movimento natural com curva suave
+ * - Stagger: 20-60ms de atraso entre partículas
+ * - Transform-only: sem reflow, apenas transform + opacity
+ * - Duração: 600-900ms
+ * - Cleanup automático ao fim da animação
+ * 
+ * @param {HTMLElement} button - Botão de favoritar
+ */
+function createParticleExplosion(button) {
+    if (!button) return;
+    
+    // Criar container para as partículas (posicionado relativo ao botão)
+    const container = document.createElement('div');
+    container.className = 'particle-container';
+    button.style.position = 'relative';
+    button.appendChild(container);
+    
+    // Configuração de partículas
+    const particleCount = 8 + Math.floor(Math.random() * 5); // 8-12 partículas
+    const baseDelay = 0;
+    const delayIncrement = 30 + Math.random() * 30; // 30-60ms stagger
+    
+    for (let i = 0; i < particleCount; i++) {
+        // Criar partícula
+        const particle = document.createElement('span');
+        particle.className = 'heart-particle';
+        particle.textContent = '❤️';
+        
+        // ===== VARIAÇÃO INDEPENDENTE POR PARTÍCULA =====
+        
+        // 1. Ângulo de dispersão (0-360°) com variação aleatória
+        const baseAngle = (360 / particleCount) * i;
+        const angleVariation = (Math.random() - 0.5) * 60; // ±30°
+        const angle = baseAngle + angleVariation;
+        const angleRad = (angle * Math.PI) / 180;
+        
+        // 2. Distância de dispersão aleatória (60-140px)
+        const distance = 60 + Math.random() * 80;
+        
+        // 3. Coordenadas finais via trigonometria
+        const endX = Math.cos(angleRad) * distance;
+        const endY = Math.sin(angleRad) * distance - 20; // Sobe naturalmente
+        
+        // 4. Escala inicial e final (variável)
+        const scaleStart = 0.8 + Math.random() * 0.5; // 0.8-1.3
+        const scaleEnd = 0.1 + Math.random() * 0.2; // 0.1-0.3
+        
+        // 5. Rotação aleatória (0-360°)
+        const rotation = Math.random() * 360;
+        
+        // 6. Duração e delay (stagger)
+        const duration = 600 + Math.random() * 300; // 600-900ms
+        const delay = baseDelay + i * delayIncrement;
+        
+        // 7. Easing customizado para movimento natural
+        const easing = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'; // ease-out smooth
+        
+        // ===== CONFIGURAR VARIÁVEIS CSS =====
+        particle.style.setProperty('--end-x', `${endX}px`);
+        particle.style.setProperty('--end-y', `${endY}px`);
+        particle.style.setProperty('--scale-start', scaleStart);
+        particle.style.setProperty('--scale-end', scaleEnd);
+        particle.style.setProperty('--rotation', `${rotation}deg`);
+        particle.style.animationDuration = `${duration}ms`;
+        particle.style.animationDelay = `${delay}ms`;
+        particle.style.animationTimingFunction = easing;
+        
+        // Adicionar ao container
+        container.appendChild(particle);
+        
+        // ===== CLEANUP AUTOMÁTICO =====
+        const handleAnimationEnd = () => {
+            particle.removeEventListener('animationend', handleAnimationEnd);
+            particle.remove();
+            
+            // Se foi a última partícula, remover o container
+            if (container.children.length === 0) {
+                container.remove();
+                button.style.position = '';
+            }
+        };
+        
+        particle.addEventListener('animationend', handleAnimationEnd, { once: true });
+    }
+}
+
+function toggleFavorite(event) {
     if (!player.currentPlaylist) return;
     
     const video = player.currentPlaylist.videos[player.currentVideoIndex];
+    const button = document.getElementById('favButton');
     
     // Usar o ID correto dependendo do contexto
     let favoriteId;
@@ -2027,13 +2141,33 @@ function toggleFavorite() {
     const index = player.favorites.findIndex(fav => fav.id === favoriteId);
     
     if (index > -1) {
+        // Remover de favoritos
         player.favorites.splice(index, 1);
+        if (button) {
+            button.classList.remove('active');
+            button.setAttribute('aria-pressed', 'false');
+        }
     } else {
+        // Adicionar aos favoritos
         player.favorites.push({
             id: favoriteId,
             video: video,
             playlist: player.currentPlaylist.name,
         });
+        if (button) {
+            button.classList.add('active');
+            button.setAttribute('aria-pressed', 'true');
+            // Dispara explosão de partículas APENAS ao ADICIONAR
+            createParticleExplosion(button);
+        }
+    }
+    
+    // Dispara animação de pulse
+    if (button) {
+        button.classList.remove('pulse');
+        // Force reflow para resetar a animação
+        void button.offsetWidth;
+        button.classList.add('pulse');
     }
     
     saveFavorites();
@@ -2053,10 +2187,21 @@ function updateFavoriteButton() {
     }
     
     const isFavorite = player.favorites.some(fav => fav.id === favoriteId);
-    
+    const button = document.getElementById('favButton');
     const icon = document.getElementById('favIcon');
+    
     if (icon) {
         icon.textContent = isFavorite ? 'favorite' : 'favorite_border';
+    }
+    
+    if (button) {
+        if (isFavorite) {
+            button.classList.add('active');
+            button.setAttribute('aria-pressed', 'true');
+        } else {
+            button.classList.remove('active');
+            button.setAttribute('aria-pressed', 'false');
+        }
     }
 }
 
@@ -2154,28 +2299,6 @@ function displayFavoritesList() {
 
 // ============================================================================
 // COMPARTILHAR
-// ============================================================================
-
-function shareMusic() {
-    const video = player.currentPlaylist.videos[player.currentVideoIndex];
-    const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}#videoId=${video.id}`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: 'SanPlayer',
-            text: text,
-            url: url,
-        });
-    } else {
-        // Fallback: copiar para clipboard
-        const shareText = `${text}\n${url}`;
-        navigator.clipboard.writeText(shareText).then(() => {
-            alert('Música copiada para compartilhamento!');
-        });
-    }
-}
-
 // ============================================================================
 // BUSCA
 // ============================================================================
