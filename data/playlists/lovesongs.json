@@ -1,0 +1,366 @@
+{
+  "playlists": [
+    {
+      "name": "LoveSongs",
+      "slug": "lovesongs",
+      "cover": "lovesongs.jpg",
+      "videos": [
+        {
+          "id": "Sz9Ad81xBuY",
+          "title": "Hurts To Be In Love",
+          "artist": "Gino Vannelli"
+        },
+        {
+          "id": "8RqnQKSP_Rk",
+          "title": "Praying for Time",
+          "artist": "George Michael"
+        },
+        {
+          "id": "GP9IB2ji02s",
+          "title": "Knife",
+          "artist": "Rockweel"
+        },
+        {
+          "id": "2nfdKzmskDk",
+          "title": "You And I",
+          "artist": "Kenny Rogers"
+        },
+        {
+          "id": "KLVq0IAzh1A",
+          "title": "Fields of Gold",
+          "artist": "Sting"
+        },
+        {
+          "id": "3ZdbHUolTi8",
+          "title": "My All",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "cWc9qeHTLQM",
+          "title": "By My Side",
+          "artist": "INXS"
+        },
+        {
+          "id": "ns5PMI6mrsI",
+          "title": "The Best LoveSongs 2026",
+          "artist": "Collection"
+        },
+        {
+          "id": "AQOlwMKpmvQ",
+          "title": "Better Be Home Soon",
+          "artist": "Crowded House"
+        },
+        {
+          "id": "mGPxQOHPkeY",
+          "title": "Tomorrow",
+          "artist": "Europe"
+        },
+        {
+          "id": "BgpqOd9fNes",
+          "title": "Don't Know What You Got (Till It's Gone)",
+          "artist": "Cinderella"
+        },
+        {
+          "id": "hWfr78em4rA",
+          "title": "Save Me Now",
+          "artist": "Andru Donalds"
+        },
+        {
+          "id": "s-ho49Do8yg",
+          "title": "I'll Be Over You",
+          "artist": "TOTO"
+        },
+        {
+          "id": "2RZ7h3Idrt4",
+          "title": "Live at the Tokyo Dome | Full Concert",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "X1wFNB3GVPU",
+          "title": "Save Me",
+          "artist": "Hanson"
+        },
+        {
+          "id": "yoOxDSEVYj0",
+          "title": "Slave To Love",
+          "artist": "Bryan Ferry"
+        },
+        {
+          "id": "T5hdNCuuIYw",
+          "title": "The Miracle of Love (2018 Remastered)",
+          "artist": "Eurythmics"
+        },
+        {
+          "id": "5kp0dw4MuWs",
+          "title": "Je Suis Malade",
+          "artist": "Lara Fabian"
+        },
+        {
+          "id": "JkK8g6FMEXE",
+          "title": "I Don't Want to Miss a Thing",
+          "artist": "Aerosmith"
+        },
+        {
+          "id": "EFOxYGOgTfQ",
+          "title": "I Should Have Known Better",
+          "artist": "Jim Diamond"
+        },
+        {
+          "id": "A__YafP_TWY",
+          "title": " One Last Cry",
+          "artist": "Marina Elali"
+        },
+        {
+          "id": "PFpZzWdu6XM",
+          "title": "Vulnerable",
+          "artist": "Roxette"
+        },
+        {
+          "id": "kE1Yle65wjg",
+          "title": "Love Is My Decision",
+          "artist": "Chris De Burgh"
+        },
+        {
+          "id": "3JWTaaS7LdU",
+          "title": "I Will Always Love You",
+          "artist": "Whitney Houston"
+        },
+        {
+          "id": "VXMbiiw6soM",
+          "title": "Lea",
+          "artist": "TOTO"
+        },
+        {
+          "id": "xuZA6qiJVfU",
+          "title": "Drive",
+          "artist": "The Cars"
+        },
+        {
+          "id": "T4gplNA3ewQ",
+          "title": "Is This Love",
+          "artist": "Whitesnake"
+        },
+        {
+          "id": "oCHFsp5rBY4",
+          "title": "For Whom The Bell Tolls",
+          "artist": "Bee Gees"
+        },
+        {
+          "id": "W3bL_j0rUrA",
+          "title": "Back At One",
+          "artist": "Brian McKnight"
+        },
+        {
+          "id": "0T1J8JuTtR8",
+          "title": "Lady",
+          "artist": "Kenny Rogers"
+        },
+        {
+          "id": "KmWE9UBFwtY",
+          "title": "Carrie",
+          "artist": "Europe"
+        },
+        {
+          "id": "S_E2EHVxNAE",
+          "title": "Right Here Waiting",
+          "artist": "Richard Marx"
+        },
+        {
+          "id": "ogoIxkPjRts",
+          "title": "Making Love Out Of Nothing At All",
+          "artist": "Air Supply"
+        },
+        {
+          "id": "pnNyJ0LXhNw",
+          "title": "Ballerina Girl",
+          "artist": "Lionel Richie"
+        },
+        {
+          "id": "J9gKyRmic20",
+          "title": "Don't Dream It's Over",
+          "artist": "Crowded House"
+        },
+        {
+          "id": "m_9hfHvQSNo",
+          "title": "Father Figure",
+          "artist": "George Michael"
+        },
+        {
+          "id": "bG5N3GC-m20",
+          "title": "One More Try",
+          "artist": "George Michael"
+        },
+        {
+          "id": "gF4p6KhxPec",
+          "title": "Chuva Fina",
+          "artist": "Robby Rosa"
+        },
+        {
+          "id": "xcs4jWUU-tw",
+          "title": "Hello",
+          "artist": "Robby Rosa"
+        },
+        {
+          "id": "HIXhKRcIYQs",
+          "title": "If You're Not Here",
+          "artist": "Robby Rosa"
+        },
+        {
+          "id": "USsL0_S6HNc",
+          "title": "Piano In The Dark",
+          "artist": "Brenda Russell"
+        },
+        {
+          "id": "9HMDUtirtJM",
+          "title": "The Lady In Red",
+          "artist": "Chris De Burgh"
+        },
+        {
+          "id": "x_XS5q0EUQs",
+          "title": "Another Day in Paradise",
+          "artist": "Phil Collins"
+        },
+        {
+          "id": "O5-c79LQ3aM",
+          "title": "Woman In Chains",
+          "artist": "Tears For Fears"
+        },
+        {
+          "id": "xQXW4iYnjuQ",
+          "title": "My Love",
+          "artist": "Little Texas"
+        },
+        {
+          "id": "5P4QrKuCnTU",
+          "title": "There's Never a Forever Thing",
+          "artist": "a-ha"
+        },
+        {
+          "id": "RVPLEhAi36Y",
+          "title": "Up Where We Belong",
+          "artist": "Joe Cocker"
+        },
+        {
+          "id": "XgWz55phFKQ",
+          "title": "Beautiful",
+          "artist": "Marillion"
+        },
+        {
+          "id": "S9IY3wX9JiI",
+          "title": "Purple Rain",
+          "artist": "Prince"
+        },
+        {
+          "id": "qQIO3pBFfXI",
+          "title": "In Too Deep",
+          "artist": "Phil Collins"
+        },
+        {
+          "id": "zKVq-P3z5Vg",
+          "title": "One More Night",
+          "artist": "Phil Collins"
+        },
+        {
+          "id": "DWYr4as49iY",
+          "title": "Against All Odds (Take a Look At Me Now)",
+          "artist": "Phil Collins"
+        },
+        {
+          "id": "h-WPexVEujg",
+          "title": "Crying in the Rain",
+          "artist": "a-ha"
+        },
+        {
+          "id": "s6VaeFCxta8",
+          "title": "Hunting High and Low",
+          "artist": "a-ha"
+        },
+        {
+          "id": "nWey1DBAchM",
+          "title": "Stay On These Roads",
+          "artist": "a-ha"
+        },
+        {
+          "id": "MrBFxfIYP7o",
+          "title": "Nikita",
+          "artist": "Elton John"
+        },
+        {
+          "id": "9Eal8z2GBQU",
+          "title": "No Promises",
+          "artist": "ICEHOUSE"
+        },
+        {
+          "id": "aQlFN3srRE",
+          "title": "Always Somewhere",
+          "artist": "Scorpions"
+        },
+        {
+          "id": "7pOr3dBFAeY",
+          "title": "Still Loving You",
+          "artist": "Scorpions"
+        },
+        {
+          "id": "1UUYjd2rjsE",
+          "title": "Send Me An Angel",
+          "artist": "Scorpions"
+        },
+        {
+          "id": "5nw0vxba3cE",
+          "title": "You And I",
+          "artist": "Scorpions"
+        },
+        {
+          "id": "FQSZWAStqcY",
+          "title": "Believe In Love",
+          "artist": "Scorpions"
+        },
+        {
+          "id": "ksNoe8W2jTc",
+          "title": "Freddie Mercury & Montserrat Caballé - How Can I Go On (Live at La Nit, 1988 Remastered)",
+          "artist": "Freddie Mercury"
+        },
+        {
+          "id": "qjuEXKwnkLE",
+          "title": "I Remember You",
+          "artist": "Skid Row"
+        },
+        {
+          "id": "OXYb-0oQnB8",
+          "title": "In A Darkened Room",
+          "artist": "Skid Row"
+        },
+        {
+          "id": "8SbUC-UaAxE",
+          "title": "November Rain",
+          "artist": "Guns N Roses"
+        },
+        {
+          "id": "ErvgV4P6Fzc",
+          "title": "Patience",
+          "artist": "Guns N Roses"
+        },
+        {
+          "id": "IYOYlqOitDA",
+          "title": "Since I Don't Have You",
+          "artist": "Guns N Roses"
+        },
+        {
+          "id": "zRIbf6JqkNc",
+          "title": "Don't Cry",
+          "artist": "Guns N Roses"
+        },
+        {
+          "id": "i-pvfV0pBWE",
+          "title": "So Fine",
+          "artist": "Guns N Roses"
+        },
+        {
+          "id": "lMRBVdFlnZA",
+          "title": "Remember I Love You",
+          "artist": "Jim Diamond"
+        }
+      ]
+    }
+  ]
+}

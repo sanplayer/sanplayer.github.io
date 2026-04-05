@@ -1,0 +1,96 @@
+{
+  "playlists": [
+    {
+      "name": "Boleros",
+      "slug": "boleros",
+      "cover": "boleros.jpg",
+      "videos": [
+        {
+          "id": "Cz18kmKM8Lo",
+          "title": "Pouti Pourri",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "XN-uTyUTnj8",
+          "title": "Não Importa",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "mZbHNG8-42U",
+          "title": "Noite Fria",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "JxL-qSM-npI",
+          "title": "A Beleza da Rosa",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "XF5QSXOo9-k",
+          "title": "Cinderela",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "BkI23vr-baI",
+          "title": "Ainda Espero por Ti",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "3aJWUinwcmk",
+          "title": "Amaremos",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "KNxH-RYcodU",
+          "title": "Roberta",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "e736Rl3vep0",
+          "title": "Vagabundo",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "T1pBD9n_HoA",
+          "title": "Devolva a Passagem",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "9RzspB2jZiI",
+          "title": "Eu Vou Sair Pra Bucar Você",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "wTa88Fbs-3E",
+          "title": "POUT POURRI The House of The Rising Sun",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "ewAjhaja8iQ",
+          "title": "Sonhar Contigo",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "NS2-cc6l_y8",
+          "title": "Sinfonia da Mata",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "XN-uTyUTnj8",
+          "title": "Não Importa",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "iAyQdsxHS0I",
+          "title": "Alguém me Disse",
+          "artist": "Walfredo Jair"
+        },
+        {
+          "id": "mZW3MG55YN8",
+          "title": "Maria Helena",
+          "artist": "Walfredo Jair"
+        }
+      ]
+    }
+  ]
+}

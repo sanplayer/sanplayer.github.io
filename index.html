@@ -1,1 +1,347 @@
-leiame
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <!--san-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    
+    <title>SanPlayer</title>
+    <meta name="description" content="Música para os seus ouvidos">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0" />
+    <!-- ICONES -->
+
+    <link rel="icon" type="image/png" href="./icons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg" />
+    <link rel="shortcut icon" href="./icons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png" />
+
+    <!-- PWA CONFIG -->
+    
+    <link rel="manifest" href="manifest.json" />
+
+    <meta name="theme-color" content="#0f0f0f">
+    <meta name="color-scheme" content="dark">
+    <meta name="msapplication-navbutton-color" content="#0f0f0f">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://waltemarcarneiro-code.github.io/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SanPlayer">
+    <meta property="og:description" content="O seu player de música personalizado">
+    <meta property="og:image" content="https://waltemarcarneiro-code.github.io/og-image.jpg">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="waltemarcarneiro-code.github.io">
+    <meta property="twitter:url" content="https://waltemarcarneiro-code.github.io/">
+    <meta name="twitter:title" content="SanPlayer">
+    <meta name="twitter:description" content="O seu player de música personalizado">
+    <meta name="twitter:image" content="https://waltemarcarneiro-code.github.io/og-image.jpg">
+
+</head>
+
+<body>
+
+    <header class="app-header">
+        <div class="header-logo">
+            <button class="btn-hamburger" aria-label="Abrir menu">
+                <i class="material-icons">menu</i>
+            </button>
+            <img src="logo.png" alt="SanPlayer" class="header-app-logo"/>
+            <span>SanPlayer</span>
+        </div>
+
+        <div class="header-search">
+            <form action="#">
+                <input type="search" placeholder="Pesquise músicas, artis..." id="searchInput">
+                <i class="material-icons search-icon">search</i>
+            </form>
+        </div>
+
+        <div class="header-actions">
+            <button class="btn-search-mobile" aria-label="Buscar">
+                <i class="material-icons">search</i>
+            </button>
+            <button><i class="material-icons">notifications_none</i></button>
+            <img id="userMenuButton" src="covers/user.jpg" alt="Avatar" class="profile-avatar">
+        </div>
+    </header>
+
+    <div class="app-main-grid">
+
+        <nav class="app-sidebar app-sidebar-mobile">
+            <div class="sidebar-overlay"></div>
+            <div class="sidebar-content">
+                <ul class="sidebar-nav">
+
+                    <li><a href="index.html"><i class="material-icons">home</i> Início</a></li>
+                    <li><a href="#" id="link-playlists"><i class="material-icons">queue_music</i>
+                            Playlists</a></li>
+                    <li><a href="#" id="link-artistas"><i class="material-icons">people</i>Artistas</a></li>        
+                    <li><a href="#" id="link-criar-playlist"><i class="material-icons">add</i>
+                            Criar Playlist</a></li>
+                    <li><a href="#" id="link-favoritos"><i class="material-icons">favorite_border</i>Favoritos</a></li>
+
+                    <li><a href="#"><i class="material-icons">free_breakfast</i> Contribuir</a></li>
+
+                </ul>
+            </div>
+        </nav>
+
+        <main class="video-stage">
+            <div class="video-wrapper">
+                <div id="player" class="player-embed"></div>
+                <div class="overlay-layer"></div>
+            <!-- LEGENDAS -->
+                <div class="overlay-layer-legendas">
+                <button><i class="material-icons">queue_music</i></button>
+                <button><i class="material-icons">add</i></button>
+                <button><i class="material-icons">download</i></button>
+                <button><i class="material-icons">more_vert</i></button>
+                </div>
+            </div>
+
+        </main>
+
+        <aside class="playlist-aside">
+            <h2 class="title-pl">Playlist</h2>
+            <div class="playlist-items"></div>
+        </aside>
+    </div>
+
+    <footer class="app-player-footer">
+
+        <div class="player-progress-area">
+            <div class="progress">
+                <input id="progressBar" class="progress-bar" type="range" min="0" max="100" value="0">
+                <div class="progress-time-labels">
+                    <span id="timeCurrent">0:00</span>
+                    <span id="timeDuration">0:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-content-wrapper">
+
+            <div class="footer-block block-info">
+                <img src="covers/user.jpg" alt="Capa" class="current-thumb">
+                <div class="current-details">
+                    <span class="c-title">All I Want for Christmas Is You</span>
+                    <span class="c-artist">Mariah Carey</span>
+                </div>
+                <div class="current-actions">
+                    <button alt="favoritar" title="favoritar"><i class="material-icons">favorite_border</i></button>
+                    <button alt="compartilhar" title="compartilhar"><i class="material-icons reply">reply</i></button>
+                </div>
+            </div>
+
+            <div class="footer-block block-controls">
+                <button><i class="material-icons shuffle-repeat">shuffle</i></button>
+                <button><i class="material-icons">skip_previous</i></button>
+                <button class="btn-play-pause">
+                    <i class="material-icons">pause</i>
+                </button>
+                <button><i class="material-icons">skip_next</i></button>
+                <button><i class="material-icons shuffle-repeat">repeat</i></button>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- MODAL DE PLAYLISTS -->
+    <div id="playlistModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Playlists</h2>
+                <button class="modal-close" id="closePlaylistModal" aria-label="Fechar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div id="playlistCardsContainer" class="cards-grid"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE ARTISTAS -->
+    <div id="artistsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Artistas</h2>
+                <button class="modal-close" id="closeArtistsModal" aria-label="Fechar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div id="artistsCardsContainer" class="cards-grid"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE RESULTADOS DE BUSCA -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="searchTitle">Resultados de busca</h2>
+                <button class="modal-close" id="closeSearchModal" aria-label="Fechar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div id="searchResultsContainer" class="search-results"></div>
+        </div>
+    </div>
+
+    <!-- MODAL CRIAR PLAYLIST (bottom-sheet) -->
+    <div id="createPlaylistModal" class="modal modal-bottom-sheet">
+        <div class="modal-content bottom-sheet-content">
+            <div class="modal-header modal-header--item">
+                <h2 style="font-size:1.18rem;font-weight:700;">Criar Playlist</h2>
+                <button class="modal-close" id="closeCreatePlaylistModal" aria-label="Fechar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createPlaylistForm" autocomplete="off">
+                    <div class="input-group">
+                        <label for="newPlaylistName">Nome da playlist</label>
+                        <input type="text" id="newPlaylistName" required placeholder="Digite o nome da playlist">
+                    </div>
+                    <div class="create-playlist-actions">
+                        <button type="button" id="cancelCreatePlaylist" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Criar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL MENU DO USUÁRIO -->
+    <div id="userMenuModal" class="modal modal-bottom-sheet">
+        <div class="modal-content bottom-sheet-content">
+            <div class="modal-header">
+                <h2>Minha Conta</h2>
+                <button class="modal-close" id="closeUserMenuModal" aria-label="Fechar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="user-menu-list">
+                    <li><a href="#" id="userAccountBtn"><i class="material-icons">person</i><span>Minha conta</span></a>
+                    </li>
+                    <li><a href="#" id="userPlaylistsBtn"><i class="material-icons">library_music</i><span>Minhas
+                                Playlists</span></a></li>
+                    <li><a href="#" id="userFavoritesBtn"><i class="material-icons">favorite</i><span>Meus
+                                favoritos</span></a></li>
+                    <li><a href="#" id="top10Btn"><i class="material-icons">star</i><span>As 10 Mais ouvidas</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL MINHAS PLAYLISTS (usuário) -->
+    <div id="userPlaylistsModal" class="modal modal-bottom-sheet">
+        <div class="modal-content bottom-sheet-content">
+            <div class="modal-header">
+                <h2>Minhas Playlists</h2>
+                <button class="modal-close" id="closeUserPlaylistsModal" aria-label="Fechar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body" id="userPlaylistsContainer">
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL OPÇÕES DO ITEM (kebab) - bottom sheet -->
+    <div id="itemOptionsModal" class="modal modal-bottom-sheet">
+        <div class="modal-content bottom-sheet-content">
+            <div class="modal-header">
+                <h2 id="itemOptionsTitle">Opções</h2>
+                <button class="modal-close" id="closeItemOptionsModal" aria-label="Fechar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body" id="itemOptionsBody">
+                <!-- Conteúdo gerado dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FEEDBACK (bottom-sheet) -->
+    <div id="feedbackModal" class="modal modal-bottom-sheet">
+        <div class="modal-content bottom-sheet-content">
+            <div class="modal-body" id="feedbackContent"></div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR PLAYLIST (bottom-sheet) -->
+    <div id="editPlaylistModal" class="modal modal-bottom-sheet">
+        <div class="modal-content bottom-sheet-content">
+            <div class="modal-header modal-header--item">
+                <h2 style="font-size:1.18rem;font-weight:700;">Editar Playlist</h2>
+                <button class="modal-close" id="editPlaylistCloseBtn" aria-label="Fechar">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editPlaylistForm" autocomplete="off">
+                    <div class="input-group">
+                        <label for="editPlaylistNameInput">Nome da playlist</label>
+                        <input type="text" id="editPlaylistNameInput" required placeholder="Digite o novo nome">
+                    </div>
+                    <div class="create-playlist-actions">
+                        <button type="button" id="editPlaylistCancelBtn" class="btn-cancel">Cancelar</button>
+                        <button type="button" id="editPlaylistSaveBtn" class="btn-create">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZOOM ALERT MODAL -->
+    <div id="zoomAlertModal" class="zoom-alert-modal" style="display: none;">
+        <div class="zoom-alert-content">
+            <div class="zoom-alert-header">
+                <i class="material-icons">zoom_in</i>
+                <span>Modo zoom ativo</span>
+            </div>
+            <div class="zoom-alert-message">
+                Use pinch out (dois dedos) para reduzir o zoom.
+            </div>
+            <div class="zoom-alert-actions">
+                <button type="button" id="zoomUnderstandBtn" class="btn-primary">Entendi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA INSTALL PROMPT MODAL (BOTTOM-SHEET) -->
+    <div id="pwaInstallPromptModal" class="pwa-install-modal" style="display: none;">
+        <div class="pwa-install-overlay"></div>
+        <div class="pwa-install-content">
+            <div class="pwa-install-header">
+                <img src="logo.png" class="pwa-install-logo" alt="Ícone do app"/>
+                <span>Instalar SanPlayer</span>
+            </div>
+            <div class="pwa-install-message">
+                Adicione à sua tela inicial para melhor experiência de app nativo.
+            </div>
+            <div class="pwa-install-icon">
+                <i class="material-symbols-outlined">download</i>
+            </div>
+            <div class="pwa-install-actions">
+                <button type="button" id="pwaInstallCancelBtn" class="btn-secondary">Não agora</button>
+                <button type="button" id="pwaInstallConfirmBtn" class="btn-primary">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="app.js"></script>
+
+</body>
+
+</html>

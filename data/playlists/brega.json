@@ -1,0 +1,71 @@
+{
+  "playlists": [
+    {
+      "name": "Brega",
+      "slug": "brega",
+      "cover": "brega.jpg",
+      "videos": [
+        {
+          "id": "GhH7CIVW1zs",
+          "title": "Quebrou a Cara",
+          "artist": "Silvanno Salles"
+        },
+        {
+          "id": "M7Y5b3dg274",
+          "title": "A Fila Anda",
+          "artist": "Léo Magalhães"
+        },
+        {
+          "id": "VIs2xSHKdQc",
+          "title": "Decida (Ao Vivo)",
+          "artist": "Zezo"
+        },
+        {
+          "id": "8V4Ix5i2DMo",
+          "title": "Morango do Nordeste",
+          "artist": "Lairton e Seus Teclados"
+        },
+        {
+          "id": "meq3SGOpluU",
+          "title": "Me Libera",
+          "artist": "Banda Djavú e DJ Juninho Portugal"
+        },
+        {
+          "id": "wz88J65-Y-0",
+          "title": "Não Me Deixe Aqui no Chão",
+          "artist": "Grupo Arrocha"
+        },
+        {
+          "id": "QLoZhUpzNzQ",
+          "title": "Porque Homem Não Chora",
+          "artist": "Pablo"
+        },
+        {
+          "id": "PmJr99CHw_g",
+          "title": "Fogo E Paixão",
+          "artist": "Wando"
+        },
+        {
+          "id": "sWddOTLRe30",
+          "title": "Quando Você Foi Embora",
+          "artist": "Reginaldo Rossi"
+        },
+        {
+          "id": "2VluMbOfL7Y",
+          "title": "O Fim (The End)",
+          "artist": "Altemar Dutra"
+        },
+        {
+          "id": "StJYTA7wvpY",
+          "title": "Homem Safado",
+          "artist": "Os Clones  •  Na Pegada do Arrocha"
+        },
+        {
+          "id": "rgt2rMfmxwY",
+          "title": "20 Grandes Sucessos",
+          "artist": "Reginaldo Rossi"
+        }
+      ]
+    }
+  ]
+}
