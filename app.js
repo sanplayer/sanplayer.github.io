@@ -828,25 +828,32 @@ async function handleHashNavigation() {
             console.error('Erro ao navegar para vídeo:', error);
         }
     } else if (hash.includes('playlistId=')) {
-        const playlistName = decodeURIComponent(hash.split('playlistId=')[1].split('&')[0]);
+        const playlistShareName = decodeURIComponent(hash.split('playlistId=')[1].split('&')[0]).trim();
         
         try {
-            // Encontrar índice da playlist pelo nome
-            const index = player.playlistsIndex.findIndex(p => p.name === playlistName || p.title === playlistName);
+            // Encontrar índice da playlist com matching robusto (case-insensitive)
+            const index = player.playlistsIndex.findIndex(p => {
+                const pName = (p.name || '').trim();
+                const pTitle = (p.title || '').trim();
+                return pName.toLowerCase() === playlistShareName.toLowerCase() || 
+                       pTitle.toLowerCase() === playlistShareName.toLowerCase();
+            });
+            
             if (index !== -1) {
                 await selectPlaylistByIndex(index);
             } else {
-                console.warn(`Playlist não encontrada: ${playlistName}`);
+                console.warn(`Playlist não encontrada: "${playlistShareName}". Disponíveis:`, 
+                    player.playlistsIndex.map(p => p.name || p.title));
             }
         } catch (error) {
             console.error('Erro ao navegar para playlist:', error);
         }
     } else if (hash.includes('artistId=')) {
-        const artistName = decodeURIComponent(hash.split('artistId=')[1].split('&')[0]);
+        const artistShareName = decodeURIComponent(hash.split('artistId=')[1].split('&')[0]).trim();
         
         try {
             // Carregar artista
-            await selectArtist(artistName);
+            await selectArtist(artistShareName);
         } catch (error) {
             console.error('Erro ao navegar para artista:', error);
         }
@@ -854,7 +861,13 @@ async function handleHashNavigation() {
 }
 
 // Listener para alterações na URL
-window.addEventListener('hashchange', handleHashNavigation);
+window.addEventListener('hashchange', async () => {
+    // Garantir que playlistsIndex está disponível antes de navegar
+    if (player.playlistsIndex.length === 0) {
+        await loadPlaylistsIndex();
+    }
+    await handleHashNavigation();
+});
 
 // Garantir refresh ao focar na janela (reentrar no player)
 window.addEventListener('focus', () => {
@@ -884,7 +897,7 @@ function refreshPlayerUI() {
 
 async function loadPlaylists() {
     try {
-        // 1. Carregar índice de playlists
+        // 1. Carregar índice de playlists (MANDATORY)
         await loadPlaylistsIndex();
 
         if (player.playlistsIndex.length === 0) {
@@ -892,12 +905,13 @@ async function loadPlaylists() {
             return;
         }
 
-        // 2. Verificar hash navigation (precisa de playlist específica ou procura)
+        // 2. Verificar tipo de hash navigation
         const hash = window.location.hash;
-        if (hash.includes('videoId=')) {
-            handleHashNavigation();
+        if (hash.includes('videoId=') || hash.includes('playlistId=') || hash.includes('artistId=')) {
+            // Router suporta todos os 3 tipos
+            await handleHashNavigation();
         } else {
-            // 3. Carregar primeira playlist como padrão
+            // 3. Sem hash: carregar primeira playlist como padrão
             await selectPlaylistByIndex(0);
         }
 
