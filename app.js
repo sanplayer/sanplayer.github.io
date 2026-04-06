@@ -844,9 +844,16 @@ async function handleHashNavigation() {
             } else {
                 console.warn(`Playlist não encontrada: "${playlistShareName}". Disponíveis:`, 
                     player.playlistsIndex.map(p => p.name || p.title));
+                // Feedback ao usuário e fallback para home com limpeza de hash
+                showToast(`Playlist "${playlistShareName}" não encontrada`);
+                await loadHome();
+                location.hash = ''; // Limpar URL inválida
             }
         } catch (error) {
             console.error('Erro ao navegar para playlist:', error);
+            showToast('Erro ao carregar playlist');
+            await loadHome();
+            location.hash = '';
         }
     } else if (hash.includes('artistId=')) {
         const artistShareName = decodeURIComponent(hash.split('artistId=')[1].split('&')[0]).trim();
@@ -918,6 +925,27 @@ async function loadPlaylists() {
         refreshPlayerUI();
     } catch (error) {
         console.error('Erro ao carregar playlists:', error);
+    }
+}
+
+/**
+ * Carrega o estado "home" padrão (primeira playlist)
+ * Garante sempre um estado visual válido
+ */
+async function loadHome() {
+    // Iniciar transição visual
+    document.body.classList.add('is-routing');
+    
+    try {
+        await selectPlaylistByIndex(0);
+        refreshPlayerUI();
+    } catch (error) {
+        console.error('Erro ao carregar home:', error);
+    } finally {
+        // Completar transição no próximo frame
+        requestAnimationFrame(() => {
+            document.body.classList.remove('is-routing');
+        });
     }
 }
 
@@ -1713,6 +1741,15 @@ async function selectArtist(artist) {
             });
         });
 
+        // Validação: artista sem vídeos → fallback para home
+        if (artistVideos.length === 0) {
+            console.warn(`Nenhum vídeo encontrado para o artista: "${artist}"`);
+            showToast(`Nenhuma música encontrada: "${artist}"`);
+            await loadHome(); // ✅ Garante UI válida
+            location.hash = ''; // Limpar URL inválida
+            return;
+        }
+
         // Criar uma playlist temporária para o artista
         player.currentPlaylist = {
             name: artist,
@@ -1731,6 +1768,8 @@ async function selectArtist(artist) {
         refreshPlayerUI();
     } catch (error) {
         console.error('Erro ao selecionar artista:', error);
+        showToast('Erro ao carregar artista');
+        await loadHome(); // ✅ Garante UI válida no erro
     }
 }
 

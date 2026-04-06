@@ -142,7 +142,12 @@ body {
     min-height: 100dvh; /* PreferÃªncia em navegadores modernos */
     padding-top: env(safe-area-inset-top); /*san*/
     padding-bottom: env(safe-area-inset-bottom); /*san*/
-    
+    transition: opacity 0.2s ease;
+}
+
+/* Transição durante roteamento */
+body.is-routing {
+    opacity: 0.6;
 }
 
 /* Modal criar playlist (bottom-sheet) */
