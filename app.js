@@ -765,6 +765,7 @@ function initPlayerUI() {
     
     const shareButton = document.createElement('button');
     shareButton.id = 'shareButton';
+    shareButton.className = 'share-btn';
     shareButton.setAttribute('aria-label', 'Compartilhar');
     const shareIcon = document.createElement('i');
     shareIcon.className = 'material-icons reply';
@@ -779,6 +780,7 @@ function initPlayerUI() {
     blockInfo.appendChild(currentActions);
     
     document.getElementById('favButton').addEventListener('click', toggleFavorite);
+    document.getElementById('shareButton').addEventListener('click', shareMusic);
 }
 
 async function handleHashNavigation() {
@@ -1455,11 +1457,23 @@ function shareItem(index) {
             url: url,
         }).catch(() => {});
     } else {
-        // Fallback: copiar para clipboard (mesmo formato do shareMusic)
+        // Fallback: copiar para clipboard
         const shareText = `${text}\n${url}`;
         try { navigator.clipboard.writeText(shareText); } catch (e) {}
         alert('Música copiada para compartilhamento!');
     }
+}
+
+/**
+ * Compartilhar a música atual
+ * Usa navigator.share (Web Share API) se disponível
+ * Fallback: copia para clipboard
+ */
+function shareMusic() {
+    if (!player.currentPlaylist) return;
+    const video = player.currentPlaylist.videos[player.currentVideoIndex];
+    if (!video) return;
+    shareItem(player.currentVideoIndex);
 }
 
 async function selectArtist(artist) {
