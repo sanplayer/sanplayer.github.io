@@ -827,6 +827,29 @@ async function handleHashNavigation() {
         } catch (error) {
             console.error('Erro ao navegar para vídeo:', error);
         }
+    } else if (hash.includes('playlistId=')) {
+        const playlistName = decodeURIComponent(hash.split('playlistId=')[1].split('&')[0]);
+        
+        try {
+            // Encontrar índice da playlist pelo nome
+            const index = player.playlistsIndex.findIndex(p => p.name === playlistName || p.title === playlistName);
+            if (index !== -1) {
+                await selectPlaylistByIndex(index);
+            } else {
+                console.warn(`Playlist não encontrada: ${playlistName}`);
+            }
+        } catch (error) {
+            console.error('Erro ao navegar para playlist:', error);
+        }
+    } else if (hash.includes('artistId=')) {
+        const artistName = decodeURIComponent(hash.split('artistId=')[1].split('&')[0]);
+        
+        try {
+            // Carregar artista
+            await selectArtist(artistName);
+        } catch (error) {
+            console.error('Erro ao navegar para artista:', error);
+        }
     }
 }
 
