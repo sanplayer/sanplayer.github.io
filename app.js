@@ -1393,17 +1393,11 @@ function openPlaylistShareModal(playlistName) {
     const modal = document.getElementById('itemOptionsModal');
     const headerEl = modal.querySelector('.modal-header');
     
-    // Limpar header anterior
+    // Atualizar conteúdo do header existente
     headerEl.innerHTML = '';
-    
-    // Renderizar header simples (sem imagem)
-    const header = document.createElement('div');
-    header.className = 'modal-header';
     
     const title = document.createElement('h2');
     title.textContent = playlistName;
-    title.style.fontSize = '1.18rem';
-    title.style.fontWeight = '700';
     
     const closeBtn = document.createElement('button');
     closeBtn.className = 'modal-close';
@@ -1415,9 +1409,8 @@ function openPlaylistShareModal(playlistName) {
     closeBtn.appendChild(closeIcon);
     closeBtn.addEventListener('click', closeItemOptionsModal);
     
-    header.appendChild(title);
-    header.appendChild(closeBtn);
-    headerEl.appendChild(header);
+    headerEl.appendChild(title);
+    headerEl.appendChild(closeBtn);
     
     const body = document.getElementById('itemOptionsBody');
     body.innerHTML = '';
@@ -1456,17 +1449,11 @@ function openArtistShareModal(artistName) {
     const modal = document.getElementById('itemOptionsModal');
     const headerEl = modal.querySelector('.modal-header');
     
-    // Limpar header anterior
+    // Atualizar conteúdo do header existente
     headerEl.innerHTML = '';
-    
-    // Renderizar header simples (sem imagem)
-    const header = document.createElement('div');
-    header.className = 'modal-header';
     
     const title = document.createElement('h2');
     title.textContent = artistName;
-    title.style.fontSize = '1.18rem';
-    title.style.fontWeight = '700';
     
     const closeBtn = document.createElement('button');
     closeBtn.className = 'modal-close';
@@ -1478,9 +1465,8 @@ function openArtistShareModal(artistName) {
     closeBtn.appendChild(closeIcon);
     closeBtn.addEventListener('click', closeItemOptionsModal);
     
-    header.appendChild(title);
-    header.appendChild(closeBtn);
-    headerEl.appendChild(header);
+    headerEl.appendChild(title);
+    headerEl.appendChild(closeBtn);
     
     const body = document.getElementById('itemOptionsBody');
     body.innerHTML = '';
