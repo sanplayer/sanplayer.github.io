@@ -1,0 +1,236 @@
+{
+  "playlists": [
+    {
+      "name": "Nacionais Romanticas",
+      "slug": "nacionais-romanticas",
+      "cover": "nacionais-romanticas.jpg",
+      "videos": [
+        {
+          "id": "icLQT9qA3z0",
+          "title": "Romance Rosa",
+          "artist": "Juan Luis Guerra"
+        },
+        {
+          "id": "SxnRSP6eNbA",
+          "title": "Dois",
+          "artist": "Paulo Ricardo"
+        },
+        {
+          "id": "3wjn1VvzHqw",
+          "title": "Transas",
+          "artist": "Ritchie"
+        },
+        {
+          "id": "Nd3AnMRgfPA",
+          "title": "Tudo Por Nada",
+          "artist": "Paulo Ricardo"
+        },
+        {
+          "id": "yVrCTE1-cXM",
+          "title": "Juro que não vou mais chorar",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "3aCKIbPoqlw",
+          "title": "A Minha História",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "D8jfNewEZqI",
+          "title": "De Que Vale Ter Tudo Na Vida",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "EHCFHzfOLzM",
+          "title": "Amor Eterno",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "jtQmAVHffv0",
+          "title": "Ele",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "9f_YnlyTNiM",
+          "title": "Evidências",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "M4kzmLRpjYc",
+          "title": "Fantasia",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "YF-OUKKh6c4",
+          "title": "Choro",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "718MKz_48to",
+          "title": "Faz De Conta",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "kIn1FT4e-sI",
+          "title": "Aguenta Coração",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "2TY1_HNAa7E",
+          "title": "De Igual Pra Igual / A Noite Mais Linda",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "aAv87xKCmrE",
+          "title": "Só Você",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "6diDPGM_mAs",
+          "title": "Quero Me Apaixonar",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "XyOhgzv-Acg",
+          "title": "Sábado",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "hRCuZkvLmbQ",
+          "title": "Hey  / Me Esqueci De Viver",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "FO1L9rrFrfU",
+          "title": "Quem Se Não Sou Eu",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "kcS5VZykJ0c",
+          "title": "Separação",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "je4Bt_6hMts",
+          "title": "Te Amo / Por Eu Ter Me Machucado",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "WdueeV3rNRE",
+          "title": "Mesmo Que Exista Alguém",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "DlY0EcZZ9Z0",
+          "title": "Chuvas De Verão",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "2eAMSZMqiPQ",
+          "title": "Fui Eu",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "chuqJhKKHE8",
+          "title": "Tudo Deu Em Nada",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "SHnxyX2jqWg",
+          "title": "Sonho Por Sonho",
+          "artist": "José Augusto"
+        },
+        {
+          "id": "9l8ghAxFCb8",
+          "title": "Pássaro de Fogo",
+          "artist": "Paula Fernandes"
+        },
+        {
+          "id": "PLE88cneawM",
+          "title": "Dói Demais",
+          "artist": "Só Pra Contrariar"
+        },
+        {
+          "id": "HlcxXX2RcJs",
+          "title": "E Não Vou Mais Deixar Você Tão Só",
+          "artist": "Raça Negra"
+        },
+        {
+          "id": "_N1er9qlGMY",
+          "title": "Ela é demais",
+          "artist": "Rick & Renner"
+        },
+        {
+          "id": "SqAWUCi0lg0",
+          "title": "A Força do Amor",
+          "artist": "Roupa Nova"
+        },
+        {
+          "id": "_JG95cs7gLw",
+          "title": "Menina Veneno",
+          "artist": "Ritchie"
+        },
+        {
+          "id": "-ypIzdy1Bkc",
+          "title": "Eu Sem Você",
+          "artist": "Paula Fernandes"
+        },
+        {
+          "id": "b16NlaSmdkk",
+          "title": "Momentos",
+          "artist": "Joana"
+        },
+        {
+          "id": "YL1Hk5gondM",
+          "title": "Demais",
+          "artist": "Verônica Sabino"
+        },
+        {
+          "id": "CK64B139jUE",
+          "title": "Todo Azul do Mar",
+          "artist": "Flávio Venturini"
+        },
+        {
+          "id": "rJuZOPqLjLU",
+          "title": "Senta Aqui",
+          "artist": "Fábio Jr."
+        },
+        {
+          "id": "7cdAzos8RAw",
+          "title": "Quando Um Grande Amor Se Faz",
+          "artist": "Cleiton & Camargo"
+        },
+        {
+          "id": "939MGkS4c98",
+          "title": "Outra Vez",
+          "artist": "Roberto Carlos"
+        },
+        {
+          "id": "siOUbcgKQC0",
+          "title": "Simone",
+          "artist": "Separação"
+        },
+        {
+          "id": "su5d04JvJKk",
+          "title": "Nem um Toque",
+          "artist": "Rosana"
+        },
+        {
+          "id": "nmiSEhGbZhk",
+          "title": "Aparências",
+          "artist": "Márcio Greyck"
+        },
+        {
+          "id": "amuUK8Enb-U",
+          "title": "Quando Gira o Mundo",
+          "artist": "Fábio Jr."
+        },
+        {
+          "id": "ukfiGCMO2MA",
+          "title": "O Que É Que Há?",
+          "artist": "Fábio Jr."
+        }
+      ]
+    }
+  ]
+}
