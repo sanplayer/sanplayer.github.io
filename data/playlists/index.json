@@ -54,5 +54,12 @@
     "name": "Brega",
     "cover": "brega.jpg",
     "url": "./data/playlists/brega.json"
+  },
+  {
+    "id": "roberto-carlos",
+    "title": "Roberto Carlos",
+    "name": "Roberto Carlos",
+    "cover": "roberto-carlos.jpg",
+    "url": "./data/playlists/roberto-carlos.json"
   }
 ]
