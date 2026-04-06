@@ -807,6 +807,23 @@ function initPlayerUI() {
 
 async function handleHashNavigation() {
     const hash = window.location.hash;
+    
+    // ✨ Suporte a atalhos de modais (PWA shortcuts)
+    if (hash === '#modal=playlists') {
+        const btn = document.getElementById('link-playlists');
+        if (btn) btn.click();
+        return;
+    } else if (hash === '#modal=artists') {
+        const btn = document.getElementById('link-artistas');
+        if (btn) btn.click();
+        return;
+    } else if (hash === '#modal=favorites') {
+        const btn = document.getElementById('link-favoritos');
+        if (btn) btn.click();
+        return;
+    }
+    
+    // Roteamento de conteúdo (música, playlist, artista)
     if (hash.includes('videoId=')) {
         const videoId = hash.split('videoId=')[1].split('&')[0];
         
