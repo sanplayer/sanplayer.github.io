@@ -61,5 +61,12 @@
     "name": "Roberto Carlos",
     "cover": "roberto-carlos.jpg",
     "url": "./data/playlists/roberto-carlos.json"
+  },
+  {
+    "id": "reginaldo-rossi",
+    "title": "Reginaldo Rossi",
+    "name": "Reginaldo Rossi",
+    "cover": "reginaldo-rossi.jpg",
+    "url": "./data/playlists/reginaldo-rossi.json"
   }
 ]
