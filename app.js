@@ -178,7 +178,7 @@ async function findVideoById(videoId) {
  * @param {Object} data - {src, title, subtitle}
  * @returns {HTMLElement}
  */
-function renderCard(data) {
+function renderCard(data, config = {}) {
     const card = document.createElement('div');
     card.className = 'card';
     
@@ -203,6 +203,28 @@ function renderCard(data) {
     body.appendChild(subtitleEl);
     card.appendChild(img);
     card.appendChild(body);
+    
+    // Adicionar botão kebab se tipo for fornecido
+    if (config.type === 'playlist' || config.type === 'artist') {
+        const kebabBtn = document.createElement('button');
+        kebabBtn.className = 'card-kebab';
+        kebabBtn.setAttribute('aria-label', 'Opções');
+        const kebabIcon = document.createElement('i');
+        kebabIcon.className = 'material-icons';
+        kebabIcon.textContent = 'more_vert';
+        kebabBtn.appendChild(kebabIcon);
+        
+        kebabBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (config.type === 'playlist') {
+                openPlaylistShareModal(config.shareData);
+            } else if (config.type === 'artist') {
+                openArtistShareModal(config.shareData);
+            }
+        });
+        
+        card.appendChild(kebabBtn);
+    }
     
     return card;
 }
@@ -934,6 +956,9 @@ function openPlaylistsModal() {
             src: `covers/playlists/${playlistMeta.cover}`,
             title: playlistMeta.title || playlistMeta.name,
             subtitle: videoCount
+        }, {
+            type: 'playlist',
+            shareData: playlistMeta.name
         });
         card.addEventListener('click', () => selectPlaylistByIndex(index));
         fragment.appendChild(card);
@@ -984,6 +1009,9 @@ async function openArtistsModal() {
                 src: artistCover,
                 title: artist,
                 subtitle: 'Artista'
+            }, {
+                type: 'artist',
+                shareData: artist
             });
             card.addEventListener('click', () => selectArtist(artist));
             fragment.appendChild(card);
@@ -1357,6 +1385,132 @@ function closeItemOptionsModal() {
     document.getElementById('itemOptionsModal').classList.remove('show');
 }
 
+/**
+ * Abre modal de compartilhamento para playlist
+ * @param {String} playlistName - Nome da playlist
+ */
+function openPlaylistShareModal(playlistName) {
+    const modal = document.getElementById('itemOptionsModal');
+    const headerEl = modal.querySelector('.modal-header');
+    
+    // Limpar header anterior
+    headerEl.innerHTML = '';
+    
+    // Renderizar header simples (sem imagem)
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+    
+    const title = document.createElement('h2');
+    title.textContent = playlistName;
+    title.style.fontSize = '1.18rem';
+    title.style.fontWeight = '700';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close';
+    closeBtn.setAttribute('aria-label', 'Fechar');
+    
+    const closeIcon = document.createElement('i');
+    closeIcon.className = 'material-icons';
+    closeIcon.textContent = 'close';
+    closeBtn.appendChild(closeIcon);
+    closeBtn.addEventListener('click', closeItemOptionsModal);
+    
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    headerEl.appendChild(header);
+    
+    const body = document.getElementById('itemOptionsBody');
+    body.innerHTML = '';
+    
+    const fragment = document.createDocumentFragment();
+    
+    // Botão: Compartilhar
+    const shareRow = renderOptionRow({
+        icon: 'share',
+        text: 'Compartilhar',
+        onClick: () => {
+            sharePlaylist(playlistName);
+            closeItemOptionsModal();
+        }
+    });
+    fragment.appendChild(shareRow);
+    fragment.appendChild(renderSeparator());
+    
+    // Botão: Cancelar
+    const cancelRow = renderOptionRow({
+        icon: 'close',
+        text: 'Cancelar',
+        onClick: closeItemOptionsModal
+    });
+    fragment.appendChild(cancelRow);
+    
+    body.appendChild(fragment);
+    modal.classList.add('show');
+}
+
+/**
+ * Abre modal de compartilhamento para artista
+ * @param {String} artistName - Nome do artista
+ */
+function openArtistShareModal(artistName) {
+    const modal = document.getElementById('itemOptionsModal');
+    const headerEl = modal.querySelector('.modal-header');
+    
+    // Limpar header anterior
+    headerEl.innerHTML = '';
+    
+    // Renderizar header simples (sem imagem)
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+    
+    const title = document.createElement('h2');
+    title.textContent = artistName;
+    title.style.fontSize = '1.18rem';
+    title.style.fontWeight = '700';
+    
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close';
+    closeBtn.setAttribute('aria-label', 'Fechar');
+    
+    const closeIcon = document.createElement('i');
+    closeIcon.className = 'material-icons';
+    closeIcon.textContent = 'close';
+    closeBtn.appendChild(closeIcon);
+    closeBtn.addEventListener('click', closeItemOptionsModal);
+    
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    headerEl.appendChild(header);
+    
+    const body = document.getElementById('itemOptionsBody');
+    body.innerHTML = '';
+    
+    const fragment = document.createDocumentFragment();
+    
+    // Botão: Compartilhar
+    const shareRow = renderOptionRow({
+        icon: 'share',
+        text: 'Compartilhar',
+        onClick: () => {
+            shareArtist(artistName);
+            closeItemOptionsModal();
+        }
+    });
+    fragment.appendChild(shareRow);
+    fragment.appendChild(renderSeparator());
+    
+    // Botão: Cancelar
+    const cancelRow = renderOptionRow({
+        icon: 'close',
+        text: 'Cancelar',
+        onClick: closeItemOptionsModal
+    });
+    fragment.appendChild(cancelRow);
+    
+    body.appendChild(fragment);
+    modal.classList.add('show');
+}
+
 function addItemToUserPlaylist(playlistIdx) {
     const list = getUserPlaylists();
     
@@ -1461,6 +1615,48 @@ function shareItem(index) {
         const shareText = `${text}\n${url}`;
         try { navigator.clipboard.writeText(shareText); } catch (e) {}
         alert('Música copiada para compartilhamento!');
+    }
+}
+
+/**
+ * Compartilha uma playlist
+ * @param {String} playlistName - Nome da playlist
+ */
+function sharePlaylist(playlistName) {
+    const text = `Acompanhe a playlist: ${playlistName} no SanPlayer`;
+    const url = `${window.location.origin}${window.location.pathname}#playlistId=${encodeURIComponent(playlistName)}`;
+    if (navigator.share) {
+        navigator.share({
+            title: 'SanPlayer',
+            text: text,
+            url: url,
+        }).catch(() => {});
+    } else {
+        // Fallback: copiar para clipboard
+        const shareText = `${text}\n${url}`;
+        try { navigator.clipboard.writeText(shareText); } catch (e) {}
+        alert('Playlist copiada para compartilhamento!');
+    }
+}
+
+/**
+ * Compartilha um artista
+ * @param {String} artistName - Nome do artista
+ */
+function shareArtist(artistName) {
+    const text = `Ouça todas as músicas de: ${artistName} no SanPlayer`;
+    const url = `${window.location.origin}${window.location.pathname}#artistId=${encodeURIComponent(artistName)}`;
+    if (navigator.share) {
+        navigator.share({
+            title: 'SanPlayer',
+            text: text,
+            url: url,
+        }).catch(() => {});
+    } else {
+        // Fallback: copiar para clipboard
+        const shareText = `${text}\n${url}`;
+        try { navigator.clipboard.writeText(shareText); } catch (e) {}
+        alert('Artista copiado para compartilhamento!');
     }
 }
 

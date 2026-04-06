@@ -1,6 +1,6 @@
-
+﻿
 /* ==========================================================================
-   1. CONFIGURAÃ‡Ã•ES DE FONTE E VARIÃVEIS
+   1. CONFIGURAÃƒâ€¡Ãƒâ€¢ES DE FONTE E VARIÃƒÂVEIS
    ========================================================================== */
 
 /* roboto-regular - latin */
@@ -67,7 +67,7 @@
     --font-lg: clamp(1.1rem, 3vw, 1.4rem);
     --font-xl: clamp(1.3rem, 4vw, 1.8rem);
 
-    /* Espaçamento Fluido com Clamp */
+    /* EspaÃ§amento Fluido com Clamp */
     --gap-xs: clamp(0.25rem, 1vw, 0.5rem);
     --gap-sm: clamp(0.5rem, 1.5vw, 0.75rem);
     --gap-md: clamp(0.75rem, 2vw, 1rem);
@@ -75,15 +75,15 @@
     --gap-lg: clamp(1rem, 3vw, 1.8rem);
     --padding-app: clamp(0.75rem, 2.5vw, 2rem);
 
-    /* Dimensões Fluidas */
+    /* DimensÃµes Fluidas */
     --header-height: clamp(50px, 10vh, 72px);
     --footer-height: clamp(60px, 12vh, 100px);
     --btn-size: clamp(36px, 8vw, 48px);
     --icon-size: clamp(1.25rem, 3vw, 1.8rem);
     
-    /* Hierarquia de Ícones (Proporção do Container) */
+    /* Hierarquia de Ãcones (ProporÃ§Ã£o do Container) */
     --icon-size-main: clamp(1.75rem, 5vw, 2.25rem);      /* Play/Pause: 60% do container */
-    --icon-size-sub: clamp(1.25rem, 3.5vw, 1.75rem);     /* Navegação: 50% do container */
+    --icon-size-sub: clamp(1.25rem, 3.5vw, 1.75rem);     /* NavegaÃ§Ã£o: 50% do container */
     
     /* Touch Target e Feedback (YouTube Music Pattern) */
     --touch-target: 42px;                                 /* Minimum tap area */
@@ -139,7 +139,7 @@ body {
     line-height: 1.4;
     overflow-x: hidden;
     min-height: 100vh; /* Fallback para navegadores antigos */
-    min-height: 100dvh; /* Preferência em navegadores modernos */
+    min-height: 100dvh; /* PreferÃªncia em navegadores modernos */
     padding-top: env(safe-area-inset-top); /*san*/
     padding-bottom: env(safe-area-inset-bottom); /*san*/
     
@@ -194,7 +194,7 @@ body {
 }
 
 
-/* Playlists do usuÃ¡rio: linha clicÃ¡vel e contador destacado */
+/* Playlists do usuÃƒÂ¡rio: linha clicÃƒÂ¡vel e contador destacado */
 .user-playlist.user-playlist-clickable {
     display: flex;
     align-items: center;
@@ -236,7 +236,7 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
 }
 
-/* Lista do menu do usuÃ¡rio (modal de perfil) */
+/* Lista do menu do usuÃƒÂ¡rio (modal de perfil) */
 .user-menu-list {
     list-style: none;
     margin: 0;
@@ -321,8 +321,8 @@ body {
     }
 }
 
-/* Header do modal de opÃ§Ãµes do item (kebab) */
-/* Header do bottom-sheet: confortÃ¡vel, nativo, sem excessos */
+/* Header do modal de opÃƒÂ§ÃƒÂµes do item (kebab) */
+/* Header do bottom-sheet: confortÃƒÂ¡vel, nativo, sem excessos */
 .modal-header--item {
     display: flex;
     align-items: center;
@@ -417,7 +417,7 @@ body {
 
 /* Artists modal: align to top but keep comfortable header spacing */
 /* Mobile: ocupar tela inteira - sobrescrito na media query mobile */
-/* Desktop: regras continuam na seÃ§Ã£o de desktop */
+/* Desktop: regras continuam na seÃƒÂ§ÃƒÂ£o de desktop */
 
 /* Header sizing: restore comfortable, professional dimensions */
 .modal-header {
@@ -493,7 +493,7 @@ body {
     max-width: 90%;
 }
 
-/* Separador visual para opções do modal */
+/* Separador visual para opÃ§Ãµes do modal */
 .option-separator {
     height: 1px;
     background: var(--border-rgba);
@@ -501,7 +501,7 @@ body {
     width: 100%;
 }
 
-/* === MOBILE: GRID VÃDEO + PLAYLIST === */
+/* === MOBILE: GRID VÃƒÂDEO + PLAYLIST === */
 @media (max-width: 1023px) {
     
     .sidebar-nav li {
@@ -715,7 +715,7 @@ body {
         color: var(--text-dim);
     }
 
-    /* Lista simples das playlists do usuÃ¡rio */
+    /* Lista simples das playlists do usuÃƒÂ¡rio */
     #userPlaylistsContainer .user-playlist {
         padding: var(--gap-sm);
         border-bottom: 1px solid var(--border-rgba);
@@ -724,7 +724,7 @@ body {
         justify-content: space-between;
     }
 
-    /* Pequenos ajustes para botÃµes nos modais */
+    /* Pequenos ajustes para botÃƒÂµes nos modais */
     .modal-body input[type="text"] {
         width: 100%;
         padding: clamp(0.4rem, 1vw, 0.75rem);
@@ -753,7 +753,7 @@ body {
         border-color: var(--text-main);
     }
 
-    /* Opções dentro do modal (kebab) */
+    /* OpÃ§Ãµes dentro do modal (kebab) */
     .option-row {
         display: flex;
         align-items: center;
@@ -923,7 +923,7 @@ img {
 }
 
 /* ==========================================================================
-   3. HEADER (NavegaÃ§Ã£o Superior)
+   3. HEADER (NavegaÃƒÂ§ÃƒÂ£o Superior)
    ========================================================================== */
 
 .app-header {
@@ -1027,7 +1027,7 @@ img {
 }
 
 /* ==========================================================================
-   4. LAYOUT PRINCIPAL (Sidebar, VÃ­deo, Playlist)
+   4. LAYOUT PRINCIPAL (Sidebar, VÃƒÂ­deo, Playlist)
    ========================================================================== */
 
 .app-main-grid {
@@ -1089,7 +1089,7 @@ img {
     background: rgba(255, 255, 255, 0.05);
 }
 
-/* Ãrea do VÃ­deo */
+/* ÃƒÂrea do VÃƒÂ­deo */
 .video-stage {
     padding: var(--gap-fluid);
     display: flex;
@@ -1257,20 +1257,20 @@ img {
 }
 
 /* ==========================================================================
-   4.5 EFEITO EXPLOSÃO DE CORAÇÕES - FAVORITAR
+   4.5 EFEITO EXPLOSÃƒO DE CORAÃ‡Ã•ES - FAVORITAR
    ========================================================================== */
 
 /* ==========================================================================
-   SISTEMA DE PARTÍCULAS NATIVO - FAVORITAR (Samsung/One UI)
+   SISTEMA DE PARTÃCULAS NATIVO - FAVORITAR (Samsung/One UI)
    ========================================================================== */
 
 /**
- * Animação natural de partículas com movimento fluido
+ * AnimaÃ§Ã£o natural de partÃ­culas com movimento fluido
  * 
- * Características:
+ * CaracterÃ­sticas:
  * - Translate suave com easing ease-out
- * - Scale de tamanho variável (independente por partícula)
- * - Rotação progressiva (spin effect)
+ * - Scale de tamanho variÃ¡vel (independente por partÃ­cula)
+ * - RotaÃ§Ã£o progressiva (spin effect)
  * - Opacity fade out
  * - Transform-only (GPU accelerated, sem reflow)
  * 
@@ -1278,7 +1278,7 @@ img {
  */
 @keyframes particle-float {
     0% {
-        /* Nasce no centro do botão */
+        /* Nasce no centro do botÃ£o */
         transform: 
             translate(0, 0) 
             scale(var(--scale-start)) 
@@ -1286,12 +1286,12 @@ img {
         opacity: 1;
     }
     
-    /* Movimento ativo - 70% da duração */
+    /* Movimento ativo - 70% da duraÃ§Ã£o */
     70% {
         opacity: 0.8;
     }
     
-    /* Fim - partícula atinge destino com fade out */
+    /* Fim - partÃ­cula atinge destino com fade out */
     100% {
         transform: 
             translate(var(--end-x), var(--end-y)) 
@@ -1302,8 +1302,8 @@ img {
 }
 
 /**
- * Container para as partículas
- * Posicionado DENTRO do botão (position: relative pai)
+ * Container para as partÃ­culas
+ * Posicionado DENTRO do botÃ£o (position: relative pai)
  */
 .particle-container {
     /* Posicionamento absoluto relativo ao pai (button) */
@@ -1312,14 +1312,14 @@ img {
     left: 50%;
     transform: translate(-50%, -50%);
     
-    /* Dimensões - cobre o botão */
+    /* DimensÃµes - cobre o botÃ£o */
     width: 100%;
     height: 100%;
     
-    /* Não interfere em cliques */
+    /* NÃ£o interfere em cliques */
     pointer-events: none;
     
-    /* Garante que partículas apareçam acima do ícone */
+    /* Garante que partÃ­culas apareÃ§am acima do Ã­cone */
     z-index: 1001;
     
     /* Performance */
@@ -1327,16 +1327,16 @@ img {
 }
 
 /**
- * Cada partícula de coração
+ * Cada partÃ­cula de coraÃ§Ã£o
  * 
- * Variáveis dinâmicas (via JS):
+ * VariÃ¡veis dinÃ¢micas (via JS):
  * --end-x: coordenada X final (px)
  * --end-y: coordenada Y final (px)
  * --scale-start: escala inicial (0.8-1.3)
  * --scale-end: escala final (0.1-0.3)
- * --rotation: rotação final (0-360deg)
+ * --rotation: rotaÃ§Ã£o final (0-360deg)
  * 
- * Animação:
+ * AnimaÃ§Ã£o:
  * - duration: 600-900ms (via JS)
  * - delay: stagger 0-300ms+ (via JS)
  * - easing: cubic-bezier(0.25, 0.46, 0.45, 0.94) = ease-out smooth
@@ -1347,18 +1347,18 @@ img {
     top: 50%;
     left: 50%;
     
-    /* Emoji do coração */
+    /* Emoji do coraÃ§Ã£o */
     width: 24px;
     height: 24px;
     line-height: 24px;
     text-align: center;
     font-size: 20px;
     
-    /* Não interfere em eventos */
+    /* NÃ£o interfere em eventos */
     pointer-events: none;
     user-select: none;
     
-    /* Animação - configurações base */
+    /* AnimaÃ§Ã£o - configuraÃ§Ãµes base */
     animation: particle-float forwards;
     
     /* Performance - GPU acceleration */
@@ -1372,15 +1372,15 @@ img {
 }
 
 /* ==========================================================================
-   ANIMAÇÃO DE PULSE - MICROINTERAÇÃO DO BOTÃO FAVORITAR 
+   ANIMAÃ‡ÃƒO DE PULSE - MICROINTERAÃ‡ÃƒO DO BOTÃƒO FAVORITAR 
    ========================================================================== */
 
 /**
- * Animação de pulse suave para o botão de favoritar
+ * AnimaÃ§Ã£o de pulse suave para o botÃ£o de favoritar
  * Inspirado em Samsung Music (One UI)
  * 
  * Timing: 250ms - 320ms (cubic-bezier suave)
- * Escala: 1 → 1.25 → 1
+ * Escala: 1 â†’ 1.25 â†’ 1
  * Ideal para feedback visual de clique
  */
 @keyframes favorite-pulse {
@@ -1388,7 +1388,7 @@ img {
         transform: scale(1);
     }
     
-    /* Pico da animação no meio */
+    /* Pico da animaÃ§Ã£o no meio */
     50% {
         transform: scale(1.25);
     }
@@ -1400,12 +1400,12 @@ img {
 }
 
 /**
- * Classe de botão para favoritar
+ * Classe de botÃ£o para favoritar
  * 
  * Estados:
- * - .favorite-btn: estado padrão
+ * - .favorite-btn: estado padrÃ£o
  * - .favorite-btn.active: favoritado
- * - .favorite-btn.pulse: animação ativa (remover após ciclo)
+ * - .favorite-btn.pulse: animaÃ§Ã£o ativa (remover apÃ³s ciclo)
  */
 .favorite-btn {
     /* Estilo base */
@@ -1416,7 +1416,7 @@ img {
     font-size: var(--icon-size);
     color: var(--text-dim);
     
-    /* Transição suave de cor */
+    /* TransiÃ§Ã£o suave de cor */
     transition: color 0.2s ease, filter 0.2s ease;
     
     /* Performance */
@@ -1440,7 +1440,7 @@ img {
 
 /**
  * Estado favoritado
- * Ícone fica branco após favoritar
+ * Ãcone fica branco apÃ³s favoritar
  */
 .favorite-btn.active {
     color: var(--text-main);
@@ -1452,8 +1452,8 @@ img {
 }
 
 /**
- * Botão de compartilhamento
- * Mesmo padrão do botão de favoritar
+ * BotÃ£o de compartilhamento
+ * Mesmo padrÃ£o do botÃ£o de favoritar
  */
 .share-btn {
     background: none;
@@ -1482,11 +1482,11 @@ img {
 }
 
 /**
- * Animação de pulse disparada pela classe .pulse
+ * AnimaÃ§Ã£o de pulse disparada pela classe .pulse
  * Aplicada dinamicamente via JavaScript
  * 
  * Easing: cubic-bezier(0.34, 1.56, 0.64, 1)
- * Esse cubic-bezier cria um efeito "springy" natural e orgânico
+ * Esse cubic-bezier cria um efeito "springy" natural e orgÃ¢nico
  * Similar ao utilizado no Material Design e Samsung One UI
  */
 .favorite-btn.pulse {
@@ -1499,7 +1499,7 @@ img {
 
 /**
  * Focus visible para acessibilidade
- * Importante para navegação via teclado
+ * Importante para navegaÃ§Ã£o via teclado
  */
 .favorite-btn:focus-visible {
     outline: 2px solid var(--accent-red);
@@ -1509,7 +1509,7 @@ img {
 
 /**
  * Estado active (aria-pressed=true)
- * Garante que leitores de tela reconheçam o estado
+ * Garante que leitores de tela reconheÃ§am o estado
  */
 .favorite-btn[aria-pressed="true"] {
     color: var(--accent-text-main);
@@ -1539,9 +1539,9 @@ img {
     display: block;
 }
 
-/* Animações independentes e assimétricas para cada barra do equalizador */
+/* AnimaÃ§Ãµes independentes e assimÃ©tricas para cada barra do equalizador */
 
-/* Barra 0: Pica até 80%, volta rápido (duração 0.6s) */
+/* Barra 0: Pica atÃ© 80%, volta rÃ¡pido (duraÃ§Ã£o 0.6s) */
 @keyframes eq-bar-0-pulse {
     0% {
         transform: scaleY(0.3);
@@ -1557,7 +1557,7 @@ img {
     }
 }
 
-/* Barra 1: Pica até 40%, volta lento (duração 0.8s) */
+/* Barra 1: Pica atÃ© 40%, volta lento (duraÃ§Ã£o 0.8s) */
 @keyframes eq-bar-1-pulse {
     0% {
         transform: scaleY(0.3);
@@ -1573,7 +1573,7 @@ img {
     }
 }
 
-/* Barra 2: Pica até 100%, volta normal (duração 0.7s) */
+/* Barra 2: Pica atÃ© 100%, volta normal (duraÃ§Ã£o 0.7s) */
 @keyframes eq-bar-2-pulse {
     0% {
         transform: scaleY(0.3);
@@ -1589,7 +1589,7 @@ img {
     }
 }
 
-/* Barra 3: Pica até 60%, volta muito rápido (duração 0.5s) */
+/* Barra 3: Pica atÃ© 60%, volta muito rÃ¡pido (duraÃ§Ã£o 0.5s) */
 @keyframes eq-bar-3-pulse {
     0% {
         transform: scaleY(0.3);
@@ -1605,7 +1605,7 @@ img {
     }
 }
 
-/* Aplicar animações e performance */
+/* Aplicar animaÃ§Ãµes e performance */
 .indicator-container.playing .eq-bar-0 {
     animation: eq-bar-0-pulse 0.6s ease-in-out infinite;
     transform-origin: bottom center;
@@ -1633,7 +1633,7 @@ img {
     will-change: transform;
 }
 
-/* Quando não está tocando (paused), congelar a animação */
+/* Quando nÃ£o estÃ¡ tocando (paused), congelar a animaÃ§Ã£o */
 .indicator-container.playing .eq-bar {
     animation-play-state: running;
 }
@@ -1646,7 +1646,7 @@ img {
 }
 
 /* ==========================================================================
-   5. RODAPÃ‰ FIXO (Player)
+   5. RODAPÃƒâ€° FIXO (Player)
    ========================================================================== */
 
 .app-player-footer {
@@ -1662,7 +1662,7 @@ img {
     transition: transform 0.2s ease;
 }
 
-/* Mover footer para cima quando teclado abre (se necessário via JS) */
+/* Mover footer para cima quando teclado abre (se necessÃ¡rio via JS) */
 .app-player-footer.keyboard-open {
     transform: translateY(calc(-1 * var(--keyboard-offset, 0px)));
 }
@@ -1686,7 +1686,7 @@ img {
     height: 3px;
     border-radius: 999px;
     background: #23232b;
-    /* Usar variÃ¡vel de progresso para controlar o preenchimento (restaura cor vermelha) */
+    /* Usar variÃƒÂ¡vel de progresso para controlar o preenchimento (restaura cor vermelha) */
     background-image: linear-gradient(to right, var(--accent-red) 0%, var(--accent-red) 100%);
     background-repeat: no-repeat;
     background-size: var(--progress-bar-fill, 0% 100%);
@@ -1892,7 +1892,7 @@ img {
     line-height: 0;
 }
 
-/* Botões de Navegação (skip, shuffle, repeat) */
+/* BotÃµes de NavegaÃ§Ã£o (skip, shuffle, repeat) */
 .block-controls button:not(.btn-play-pause) i {
     font-size: var(--icon-size-sub);
     line-height: 0;
@@ -2352,6 +2352,7 @@ img {
 }
 
 .card {
+    position: relative;
     border-radius: 0.5rem;
 
     cursor: pointer;
@@ -2362,6 +2363,34 @@ img {
 .card:hover {
     transform: scale(1.05);
     box-shadow: 0 8px 20px rgba(255, 0, 0, 0.3);
+}
+
+.card-kebab {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-main);
+    z-index: 10;
+    transition: background 0.2s ease;
+}
+
+.card-kebab:hover,
+.card-kebab:focus-visible {
+    background: rgba(255, 0, 0, 0.8);
+}
+
+.card-kebab:focus-visible {
+    outline: 2px solid var(--accent-red);
+    outline-offset: 2px;
 }
 
 .card-image {
@@ -2414,7 +2443,7 @@ img {
 }
 
 /* ==========================================================================
-   8. ANIMAÃ‡Ã•ES TOAST
+   8. ANIMAÃƒâ€¡Ãƒâ€¢ES TOAST
    ========================================================================== */
 
 @keyframes toastSlideUp {
@@ -2453,7 +2482,7 @@ img {
     align-items: center;
 }
 
-/* Search modal: permitir altura dinâmica para resultados */
+/* Search modal: permitir altura dinÃ¢mica para resultados */
 @media (min-width: 641px) {
     #searchModal .modal-content {
         height: auto;
@@ -2470,7 +2499,7 @@ img {
 }
 
 
-/* Estilos para os botÃµes de adicionar/remover no modal de opÃ§Ãµes do item */
+/* Estilos para os botÃƒÂµes de adicionar/remover no modal de opÃƒÂ§ÃƒÂµes do item */
 .btn-add,
 .btn-remove {
     padding: 0.5rem 1rem;
@@ -2581,7 +2610,7 @@ img {
         flex-direction: column;
     }
 
-    /* Ajustes de espaÃ§amento interno para header/body quando em fullscreen */
+    /* Ajustes de espaÃƒÂ§amento interno para header/body quando em fullscreen */
     .modal-header {
         padding: 1.5rem 1.5rem;
         position: sticky;
@@ -2595,7 +2624,7 @@ img {
         overflow-y: auto;
     }
 
-    /* NÃ£o forÃ§ar fullscreen nos bottom-sheets (kebab, create) */
+    /* NÃƒÂ£o forÃƒÂ§ar fullscreen nos bottom-sheets (kebab, create) */
     .modal.modal-bottom-sheet .modal-content,
     .modal.modal-bottom-sheet .bottom-sheet-content {
         max-height: 60vh;
@@ -2641,7 +2670,7 @@ img {
     }
 }
 /* ==========================================================================
-   9. ESTILOS ESPECIAIS PARA VÃDEO (OVERLAYS, LEGENDAS)
+   9. ESTILOS ESPECIAIS PARA VÃƒÂDEO (OVERLAYS, LEGENDAS)
    ========================================================================== */
 
     .overlay-layer {
@@ -2650,8 +2679,8 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 10; /* Garante que fique acima do vídeo/conteúdo */
-    /* Opcional: para centralizar conteúdo dentro da camada sobreposta */
+    z-index: 10; /* Garante que fique acima do vÃ­deo/conteÃºdo */
+    /* Opcional: para centralizar conteÃºdo dentro da camada sobreposta */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2798,3 +2827,4 @@ img {
 .material-symbols-outlined {
   font-weight: 400; 
 }
+
