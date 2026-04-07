@@ -1593,7 +1593,7 @@ function openItemOptionsModal(index) {
 
     // Opção: Adicionar/Remover da playlist
     const playlistRow = renderOptionRow({
-        icon: isInAnyPlaylist ? 'remove_circle' : 'add_circle',
+        icon: isInAnyPlaylist ? 'remove_circle' : 'add',
         text: isInAnyPlaylist ? 'Remover da Playlist' : 'Adicionar a playlist',
         onClick: () => {
             if (isInAnyPlaylist) {
