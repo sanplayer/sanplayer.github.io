@@ -58,7 +58,7 @@
       "name": "Playlists",
       "short_name": "Playlists",
       "description": "Acesse suas playlists salvas",
-      "url": "index.html#modal=playlists",
+      "url": "index.html?modal=playlists",
       "icons": [
         {
           "src": "shortcuts/playlist.png",
@@ -71,7 +71,7 @@
       "name": "Artistas",
       "short_name": "Artistas",
       "description": "Veja seus artistas favoritos",
-      "url": "index.html#modal=artists",
+      "url": "index.html?modal=artists",
       "icons": [
         {
           "src": "shortcuts/artist.png",
@@ -84,7 +84,7 @@
       "name": "Favoritos",
       "short_name": "Favoritos",
       "description": "Suas múscas favoritas",
-      "url": "index.html#modal=favorites",
+      "url": "index.html?modal=favorites",
       "icons": [
         {
           "src": "shortcuts/heart.png",

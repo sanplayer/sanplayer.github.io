@@ -423,6 +423,11 @@ async function initApp() {
     initPlayerUI(); // Inicializa UI primeiro
 
     await loadPlaylists();
+    
+    // 🔥 CRÍTICO: Executar roteamento na carga inicial
+    // Isso garante que ?modal=playlists funcione no primeiro acesso
+    await handleHashNavigation();
+    
     setupEventListeners();
     loadFavorites();
     setupMobileSearch();
@@ -805,27 +810,46 @@ function initPlayerUI() {
     document.getElementById('shareButton').addEventListener('click', shareMusic);
 }
 
+// 🔍 Extrai parâmetros de rota de AMBOS query string e hash
+// Suporta:  ?param=value e #param=value
+function getRoutingParams() {
+    // Tenta query string primeiro (?modal=playlists) - mais confiável em PWA
+    let params = new URLSearchParams(window.location.search);
+    if (params.has('modal') || params.has('videoId') || params.has('playlistId') || params.has('artistId')) {
+        return params;
+    }
+    
+    // Fallback para hash (#modal=playlists) - retrocompatibilidade
+    params = new URLSearchParams(window.location.hash.replace('#', ''));
+    return params;
+}
+
 async function handleHashNavigation() {
+    const params = getRoutingParams();
     const hash = window.location.hash;
     
-    // ✨ Suporte a atalhos de modais (PWA shortcuts)
-    if (hash === '#modal=playlists') {
+    // ✨ Suporte a atalhos de modais (PWA shortcuts) - via query string OU hash
+    const modal = params.get('modal');
+    if (modal === 'playlists') {
         const btn = document.getElementById('link-playlists');
         if (btn) btn.click();
         return;
-    } else if (hash === '#modal=artists') {
+    } else if (modal === 'artists') {
         const btn = document.getElementById('link-artistas');
         if (btn) btn.click();
         return;
-    } else if (hash === '#modal=favorites') {
+    } else if (modal === 'favorites') {
         const btn = document.getElementById('link-favoritos');
         if (btn) btn.click();
         return;
     }
     
-    // Roteamento de conteúdo (música, playlist, artista)
-    if (hash.includes('videoId=')) {
-        const videoId = hash.split('videoId=')[1].split('&')[0];
+    // Roteamento de conteúdo (música, playlist, artista) - suporta ambos formatos
+    const videoId = params.get('videoId');
+    const playlistId = params.get('playlistId');
+    const artistId = params.get('artistId');
+    
+    if (videoId) {
         
         try {
             // Buscar vídeo em cache e playlists
@@ -844,53 +868,68 @@ async function handleHashNavigation() {
         } catch (error) {
             console.error('Erro ao navegar para vídeo:', error);
         }
-    } else if (hash.includes('playlistId=')) {
-        const playlistShareName = decodeURIComponent(hash.split('playlistId=')[1].split('&')[0]).trim();
+    } else if (playlistId) {
         
         try {
             // Encontrar índice da playlist com matching robusto (case-insensitive)
             const index = player.playlistsIndex.findIndex(p => {
                 const pName = (p.name || '').trim();
                 const pTitle = (p.title || '').trim();
-                return pName.toLowerCase() === playlistShareName.toLowerCase() || 
-                       pTitle.toLowerCase() === playlistShareName.toLowerCase();
+                return pName.toLowerCase() === playlistId.toLowerCase() || 
+                       pTitle.toLowerCase() === playlistId.toLowerCase();
             });
             
             if (index !== -1) {
                 await selectPlaylistByIndex(index);
             } else {
-                console.warn(`Playlist não encontrada: "${playlistShareName}". Disponíveis:`, 
+                console.warn(`Playlist não encontrada: "${playlistId}". Disponíveis:`, 
                     player.playlistsIndex.map(p => p.name || p.title));
-                // Feedback ao usuário e fallback para home com limpeza de hash
-                showToast(`Playlist "${playlistShareName}" não encontrada`);
+                // Feedback ao usuário e fallback para home com limpeza de URL
+                showToast(`Playlist "${playlistId}" não encontrada`);
                 await loadHome();
-                location.hash = ''; // Limpar URL inválida
+                // Limpar URL inválida (remove tanto ? quanto #)
+                window.location.replace(window.location.pathname);
             }
         } catch (error) {
             console.error('Erro ao navegar para playlist:', error);
             showToast('Erro ao carregar playlist');
             await loadHome();
-            location.hash = '';
+            window.location.replace(window.location.pathname);
         }
-    } else if (hash.includes('artistId=')) {
-        const artistShareName = decodeURIComponent(hash.split('artistId=')[1].split('&')[0]).trim();
+    } else if (artistId) {
         
         try {
             // Carregar artista
-            await selectArtist(artistShareName);
+            await selectArtist(artistId);
         } catch (error) {
             console.error('Erro ao navegar para artista:', error);
         }
     }
 }
 
-// Listener para alterações na URL
+// Listeners para alterações de rota
+// ✨ Hashchange: quando usuário muda #hash manualmente
 window.addEventListener('hashchange', async () => {
     // Garantir que playlistsIndex está disponível antes de navegar
     if (player.playlistsIndex.length === 0) {
         await loadPlaylistsIndex();
     }
     await handleHashNavigation();
+});
+
+// 🔥 Load: fallback robusto para acesso direto via URL (?modal=playlists)
+// Alguns cenários de PWA/shortcuts não disparam hashchange no init
+window.addEventListener('load', async () => {
+    const params = getRoutingParams();
+    // Se houver parâmetros de rota, garantir que foram processados
+    if (params.has('modal') || params.has('videoId') || params.has('playlistId') || params.has('artistId')) {
+        if (player.playlistsIndex.length === 0) {
+            await loadPlaylistsIndex();
+        }
+        // handleHashNavigation() já foi chamada em initApp(), mas chamar novamente garante
+        // que PWA shortcuts diretos funcionam mesmo em casos edge
+        await handleHashNavigation();
+    }
 });
 
 // Garantir refresh ao focar na janela (reentrar no player)
@@ -929,13 +968,13 @@ async function loadPlaylists() {
             return;
         }
 
-        // 2. Verificar tipo de hash navigation
-        const hash = window.location.hash;
-        if (hash.includes('videoId=') || hash.includes('playlistId=') || hash.includes('artistId=')) {
-            // Router suporta todos os 3 tipos
+        // 2. Verificar tipo de navegação (query params OU hash para retrocompatibilidade)
+        const params = getRoutingParams();
+        if (params.has('videoId') || params.has('playlistId') || params.has('artistId') || params.has('modal')) {
+            // Router suporta todos os 4 tipos
             await handleHashNavigation();
         } else {
-            // 3. Sem hash: carregar primeira playlist como padrão
+            // 3. Sem parâmetros de rota: carregar primeira playlist como padrão
             await selectPlaylistByIndex(0);
         }
 
@@ -1671,7 +1710,7 @@ function showToast(message) {
 function shareItem(index) {
     const video = player.currentPlaylist.videos[index];
     const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}#videoId=${video.id}`;
+    const url = `${window.location.origin}${window.location.pathname}?videoId=${video.id}`;
     if (navigator.share) {
         navigator.share({
             title: 'SanPlayer',
@@ -1692,7 +1731,7 @@ function shareItem(index) {
  */
 function sharePlaylist(playlistName) {
     const text = `Acompanhe a playlist: ${playlistName} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}#playlistId=${encodeURIComponent(playlistName)}`;
+    const url = `${window.location.origin}${window.location.pathname}?playlistId=${encodeURIComponent(playlistName)}`;
     if (navigator.share) {
         navigator.share({
             title: 'SanPlayer',
@@ -1713,7 +1752,7 @@ function sharePlaylist(playlistName) {
  */
 function shareArtist(artistName) {
     const text = `Ouça todas as músicas de: ${artistName} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}#artistId=${encodeURIComponent(artistName)}`;
+    const url = `${window.location.origin}${window.location.pathname}?artistId=${encodeURIComponent(artistName)}`;
     if (navigator.share) {
         navigator.share({
             title: 'SanPlayer',
@@ -1763,7 +1802,7 @@ async function selectArtist(artist) {
             console.warn(`Nenhum vídeo encontrado para o artista: "${artist}"`);
             showToast(`Nenhuma música encontrada: "${artist}"`);
             await loadHome(); // ✅ Garante UI válida
-            location.hash = ''; // Limpar URL inválida
+            window.location.replace(window.location.pathname); // Limpar URL inválida
             return;
         }
 
