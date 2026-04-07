@@ -739,23 +739,26 @@ body.is-routing {
         color: var(--text-main);
     }
 
-    .modal-body button {
-        color: inherit;
-        border: 1px solid var(--border-rgba);
-        border-radius: 2rem;
-        padding: clamp(0.5rem, 1vw, 0.75rem) clamp(1rem, 2vw, 1.5rem);
-        transition: background 0.2s ease, border-color 0.2s ease;
-        cursor: pointer;
+
+    /* 🔥 Resetar estilos customizados para icon-buttons */
+    /* Icon buttons (editar/remover) devem seguir padrão puro de button */
+    .modal-body .icon-btn {
+        border: none;
+        padding: 0;
+        border-radius: 50%;
+        transition: background 0.2s ease, color 0.2s ease;
     }
 
-    .modal-body button:hover {
+    .modal-body .icon-btn:hover {
         background: var(--feedback-color);
-        border-color: var(--text-dim);
+        border-color: unset;
+        color: var(--text-main);
     }
 
-    .modal-body button:active {
+    .modal-body .icon-btn:active {
         background: var(--feedback-color);
-        border-color: var(--text-main);
+        border-color: unset;
+        color: var(--text-main);
     }
 
     /* OpÃ§Ãµes dentro do modal (kebab) */

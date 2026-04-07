@@ -520,6 +520,10 @@ async function loadDefaultState() {
 async function initApp() {
     initPlayerUI(); // Inicializa UI primeiro
 
+    // 🔥 CRÍTICO: Carregar favoritos ANTES de tudo
+    // Assim quando updateFavoriteButton() for chamada, player.favorites já está populado
+    loadFavorites();
+    
     await loadPlaylists();
     
     // 🔥 GARANTIA DE ESTADO MÍNIMO VÁLIDO (Obrigatório)
@@ -542,7 +546,6 @@ async function initApp() {
     }
     
     setupEventListeners();
-    loadFavorites();
     setupMobileSearch();
     setupSidbarMobile();
 
