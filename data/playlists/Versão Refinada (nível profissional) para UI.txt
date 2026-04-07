@@ -1,0 +1,124 @@
+
+📐 Regras de Padronização de UI (Obrigatórias)
+
+1. Arquitetura e Reutilização de Componentes
+
+1.1 Proibição Absoluta de Criação Arbitrária
+
+É proibido criar novos padrões visuais para:
+modais
+bottom-sheets
+botões
+listas
+Todo componente deve reutilizar estruturas já existentes.
+
+1.2 Reuso Obrigatório
+Antes de implementar qualquer UI:
+
+Verifique os arquivos globais (ex: style.css)
+Identifique classes e padrões existentes
+Reutilize a mesma:
+estrutura HTML
+hierarquia de DOM
+classes CSS
+
+Se existir um padrão similar → é obrigatório reutilizar
+
+1.3 Estrutura de Modais / Bottom-Sheets
+
+Devem ser:
+renderizados no final do <body> ou
+dentro do container global definido
+Devem usar:
+position: fixed
+controle por z-index
+
+❌ Nunca renderizar dentro de:
+
+<header>
+<nav>
+containers semânticos inadequados
+2. Sistema de Design (Design Tokens)
+
+2.1 Botões
+
+Utilizar exclusivamente classes existentes:
+.btn-primary
+.btn-icon
+❌ Proibido:
+style=""
+criar nova classe para padding, cor ou radius
+✔ Ajustes devem usar variáveis CSS existentes
+
+2.2 Listas e Itens Interativos
+
+Manter padrão visual do projeto:
+layout com flex
+alinhamento consistente
+Requisitos obrigatórios:
+área de toque mínima: 44px
+uso de ícones Material Design (ou padrão já adotado)
+
+2.3 Responsividade
+
+Sempre utilizar:
+clamp()
+Seguir abordagem:
+mobile-first
+fluidez (sem valores fixos desnecessários)
+3. Regras de Implementação
+
+3.1 Validação Antes de Criar
+Antes de escrever qualquer código, valide mentalmente:
+
+"Este componente já existe?"
+
+Se SIM:
+→ reutilizar
+Se NÃO:
+→ seguir padrão mais próximo existente
+
+3.2 Proibição de Inline Styles
+
+❌ Não usar .style via JS
+❌ Não usar style="" no HTML
+
+✔ Exceção:
+
+uso de variáveis CSS dinâmicas (--var)
+
+3.3 Consistência Visual
+
+Não alterar:
+espaçamentos
+bordas
+cores
+tipografia
+
+Sem usar:
+
+variáveis globais já definidas
+4. Regra Crítica (ANTI-ERRO DE IA)
+
+Antes de finalizar qualquer implementação:
+
+Verifique:
+
+Existe duplicação de classe?
+Foi criado CSS novo desnecessário?
+Algum padrão global foi ignorado?
+Algum comportamento foi reimplementado?
+
+Se qualquer resposta for SIM → refatorar.
+
+5. Protocolo de Leitura Obrigatória
+
+Antes de implementar qualquer UI:
+
+Ler o arquivo principal de estilos (style.css)
+Identificar:
+utilitários
+componentes existentes
+Basear toda implementação nesses padrões
+
+Se violar qualquer regra acima, a implementação deve ser considerada inválida e reescrita.
