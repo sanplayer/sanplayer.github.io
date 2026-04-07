@@ -1606,7 +1606,17 @@ function openItemOptionsModal(index) {
             } else {
                 // Adicionar à primeira playlist, ou abrir modal se múltiplas
                 if (userList.length === 0) {
-                    showToast('Crie uma playlist primeiro');
+                    // Sem playlists: abrir modal para criar
+                    addingItemToPlaylist = true;
+                    videoToAdd = video;
+                    previousPlaylistState = {
+                        playlist: player.currentPlaylist,
+                        playlistIndex: player.currentPlaylistIndex,
+                        videoIndex: player.currentVideoIndex,
+                        viewingFavorites: player.viewingFavorites,
+                        currentFavoriteId: player.currentFavoriteId
+                    };
+                    openCreatePlaylistModal();
                 } else if (userList.length === 1) {
                     addItemToUserPlaylist(0);
                 } else {
