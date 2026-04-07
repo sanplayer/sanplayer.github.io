@@ -6,6 +6,16 @@
       "cover": "lovesongs.jpg",
       "videos": [
         {
+          "id": "qjuEXKwnkLE",
+          "title": "I Remember You",
+          "artist": "Skid Row"
+        },
+        {
+          "id": "m_9hfHvQSNo",
+          "title": "Father Figure",
+          "artist": "George Michael"
+        },
+        {
           "id": "Sz9Ad81xBuY",
           "title": "Hurts To Be In Love",
           "artist": "Gino Vannelli"
@@ -181,11 +191,6 @@
           "artist": "Crowded House"
         },
         {
-          "id": "m_9hfHvQSNo",
-          "title": "Father Figure",
-          "artist": "George Michael"
-        },
-        {
           "id": "bG5N3GC-m20",
           "title": "One More Try",
           "artist": "George Michael"
@@ -321,11 +326,6 @@
           "artist": "Freddie Mercury"
         },
         {
-          "id": "qjuEXKwnkLE",
-          "title": "I Remember You",
-          "artist": "Skid Row"
-        },
-        {
           "id": "OXYb-0oQnB8",
           "title": "In A Darkened Room",
           "artist": "Skid Row"
@@ -359,6 +359,41 @@
           "id": "lMRBVdFlnZA",
           "title": "Remember I Love You",
           "artist": "Jim Diamond"
+        },
+        {
+          "id": "BD4nvP-_0W8",
+          "title": "Over You",
+          "artist": "Lane Brody"
+        },
+        {
+          "id": "IYzlVDlE72w",
+          "title": "Greatest Love Of All",
+          "artist": "Whitney Houston"
+        },
+        {
+          "id": "RnyRrCkPYGc",
+          "title": "Retratos e Canções",
+          "artist": "Sandra de Sá"
+        },
+        {
+          "id": "qWEFNFsFrgE",
+          "title": "I Should Have Known Better",
+          "artist": "Jim Diamond"
+        },
+        {
+          "id": "7RoV4U_pxdo",
+          "title": "Se Quiser",
+          "artist": "Tânia Mara"
+        },
+        {
+          "id": "STugQ0X1NoI",
+          "title": "I'm Not In Love",
+          "artist": "10cc"
+        },
+        {
+          "id": "cUcPALSC1XM",
+          "title": "We Said Goodbye",
+          "artist": "Dave Maclean"
         }
       ]
     }
