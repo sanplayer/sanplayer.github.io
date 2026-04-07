@@ -419,14 +419,131 @@ function renderSeparator() {
     return sep;
 }
 
+// ============================================================================
+// PERSISTÊNCIA DE ESTADO (localStorage)
+// ============================================================================
+
+/**
+ * Salva o estado atual do player em localStorage
+ * Chamado sempre que uma playlist ou artista é carregado
+ */
+function saveCurrentState() {
+    try {
+        const state = {
+            timestamp: Date.now(),
+            playlistIndex: player.currentPlaylistIndex,
+            playlistName: player.currentPlaylist?.name || player.currentPlaylist?.title,
+            videoIndex: player.currentVideoIndex,
+            viewingFavorites: player.viewingFavorites,
+            isArtist: player.currentPlaylistIndex === -1 && player.currentPlaylist?.name, // Indica playlist temporária de artista
+        };
+        localStorage.setItem('sanplayer-state', JSON.stringify(state));
+    } catch (error) {
+        console.warn('Erro ao salvar estado em localStorage:', error);
+    }
+}
+
+/**
+ * Restaura o último estado salvo em localStorage
+ * @returns {Promise<Boolean>} true se conseguiu restaurar, false se não havia estado salvo
+ */
+async function loadLastState() {
+    try {
+        const saved = localStorage.getItem('sanplayer-state');
+        if (!saved) return false;
+        
+        const state = JSON.parse(saved);
+        
+        // Validar que o estado é válido (não muito antigo, etc)
+        const age = Date.now() - state.timestamp;
+        if (age > 30 * 24 * 60 * 60 * 1000) { // Mais de 30 dias = descartar
+            localStorage.removeItem('sanplayer-state');
+            return false;
+        }
+        
+        // Se estava vendo favoritos, restaurar
+        if (state.viewingFavorites) {
+            player.viewingFavorites = true;
+            displayFavoritesList();
+            return true;
+        }
+        
+        // Se era uma playlist de artista, restaurar
+        if (state.isArtist && state.playlistName) {
+            await selectArtist(state.playlistName);
+            
+            // Restaurar posição do vídeo se existir
+            if (state.videoIndex >= 0 && state.videoIndex < player.currentPlaylist.videos.length) {
+                player.currentVideoIndex = state.videoIndex;
+                const video = player.currentPlaylist.videos[state.videoIndex];
+                if (video) {
+                    loadVideo(video);
+                }
+            }
+            return true;
+        }
+        
+        // Se tinha playlist normal, restaurar
+        if (state.playlistIndex !== null && state.playlistIndex !== undefined && state.playlistIndex >= 0) {
+            if (state.playlistIndex < player.playlistsIndex.length) {
+                await selectPlaylistByIndex(state.playlistIndex);
+                
+                // Restaurar posição do vídeo se existir
+                if (state.videoIndex >= 0 && state.videoIndex < player.currentPlaylist.videos.length) {
+                    player.currentVideoIndex = state.videoIndex;
+                    const video = player.currentPlaylist.videos[state.videoIndex];
+                    if (video) {
+                        loadVideo(video);
+                    }
+                }
+                return true;
+            }
+        }
+        
+        return false;
+    } catch (error) {
+        console.warn('Erro ao restaurar estado de localStorage:', error);
+        return false;
+    }
+}
+
+/**
+ * Carrega estado padrão (primeira playlist)
+ * Fallback para quando não há histórico
+ */
+async function loadDefaultState() {
+    if (player.playlistsIndex.length > 0) {
+        await selectPlaylistByIndex(0);
+    }
+}
+
 async function initApp() {
     initPlayerUI(); // Inicializa UI primeiro
 
     await loadPlaylists();
     
-    // 🔥 CRÍTICO: Executar roteamento na carga inicial
-    // Isso garante que ?modal=playlists funcione no primeiro acesso
-    await handleHashNavigation();
+    // 🔥 ESTRATÉGIA DE ESTADO (Nível Profissional)
+    // 1. Tentar restaurar último estado do usuário
+    // 2. Se houver parâmetros de rota (?modal=), deixar handleHashNavigation() processar
+    // 3. Senão, garantir um estado padrão válido
+    
+    const params = getRoutingParams();
+    const hasRouteParams = params.has('modal') || params.has('videoId') || params.has('playlistId') || params.has('artistId');
+    
+    if (!hasRouteParams) {
+        // Sem parâmetros de rota: tentar restaurar histórico ou usar padrão
+        const restored = await loadLastState();
+        if (!restored) {
+            // Sem histórico: carregar estado padrão (primeira playlist)
+            await loadDefaultState();
+        }
+    }
+    
+    // ✨ Roteamento: processa qualquer parâmetro (?modal=, ?videoId=, etc)
+    // Sobrescreve o estado padrão se houver
+    if (hasRouteParams) {
+        await handleHashNavigation();
+    }
     
     setupEventListeners();
     loadFavorites();
@@ -1030,6 +1147,9 @@ async function selectPlaylistByIndex(index) {
             closePlaylistsModal();
             loadPlaylistVideos();
             loadFirstVideo();
+            
+            // 💾 Salvar estado para restaurar depois
+            saveCurrentState();
         }
     } catch (error) {
         console.error('Erro ao selecionar playlist:', error);
@@ -1822,6 +1942,9 @@ async function selectArtist(artist) {
         loadPlaylistVideos();
         loadFirstVideo();
         refreshPlayerUI();
+        
+        // 💾 Salvar estado (nome do artista para restaurar depois)
+        saveCurrentState();
     } catch (error) {
         console.error('Erro ao selecionar artista:', error);
         showToast('Erro ao carregar artista');
@@ -1932,6 +2055,9 @@ function loadVideo(video) {
 
     updateCurrentVideoDisplay();
     updateFavoriteButton();
+    
+    // 💾 Salvar estado sempre que um vídeo é carregado
+    saveCurrentState();
 }
 
 function onYouTubeIframeAPIReady() {
@@ -2550,6 +2676,9 @@ function displayFavoritesList() {
     
     // Marcar que estamos visualizando favoritos
     player.viewingFavorites = true;
+    
+    // 💾 Salvar estado (favoritos)
+    saveCurrentState();
     
     // Atualizar título
     const titlePl = container.querySelector('.title-pl');
