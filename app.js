@@ -517,6 +517,48 @@ async function loadDefaultState() {
     }
 }
 
+/**
+ * 🎬 Fecha um modal com animação padrão de bottom-sheet
+ * 
+ * Função helper para gerenciar fechamento com animação suave
+ * Aplicável a qualquer modal bottom-sheet futuro
+ * 
+ * @param {string} modalId - ID do modal a fechar (ex: 'playlistModal')
+ * @param {function} callback - Função a executar após fechar (ex: restaurar conteúdo)
+ * @param {boolean} skipAnimation - Se true, fecha sem animação
+ */
+function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    if (skipAnimation) {
+        // Fechar instantaneamente sem animação
+        modal.classList.remove('show');
+        if (callback) callback();
+        return;
+    }
+    
+    // Adicionar classes de fechamento para ativar animação
+    modal.classList.add('closing');
+    const modalContent = modal.querySelector('.modal-content');
+    if (modalContent) {
+        modalContent.classList.add('closing');
+    }
+    
+    // Esperar a animação terminar (duração em CSS: 0.5s)
+    // + pequeno buffer para garantir
+    setTimeout(() => {
+        modal.classList.remove('show', 'closing');
+        if (modalContent) {
+            modalContent.classList.remove('closing');
+        }
+        // Executar callback (ex: restaurar conteúdo, limpar state)
+        if (callback) {
+            callback();
+        }
+    }, 550); // 500ms (animação) + 50ms (buffer)
+}
+
 async function initApp() {
     initPlayerUI(); // Inicializa UI primeiro
 
@@ -1210,15 +1252,15 @@ function openPlaylistsModal() {
 }
 
 function closePlaylistsModal() {
-    document.getElementById('playlistModal').classList.remove('show');
-    
-    // 🔥 CRÍTICO: Garantir que sidebar mostra a playlist atual
-    // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
-    if (player.currentPlaylist && !player.viewingFavorites) {
-        loadPlaylistVideos();
-    } else if (player.viewingFavorites) {
-        displayFavoritesList();
-    }
+    closeModalWithAnimation('playlistModal', () => {
+        // 🔥 CRÍTICO: Garantir que sidebar mostra a playlist atual
+        // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
+        if (player.currentPlaylist && !player.viewingFavorites) {
+            loadPlaylistVideos();
+        } else if (player.viewingFavorites) {
+            displayFavoritesList();
+        }
+    });
 }
 
 // ============================================================================
@@ -1276,15 +1318,15 @@ async function openArtistsModal() {
 }
 
 function closeArtistsModal() {
-    document.getElementById('artistsModal').classList.remove('show');
-    
-    // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
-    // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
-    if (player.currentPlaylist && !player.viewingFavorites) {
-        loadPlaylistVideos();
-    } else if (player.viewingFavorites) {
-        displayFavoritesList();
-    }
+    closeModalWithAnimation('artistsModal', () => {
+        // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
+        // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
+        if (player.currentPlaylist && !player.viewingFavorites) {
+            loadPlaylistVideos();
+        } else if (player.viewingFavorites) {
+            displayFavoritesList();
+        }
+    });
 }
 
 // ----------------------
@@ -1297,8 +1339,9 @@ function openCreatePlaylistModal() {
 }
 
 function closeCreatePlaylistModal() {
-    document.getElementById('createPlaylistModal').classList.remove('show');
-    document.getElementById('createPlaylistForm').reset();
+    closeModalWithAnimation('createPlaylistModal', () => {
+        document.getElementById('createPlaylistForm').reset();
+    });
 }
 
 function getUserPlaylists() {
@@ -1328,7 +1371,7 @@ function openUserMenuModal() {
 }
 
 function closeUserMenuModal() {
-    document.getElementById('userMenuModal').classList.remove('show');
+    closeModalWithAnimation('userMenuModal');
 }
 
 function openUserPlaylistsModal() {
@@ -1402,15 +1445,16 @@ function openEditPlaylistModal(idx, currentName) {
             saveUserPlaylists(list);
             showFeedbackModal(`Playlist renomeada para "${newName}"`);
         }
-        modal.classList.remove('show');
-        // Reabrir modal de playlists
-        setTimeout(() => openUserPlaylistsModal(), 300);
+        closeModalWithAnimation('editPlaylistModal', () => {
+            setTimeout(() => openUserPlaylistsModal(), 300);
+        });
     });
     
     // Fechar ao cancelar
     newCancelBtn.addEventListener('click', () => {
-        modal.classList.remove('show');
-        setTimeout(() => openUserPlaylistsModal(), 300);
+        closeModalWithAnimation('editPlaylistModal', () => {
+            setTimeout(() => openUserPlaylistsModal(), 300);
+        });
     });
     
     // Enter para salvar
@@ -1542,28 +1586,29 @@ function renderUserPlaylistRow(pl, idx, isAddingMode) {
 }
 
 function closeUserPlaylistsModal() {
-    document.getElementById('userPlaylistsModal').classList.remove('show');
-    // Resetar modo de adicionar item
-    if (addingItemToPlaylist) {
-        addingItemToPlaylist = false;
-        videoToAdd = null;
-        // Restaurar estado anterior de playlist
-        if (previousPlaylistState) {
-            player.currentPlaylist = previousPlaylistState.playlist;
-            player.currentPlaylistIndex = previousPlaylistState.playlistIndex;
-            player.currentVideoIndex = previousPlaylistState.videoIndex;
-            player.viewingFavorites = previousPlaylistState.viewingFavorites;
-            player.currentFavoriteId = previousPlaylistState.currentFavoriteId;
-            previousPlaylistState = null;
-            
-            // 🔥 Garantir que sidebar é atualizada com o estado restaurado
-            if (player.currentPlaylist && !player.viewingFavorites) {
-                loadPlaylistVideos();
-            } else if (player.viewingFavorites) {
-                displayFavoritesList();
+    closeModalWithAnimation('userPlaylistsModal', () => {
+        // Resetar modo de adicionar item
+        if (addingItemToPlaylist) {
+            addingItemToPlaylist = false;
+            videoToAdd = null;
+            // Restaurar estado anterior de playlist
+            if (previousPlaylistState) {
+                player.currentPlaylist = previousPlaylistState.playlist;
+                player.currentPlaylistIndex = previousPlaylistState.playlistIndex;
+                player.currentVideoIndex = previousPlaylistState.videoIndex;
+                player.viewingFavorites = previousPlaylistState.viewingFavorites;
+                player.currentFavoriteId = previousPlaylistState.currentFavoriteId;
+                previousPlaylistState = null;
+                
+                // 🔥 Garantir que sidebar é atualizada com o estado restaurado
+                if (player.currentPlaylist && !player.viewingFavorites) {
+                    loadPlaylistVideos();
+                } else if (player.viewingFavorites) {
+                    displayFavoritesList();
+                }
             }
         }
-    }
+    });
 }
 
 // ----------------------
@@ -1655,15 +1700,15 @@ function openItemOptionsModal(index) {
 }
 
 function closeItemOptionsModal() {
-    document.getElementById('itemOptionsModal').classList.remove('show');
-    
-    // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
-    // Se usuário fechou opções do item sem fazer nada, a sidebar deve estar visível
-    if (player.currentPlaylist && !player.viewingFavorites) {
-        loadPlaylistVideos();
-    } else if (player.viewingFavorites) {
-        displayFavoritesList();
-    }
+    closeModalWithAnimation('itemOptionsModal', () => {
+        // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
+        // Se usuário fechou opções do item sem fazer nada, a sidebar deve estar visível
+        if (player.currentPlaylist && !player.viewingFavorites) {
+            loadPlaylistVideos();
+        } else if (player.viewingFavorites) {
+            displayFavoritesList();
+        }
+    });
 }
 
 /**
@@ -3035,12 +3080,12 @@ function setupEventListeners() {
     
     // Modal de busca
     document.getElementById('closeSearchModal').addEventListener('click', () => {
-        document.getElementById('searchModal').classList.remove('show');
+        closeModalWithAnimation('searchModal');
     });
     
     document.getElementById('searchModal').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) {
-            document.getElementById('searchModal').classList.remove('show');
+            closeModalWithAnimation('searchModal');
         }
     });
     
@@ -3122,17 +3167,33 @@ function setupEventListeners() {
     const closeItemOptions = document.getElementById('closeItemOptionsModal');
     if (closeItemOptions) closeItemOptions.addEventListener('click', closeItemOptionsModal);
 
-    // Fechar modais ao clicar fora
-    ['createPlaylistModal','userMenuModal','itemOptionsModal','feedbackModal','editPlaylistModal'].forEach(id => {
+    // Fechar modais ao clicar fora (backdrop click)
+    // Modais com animação padrão de bottom-sheet
+    ['createPlaylistModal','userMenuModal','itemOptionsModal','editPlaylistModal'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.addEventListener('click', (e) => { if (e.target === e.currentTarget) el.classList.remove('show'); });
+        if (el) {
+            el.addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    // Usar ID do modal para fechar com animação
+                    closeModalWithAnimation(id);
+                }
+            });
+        }
     });
+    
+    // feedbackModal: fechar sem animação (auto-close existente)
+    const feedbackModal = document.getElementById('feedbackModal');
+    if (feedbackModal) {
+        feedbackModal.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) feedbackModal.classList.remove('show');
+        });
+    }
     
     // Botão fechar modal de edição
     const closeEditPlaylistBtn = document.getElementById('editPlaylistCloseBtn');
     if (closeEditPlaylistBtn) {
         closeEditPlaylistBtn.addEventListener('click', () => {
-            document.getElementById('editPlaylistModal').classList.remove('show');
+            closeModalWithAnimation('editPlaylistModal');
             setTimeout(() => openUserPlaylistsModal(), 300);
         });
     }
