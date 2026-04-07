@@ -522,25 +522,21 @@ async function initApp() {
 
     await loadPlaylists();
     
-    // 🔥 ESTRATÉGIA DE ESTADO (Nível Profissional)
-    // 1. Tentar restaurar último estado do usuário
-    // 2. Se houver parâmetros de rota (?modal=), deixar handleHashNavigation() processar
-    // 3. Senão, garantir um estado padrão válido
+    // 🔥 GARANTIA DE ESTADO MÍNIMO VÁLIDO (Obrigatório)
+    // Sempre carregar um estado básico ANTES de processar rotas
+    // Assim, se usuário abre via ?modal= e fecha modal, player já tem conteúdo
     
-    const params = getRoutingParams();
-    const hasRouteParams = params.has('modal') || params.has('videoId') || params.has('playlistId') || params.has('artistId');
-    
-    if (!hasRouteParams) {
-        // Sem parâmetros de rota: tentar restaurar histórico ou usar padrão
-        const restored = await loadLastState();
-        if (!restored) {
-            // Sem histórico: carregar estado padrão (primeira playlist)
-            await loadDefaultState();
-        }
+    const restored = await loadLastState();
+    if (!restored) {
+        // Sem histórico: carregar estado padrão (primeira playlist)
+        await loadDefaultState();
     }
     
     // ✨ Roteamento: processa qualquer parâmetro (?modal=, ?videoId=, etc)
-    // Sobrescreve o estado padrão se houver
+    // Pode abrir modais ou navegar, mas sempre com estado base já carregado
+    const params = getRoutingParams();
+    const hasRouteParams = params.has('modal') || params.has('videoId') || params.has('playlistId') || params.has('artistId');
+    
     if (hasRouteParams) {
         await handleHashNavigation();
     }
@@ -1212,6 +1208,14 @@ function openPlaylistsModal() {
 
 function closePlaylistsModal() {
     document.getElementById('playlistModal').classList.remove('show');
+    
+    // 🔥 CRÍTICO: Garantir que sidebar mostra a playlist atual
+    // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
+    if (player.currentPlaylist && !player.viewingFavorites) {
+        loadPlaylistVideos();
+    } else if (player.viewingFavorites) {
+        displayFavoritesList();
+    }
 }
 
 // ============================================================================
@@ -1270,6 +1274,14 @@ async function openArtistsModal() {
 
 function closeArtistsModal() {
     document.getElementById('artistsModal').classList.remove('show');
+    
+    // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
+    // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
+    if (player.currentPlaylist && !player.viewingFavorites) {
+        loadPlaylistVideos();
+    } else if (player.viewingFavorites) {
+        displayFavoritesList();
+    }
 }
 
 // ----------------------
@@ -1540,6 +1552,13 @@ function closeUserPlaylistsModal() {
             player.viewingFavorites = previousPlaylistState.viewingFavorites;
             player.currentFavoriteId = previousPlaylistState.currentFavoriteId;
             previousPlaylistState = null;
+            
+            // 🔥 Garantir que sidebar é atualizada com o estado restaurado
+            if (player.currentPlaylist && !player.viewingFavorites) {
+                loadPlaylistVideos();
+            } else if (player.viewingFavorites) {
+                displayFavoritesList();
+            }
         }
     }
 }
@@ -1624,6 +1643,14 @@ function openItemOptionsModal(index) {
 
 function closeItemOptionsModal() {
     document.getElementById('itemOptionsModal').classList.remove('show');
+    
+    // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
+    // Se usuário fechou opções do item sem fazer nada, a sidebar deve estar visível
+    if (player.currentPlaylist && !player.viewingFavorites) {
+        loadPlaylistVideos();
+    } else if (player.viewingFavorites) {
+        displayFavoritesList();
+    }
 }
 
 /**
