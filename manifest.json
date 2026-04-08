@@ -5,7 +5,7 @@
   "start_url": "index.html",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "background_color": "#0f0f0f",
   "theme_color": "#0f0f0f",
   "categories": [
@@ -93,5 +93,11 @@
         }
       ]
     }
+  ],
+  "dir": "auto",
+  "lang": "pt",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
   ]
 }
