@@ -614,6 +614,17 @@ async function initApp() {
     // Inicializar detecção de zoom
     initZoomDetection();
 
+    // 💾 CRÍTICO: Garantir que o estado é salvo ao fechar a app/aba
+    // Importante para PWA: manter posição exata quando usuário volta
+    window.addEventListener('pagehide', () => {
+        saveCurrentState();
+    });
+    
+    // Fallback para navegadores que não suportam pagehide
+    window.addEventListener('beforeunload', () => {
+        saveCurrentState();
+    });
+
     // Registrar Service Worker
     initServiceWorker();
     
@@ -742,6 +753,13 @@ function closeZoomAlert() {
     const modal = document.getElementById('zoomAlertModal');
     if (modal) {
         modal.classList.remove('show');
+    }
+    
+    // 🔥 CRÍTICO: Resetar keyboard-offset após fechar alerta de zoom
+    // Caso contrário, modais subsequentes ficam deslocados para baixo
+    document.documentElement.style.setProperty('--keyboard-offset', '0px');
+    if (typeof lastKeyboardOffset !== 'undefined') {
+        lastKeyboardOffset = 0;
     }
 }
 
@@ -1184,6 +1202,10 @@ async function selectPlaylistByIndex(index) {
             player.originalOrder = [...player.playOrder];
             player.shouldPlayOnReady = true;
             player.viewingFavorites = false;
+            
+            // 🔥 CRÍTICO: Resetar currentFavoriteId quando sai de favoritos
+            // Caso contrário, syncFavoriteState() usa ID antigo e botão fica com estado errado
+            player.currentFavoriteId = undefined;
 
             // 🔄 Atualizar os cards do modal com o novo dado cacheado
             updatePlaylistCardsInModal();
@@ -1224,37 +1246,47 @@ function openPlaylistsModal() {
     const modal = document.getElementById('playlistModal');
     const container = document.getElementById('playlistCardsContainer');
     
-    // Usar DocumentFragment para melhor performance
-    const fragment = document.createDocumentFragment();
-    
-    player.playlistsIndex.forEach((playlistMeta, index) => {
-        // Tentar obter count do cache, se disponível
-        let videoCount = '';
-        if (playlistCache.has(playlistMeta.url)) {
-            const playlist = playlistCache.get(playlistMeta.url);
-            videoCount = `${playlist.videos?.length || 0} músicas`;
-        } else {
-            videoCount = 'Carregando...';
-        }
-
-        const card = renderCard({
-            src: `covers/playlists/${playlistMeta.cover}`,
-            title: playlistMeta.title || playlistMeta.name,
-            subtitle: videoCount
-        }, {
-            type: 'playlist',
-            shareData: playlistMeta.name
-        });
-        card.addEventListener('click', () => selectPlaylistByIndex(index));
-        fragment.appendChild(card);
-    });
-    
+    // 🔄 Mostrar skeletons enquanto carrega (6 cards)
+    const skeletonFragment = document.createDocumentFragment();
+    for (let i = 0; i < 6; i++) {
+        skeletonFragment.appendChild(createCardSkeleton());
+    }
     container.innerHTML = '';
-    container.appendChild(fragment);
+    container.appendChild(skeletonFragment);
     modal.classList.add('show');
     
-    // 🔄 Pré-carregar playlists em background para atualizar contagens
-    preloadPlaylistsInBackground();
+    // Agora carregar dados reais em background
+    setTimeout(() => {
+        const fragment = document.createDocumentFragment();
+        
+        player.playlistsIndex.forEach((playlistMeta, index) => {
+            // Tentar obter count do cache, se disponível
+            let videoCount = '';
+            if (playlistCache.has(playlistMeta.url)) {
+                const playlist = playlistCache.get(playlistMeta.url);
+                videoCount = `${playlist.videos?.length || 0} músicas`;
+            } else {
+                videoCount = 'Carregando...';
+            }
+
+            const card = renderCard({
+                src: `covers/playlists/${playlistMeta.cover}`,
+                title: playlistMeta.title || playlistMeta.name,
+                subtitle: videoCount
+            }, {
+                type: 'playlist',
+                shareData: playlistMeta.name
+            });
+            card.addEventListener('click', () => selectPlaylistByIndex(index));
+            fragment.appendChild(card);
+        });
+        
+        container.innerHTML = '';
+        container.appendChild(fragment);
+        
+        // 🔄 Pré-carregar playlists em background para atualizar contagens
+        preloadPlaylistsInBackground();
+    }, 50);
 }
 
 /**
@@ -2142,6 +2174,9 @@ async function selectArtist(artist) {
         player.originalOrder = [...player.playOrder];
         player.shouldPlayOnReady = true;
         player.viewingFavorites = false;
+        
+        // 🔥 CRÍTICO: Resetar currentFavoriteId quando vai para artista
+        player.currentFavoriteId = undefined;
 
         closeArtistsModal();
         loadPlaylistVideos();
@@ -2473,17 +2508,48 @@ function updatePlayingNowIndicator() {
         container.classList.remove('playing');
     });
     
-    // Adicionar indicador ao item ativo
-    const activeItem = document.querySelector(
-        `.playlist-item[data-video-index="${player.currentVideoIndex}"]`
-    );
-    if (activeItem) {
-        const indicatorContainer = activeItem.querySelector('.indicator-container');
-        if (indicatorContainer) {
-            indicatorContainer.appendChild(createPlayingIndicator());
-            // Usar classe 'playing' para controlar animation-play-state
-            if (player.isPlaying) {
-                indicatorContainer.classList.add('playing');
+    let videoIndex = player.currentVideoIndex;
+    
+    // 🔥 CRÍTICO: Se está vendo favoritos, encontrar o índice correto na lista de favoritos
+    // Caso contrário, currentVideoIndex aponta para posição na playlist original!
+    if (player.viewingFavorites && player.favorites.length > 0) {
+        // 🔥 IMPORTANTE: Se currentFavoriteId foi explicitamente setado como null,
+        // significa que o vídeo tocando NÃO está nos favoritos
+        // Nesse caso, NÃO procurar, apenas não mostrar indicador
+        if (player.currentFavoriteId === null) {
+            videoIndex = -1; // Flag para não encontrar nenhum item
+        } else {
+            // Encontrar qual favorito está sendo tocado pela ID
+            const favoriteIndex = player.favorites.findIndex(fav => {
+                if (player.currentFavoriteId) {
+                    return fav.id === player.currentFavoriteId;
+                }
+                // Fallback: comparar pelo vídeo atual (apenas se currentFavoriteId é undefined)
+                const current = player.currentPlaylist?.videos?.[player.currentVideoIndex];
+                return current && fav.video.id === current.id;
+            });
+            
+            if (favoriteIndex !== -1) {
+                videoIndex = favoriteIndex;
+            } else {
+                videoIndex = -1; // Não encontrou, não mostrar
+            }
+        }
+    }
+    
+    // Adicionar indicador ao item ativo APENAS se encontrou um item válido
+    if (videoIndex >= 0) {
+        const activeItem = document.querySelector(
+            `.playlist-item[data-video-index="${videoIndex}"]`
+        );
+        if (activeItem) {
+            const indicatorContainer = activeItem.querySelector('.indicator-container');
+            if (indicatorContainer) {
+                indicatorContainer.appendChild(createPlayingIndicator());
+                // Usar classe 'playing' para controlar animation-play-state
+                if (player.isPlaying) {
+                    indicatorContainer.classList.add('playing');
+                }
             }
         }
     }
@@ -2494,14 +2560,41 @@ function updatePlayingNowIndicator() {
  * Chamado quando player muda de estado
  */
 function updatePlayingIndicatorAnimationState() {
-    const indicatorContainer = document.querySelector(
-        `.playlist-item[data-video-index="${player.currentVideoIndex}"] .indicator-container`
-    );
-    if (indicatorContainer) {
-        if (player.isPlaying) {
-            indicatorContainer.classList.add('playing');
+    let videoIndex = player.currentVideoIndex;
+    
+    // 🔥 CRÍTICO: Se está vendo favoritos, encontrar o índice correto
+    if (player.viewingFavorites && player.favorites.length > 0) {
+        // Se currentFavoriteId foi explicitamente setado como null, não mostrar
+        if (player.currentFavoriteId === null) {
+            videoIndex = -1;
         } else {
-            indicatorContainer.classList.remove('playing');
+            const favoriteIndex = player.favorites.findIndex(fav => {
+                if (player.currentFavoriteId) {
+                    return fav.id === player.currentFavoriteId;
+                }
+                const current = player.currentPlaylist?.videos?.[player.currentVideoIndex];
+                return current && fav.video.id === current.id;
+            });
+            
+            if (favoriteIndex !== -1) {
+                videoIndex = favoriteIndex;
+            } else {
+                videoIndex = -1;
+            }
+        }
+    }
+    
+    // Apenas atualizar se encontrou um item válido
+    if (videoIndex >= 0) {
+        const indicatorContainer = document.querySelector(
+            `.playlist-item[data-video-index="${videoIndex}"] .indicator-container`
+        );
+        if (indicatorContainer) {
+            if (player.isPlaying) {
+                indicatorContainer.classList.add('playing');
+            } else {
+                indicatorContainer.classList.remove('playing');
+            }
         }
     }
 }
@@ -2861,12 +2954,25 @@ function toggleFavorite(event) {
 function syncFavoriteState(track) {
     if (!track) return;
     
-    // Derivar o estado de favorito da fonte de verdade (player.favorites)
+    // 🔥 CRÍTICO: Determinar qual favoriteId usar baseado no contexto
     let favoriteId;
+    
+    // Se está vendo favoritos E tem um ID válido, usar esse
     if (player.viewingFavorites && player.currentFavoriteId) {
         favoriteId = player.currentFavoriteId;
-    } else {
+    } 
+    // Se está em uma playlist normal, construir ID com playlistIndex + videoIndex
+    else if (!player.viewingFavorites && player.currentPlaylistIndex >= 0) {
         favoriteId = `${player.currentPlaylistIndex}-${player.currentVideoIndex}`;
+    }
+    // Caso especial: artista ou outro contexto
+    else if (player.currentPlaylistIndex === -1) {
+        // Playlist virtual (artista, favoritos antigas, etc)
+        favoriteId = track.id;
+    }
+    // Fallback: usar ID do vídeo se tudo mais falhar
+    else {
+        favoriteId = track.id;
     }
     
     const isFavorite = player.favorites.some(fav => fav.id === favoriteId);
@@ -2911,7 +3017,20 @@ function displayFavoritesList() {
     // Marcar que estamos visualizando favoritos
     player.viewingFavorites = true;
     
-    // 💾 Salvar estado (favoritos)
+    // � CRÍTICO: Se o vídeo atual está nos favoritos, settar currentFavoriteId
+    // Isso garante que o equalizer apareça no item correto
+    if (player.currentPlaylist?.videos?.[player.currentVideoIndex]) {
+        const currentVideo = player.currentPlaylist.videos[player.currentVideoIndex];
+        const matchingFavorite = player.favorites.find(fav => fav.video.id === currentVideo.id);
+        if (matchingFavorite) {
+            player.currentFavoriteId = matchingFavorite.id;
+        } else {
+            // ✅ Se NÃO está nos favoritos, resetar para não mostrar indicador
+            player.currentFavoriteId = null;
+        }
+    }
+    
+    // �💾 Salvar estado (favoritos)
     saveCurrentState();
     
     // Atualizar título
@@ -3118,13 +3237,45 @@ function displaySearchResults(results, query) {
             card.appendChild(img);
             card.appendChild(cardBody);
             card.addEventListener('click', async () => {
-                await selectPlaylist(result.playlistIndex);
-                player.currentVideoIndex = result.videoIndex;
-                const video = player.currentPlaylist.videos[player.currentVideoIndex];
-                player.shouldPlayOnReady = true;
-                loadVideo(video);
-                updateActivePlaylistItem();
-                modal.classList.remove('show');
+                // 🔥 CRÍTICO: Carregar playlist e seta O ÍNDICE CORRETO ANTES de renderizar
+                // Isso garante que o equalizer aparece no vídeo selecionado, não no primeiro
+                try {
+                    const playlistMeta = player.playlistsIndex[result.playlistIndex];
+                    if (!playlistMeta?.url) return;
+                    
+                    const playlist = await loadPlaylistByUrl(playlistMeta.url);
+                    if (!playlist) return;
+                    
+                    // 🔥 Setar TUDO corretamente ANTES de renderizar lista
+                    player.currentPlaylist = playlist;
+                    player.currentPlaylistIndex = result.playlistIndex;
+                    player.currentVideoIndex = result.videoIndex;  // ✅ Índice correto AGORA
+                    player.shouldPlayOnReady = true;
+                    player.viewingFavorites = false;
+                    player.playOrder = [...Array(playlist.videos.length).keys()];
+                    player.originalOrder = [...player.playOrder];
+                    
+                    // 🔥 CRÍTICO: Resetar currentFavoriteId quando sai de favoritos
+                    player.currentFavoriteId = undefined;
+                    
+                    // Renderizar lista com índice correto já setado
+                    updatePlaylistCardsInModal();
+                    closePlaylistsModal();
+                    loadPlaylistVideos();
+                    
+                    // Carregar o vídeo correto (não o primeiro!)
+                    const video = player.currentPlaylist.videos[player.currentVideoIndex];
+                    loadVideo(video);
+                    updateActivePlaylistItem();
+                    
+                    // 💾 Salvar estado
+                    saveCurrentState();
+                    
+                    // Fechar modal de busca
+                    modal.classList.remove('show');
+                } catch (error) {
+                    console.error('Erro ao tocar música da busca:', error);
+                }
             });
             container.appendChild(card);
         });
