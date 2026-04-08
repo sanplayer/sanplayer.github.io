@@ -198,7 +198,7 @@
     <div id="createPlaylistModal" class="modal modal-bottom-sheet">
         <div class="modal-content bottom-sheet-content">
             <div class="modal-header modal-header--item">
-                <h2 style="font-size:1.18rem;font-weight:700;">Criar Playlist</h2>
+                <h2 class="modal-header-title">Criar Playlist</h2>
                 <button class="modal-close" id="closeCreatePlaylistModal" aria-label="Fechar">
                     <i class="material-icons">close</i>
                 </button>
@@ -282,7 +282,7 @@
     <div id="editPlaylistModal" class="modal modal-bottom-sheet">
         <div class="modal-content bottom-sheet-content">
             <div class="modal-header modal-header--item">
-                <h2 style="font-size:1.18rem;font-weight:700;">Editar Playlist</h2>
+                <h2 class="modal-header-title">Editar Playlist</h2>
                 <button class="modal-close" id="editPlaylistCloseBtn" aria-label="Fechar">
                     <i class="material-icons">close</i>
                 </button>
@@ -294,8 +294,8 @@
                         <input type="text" id="editPlaylistNameInput" required placeholder="Digite o novo nome">
                     </div>
                     <div class="create-playlist-actions">
-                        <button type="button" id="editPlaylistCancelBtn" class="btn-cancel">Cancelar</button>
-                        <button type="button" id="editPlaylistSaveBtn" class="btn-create">Salvar</button>
+                        <button type="button" id="editPlaylistCancelBtn" class="btn-secondary">Cancelar</button>
+                        <button type="button" id="editPlaylistSaveBtn" class="btn-primary">Salvar</button>
                     </div>
                 </form>
             </div>
@@ -303,7 +303,7 @@
     </div>
 
     <!-- ZOOM ALERT MODAL -->
-    <div id="zoomAlertModal" class="zoom-alert-modal" style="display: none;">
+    <div id="zoomAlertModal" class="zoom-alert-modal">
         <div class="zoom-alert-content">
             <div class="zoom-alert-header">
                 <i class="material-icons">zoom_in</i>
@@ -319,7 +319,7 @@
     </div>
 
     <!-- PWA INSTALL PROMPT MODAL (BOTTOM-SHEET) -->
-    <div id="pwaInstallPromptModal" class="pwa-install-modal" style="display: none;">
+    <div id="pwaInstallPromptModal" class="pwa-install-modal">
         <div class="pwa-install-overlay"></div>
         <div class="pwa-install-content">
             <div class="pwa-install-header">

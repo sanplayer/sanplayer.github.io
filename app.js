@@ -41,8 +41,9 @@ let videoToAdd = null;              // Guardar vídeo a ser adicionado
 let pwaInstallPrompt = null;        // Será preenchido pelo evento beforeinstallprompt
 let pwaInstallTimeout = null;       // Timer para mostrar o prompt depois de 30s
 
-// Keyboard offset throttle
+// Keyboard offset throttle & cache
 let keyboardOffsetTimeout = null;   // Throttle para updateKeyboardOffset
+let lastKeyboardOffset = 0;         // Cache do último offset calculado (evita reflow desnecessário)
 
 // Theme Color Control (Android Navbar - PWA Excellence)
 const THEME_COLOR = '#0f0f0f';
@@ -668,7 +669,7 @@ function updateKeyboardOffset() {
     }, 100);
     
     const vv = window.visualViewport;
-    if (!vv) return;
+    if (!vv) return;  // Fallback: browser sem visualViewport
 
     // Calcula o offset do teclado
     const offset = window.innerHeight - (vv.height + vv.offsetTop);
@@ -678,10 +679,15 @@ function updateKeyboardOffset() {
     const maxReasonableOffset = window.innerHeight * 0.5;
     const validOffset = Math.max(0, Math.min(offset, maxReasonableOffset));
     
-    document.documentElement.style.setProperty(
-        '--keyboard-offset',
-        `${validOffset}px`
-    );
+    // ✨ Otimização: só atualiza CSS se o offset realmente mudou
+    // Evita reflows desnecessários que causam jank
+    if (validOffset !== lastKeyboardOffset) {
+        lastKeyboardOffset = validOffset;
+        document.documentElement.style.setProperty(
+            '--keyboard-offset',
+            `${validOffset}px`
+        );
+    }
 }
 
 // ============================================================================
@@ -723,21 +729,19 @@ function showZoomAlert() {
     const modal = document.getElementById('zoomAlertModal');
     const understandBtn = document.getElementById('zoomUnderstandBtn');
     
-    if (!modal) return;
+    if (!modal || !understandBtn) return;
     
     // Exibir modal
-    modal.style.display = 'flex';
+    modal.classList.add('show');
     
-    // Handler para botão "Entendi"
-    understandBtn.onclick = () => {
-        closeZoomAlert();
-    };
+    // Handler para botão "Entendi" - usar 'once: true' para evitar múltiplos listeners
+    understandBtn.addEventListener('click', closeZoomAlert, { once: true });
 }
 
 function closeZoomAlert() {
     const modal = document.getElementById('zoomAlertModal');
     if (modal) {
-        modal.style.display = 'none';
+        modal.classList.remove('show');
     }
 }
 
@@ -793,15 +797,11 @@ function initPWAInstall() {
     const confirmBtn = document.getElementById('pwaInstallConfirmBtn');
     
     if (cancelBtn) {
-        cancelBtn.onclick = () => {
-            closePWAInstallPrompt();
-        };
+        cancelBtn.addEventListener('click', closePWAInstallPrompt);
     }
     
     if (confirmBtn) {
-        confirmBtn.onclick = () => {
-            triggerPWAInstall();
-        };
+        confirmBtn.addEventListener('click', triggerPWAInstall);
     }
 }
 
@@ -810,7 +810,7 @@ function showPWAInstallPrompt() {
     
     const modal = document.getElementById('pwaInstallPromptModal');
     if (modal) {
-        modal.style.display = 'flex';
+        modal.classList.add('show');
         console.log('[App] Modal de instalação PWA exibido');
     }
 }
@@ -818,7 +818,7 @@ function showPWAInstallPrompt() {
 function closePWAInstallPrompt() {
     const modal = document.getElementById('pwaInstallPromptModal');
     if (modal) {
-        modal.style.display = 'none';
+        modal.classList.remove('show');
     }
     
     // Limpar timer
@@ -1185,6 +1185,9 @@ async function selectPlaylistByIndex(index) {
             player.shouldPlayOnReady = true;
             player.viewingFavorites = false;
 
+            // 🔄 Atualizar os cards do modal com o novo dado cacheado
+            updatePlaylistCardsInModal();
+            
             closePlaylistsModal();
             loadPlaylistVideos();
             loadFirstVideo();
@@ -1249,6 +1252,68 @@ function openPlaylistsModal() {
     container.innerHTML = '';
     container.appendChild(fragment);
     modal.classList.add('show');
+    
+    // 🔄 Pré-carregar playlists em background para atualizar contagens
+    preloadPlaylistsInBackground();
+}
+
+/**
+ * Pré-carrega playlists não-cacheadas em background
+ * Isso permite que os cards sejam atualizados conforme as playlists são carregadas
+ */
+function preloadPlaylistsInBackground() {
+    // Não bloqueia a execução principal
+    player.playlistsIndex.forEach((playlistMeta) => {
+        // Se já está em cache, pular
+        if (playlistCache.has(playlistMeta.url)) return;
+        
+        // Carregar em background (não awaitar aqui)
+        loadPlaylistByUrl(playlistMeta.url).then(() => {
+            // Após carregar, atualizar os cards do modal
+            updatePlaylistCardsInModal();
+        }).catch((error) => {
+            console.warn(`Erro ao pré-carregar playlist (${playlistMeta.url}):`, error);
+        });
+    });
+}
+
+/**
+ * Atualiza os cards de playlists no modal com dados cacheados
+ * Chamado após carregar uma nova playlist para refletir o novo dados
+ */
+function updatePlaylistCardsInModal() {
+    const modal = document.getElementById('playlistModal');
+    
+    // Se o modal não está visível, não precisa atualizar
+    if (!modal.classList.contains('show')) return;
+    
+    const container = document.getElementById('playlistCardsContainer');
+    const fragment = document.createDocumentFragment();
+    
+    player.playlistsIndex.forEach((playlistMeta, index) => {
+        // Tentar obter count do cache
+        let videoCount = '';
+        if (playlistCache.has(playlistMeta.url)) {
+            const playlist = playlistCache.get(playlistMeta.url);
+            videoCount = `${playlist.videos?.length || 0} músicas`;
+        } else {
+            videoCount = 'Carregando...';
+        }
+
+        const card = renderCard({
+            src: `covers/playlists/${playlistMeta.cover}`,
+            title: playlistMeta.title || playlistMeta.name,
+            subtitle: videoCount
+        }, {
+            type: 'playlist',
+            shareData: playlistMeta.name
+        });
+        card.addEventListener('click', () => selectPlaylistByIndex(index));
+        fragment.appendChild(card);
+    });
+    
+    container.innerHTML = '';
+    container.appendChild(fragment);
 }
 
 function closePlaylistsModal() {
@@ -1267,38 +1332,80 @@ function closePlaylistsModal() {
 // MODAL DE ARTISTAS
 // ============================================================================
 
+/**
+ * Cria um card skeleton para loading
+ * @returns {HTMLElement}
+ */
+function createCardSkeleton() {
+    const card = document.createElement('div');
+    card.className = 'card skeleton-card';
+    
+    // Image skeleton
+    const imgSkeleton = document.createElement('div');
+    imgSkeleton.className = 'skeleton skeleton-card-image';
+    imgSkeleton.style.paddingBottom = '100%';
+    
+    // Body skeleton
+    const bodySkeleton = document.createElement('div');
+    bodySkeleton.className = 'card-body';
+    
+    const titleSkeleton = document.createElement('div');
+    titleSkeleton.className = 'skeleton skeleton-card-title';
+    
+    const subtitleSkeleton = document.createElement('div');
+    subtitleSkeleton.className = 'skeleton skeleton-card-subtitle';
+    
+    bodySkeleton.appendChild(titleSkeleton);
+    bodySkeleton.appendChild(subtitleSkeleton);
+    card.appendChild(imgSkeleton);
+    card.appendChild(bodySkeleton);
+    
+    return card;
+}
+
 async function openArtistsModal() {
     const modal = document.getElementById('artistsModal');
     const container = document.getElementById('artistsCardsContainer');
     
-    // Mostrar loading enquanto busca artistas
-    container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-dim);">Carregando artistas...</div>';
+    // 🔄 Mostrar skeletons enquanto carrega
+    container.innerHTML = '';
+    const skeletonContainer = document.createDocumentFragment();
+    for (let i = 0; i < 8; i++) {
+        skeletonContainer.appendChild(createCardSkeleton());
+    }
+    container.appendChild(skeletonContainer);
 
     try {
         // Carregar todas as playlists (necessário para listar todos os artistas)
         const allPlaylists = await loadAllPlaylists();
 
-        // Coletar artistas únicos
-        const artistsSet = new Set();
+        // Coletar artistas com contagem de músicas
+        const artistsMap = new Map();
         allPlaylists.forEach(playlist => {
             playlist.videos?.forEach(video => {
                 if (video.artist) {
-                    artistsSet.add(video.artist);
+                    if (!artistsMap.has(video.artist)) {
+                        artistsMap.set(video.artist, 0);
+                    }
+                    artistsMap.set(video.artist, artistsMap.get(video.artist) + 1);
                 }
             });
         });
 
-        const artists = Array.from(artistsSet).sort();
+        // Converter para array e ordenar
+        const artists = Array.from(artistsMap.entries())
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => a.name.localeCompare(b.name));
 
         // Usar DocumentFragment para melhor performance
         const fragment = document.createDocumentFragment();
 
-        artists.forEach(artist => {
+        artists.forEach(({ name: artist, count }) => {
             const artistCover = getArtistCoverUrl(artist);
             const card = renderCard({
                 src: artistCover,
                 title: artist,
-                subtitle: 'Artista'
+                subtitle: `${count} músicas`
             }, {
                 type: 'artist',
                 shareData: artist
@@ -1444,10 +1551,21 @@ function openEditPlaylistModal(idx, currentName) {
             list[idx].name = newName;
             saveUserPlaylists(list);
             showFeedbackModal(`Playlist renomeada para "${newName}"`);
+            
+            // 🔥 CRITICAL: Fechar editPlaylistModal e esperar feedback fechar antes de reabrir userPlaylistsModal
+            closeModalWithAnimation('editPlaylistModal');
+            setTimeout(() => {
+                // Aguardar feedback fechar (3s por padrão em showFeedbackModal)
+                setTimeout(() => {
+                    openUserPlaylistsModal();
+                }, 3200); // Feedback duration (3000) + buffer (200)
+            }, 550); // closeModalWithAnimation duration (550)
+        } else {
+            // Se nome não mudou, apenas fecha o modal
+            closeModalWithAnimation('editPlaylistModal', () => {
+                setTimeout(() => openUserPlaylistsModal(), 300);
+            });
         }
-        closeModalWithAnimation('editPlaylistModal', () => {
-            setTimeout(() => openUserPlaylistsModal(), 300);
-        });
     });
     
     // Fechar ao cancelar
@@ -1904,7 +2022,9 @@ function showFeedbackModal(message, duration = 3000) {
     // Fechar automaticamente após duração
     setTimeout(() => {
         modal.classList.remove('show');
-    }, duration);
+        // Garantir limpeza: remover qualquer classe 'closing' que possa ficar
+        modal.classList.remove('closing');
+    }, duration + 50); // +50ms de buffer para animação
 }
 
 // Alias para compatibilidade (showToast vira showFeedbackModal)
@@ -2115,6 +2235,10 @@ function loadPlaylistVideos() {
                 openItemOptionsModal(idx);
             });
         });
+        
+        // 🔥 CRÍTICO: Re-renderizar o indicador após reconstruir a lista
+        // Isso garante que o equalizer-icon apareça após modais serem fechados
+        updatePlayingNowIndicator();
     });
 }
 
@@ -2139,7 +2263,8 @@ function loadVideo(video) {
     }
 
     updateCurrentVideoDisplay();
-    updateFavoriteButton();
+    // 🔥 CRÍTICO: Sincronizar favoritos antes de atualizar botão
+    syncFavoriteState(video);
     
     // 💾 Salvar estado sempre que um vídeo é carregado
     saveCurrentState();
@@ -2591,7 +2716,7 @@ function createParticleExplosion(button) {
     // Criar container para as partículas (posicionado relativo ao botão)
     const container = document.createElement('div');
     container.className = 'particle-container';
-    button.style.position = 'relative';
+    button.classList.add('particle-container-parent');
     button.appendChild(container);
     
     // Configuração de partículas
@@ -2640,9 +2765,9 @@ function createParticleExplosion(button) {
         particle.style.setProperty('--scale-start', scaleStart);
         particle.style.setProperty('--scale-end', scaleEnd);
         particle.style.setProperty('--rotation', `${rotation}deg`);
-        particle.style.animationDuration = `${duration}ms`;
-        particle.style.animationDelay = `${delay}ms`;
-        particle.style.animationTimingFunction = easing;
+        particle.style.setProperty('--particle-duration', `${duration}ms`);
+        particle.style.setProperty('--particle-delay', `${delay}ms`);
+        particle.style.setProperty('--particle-timing', easing);
         
         // Adicionar ao container
         container.appendChild(particle);
@@ -2655,7 +2780,7 @@ function createParticleExplosion(button) {
             // Se foi a última partícula, remover o container
             if (container.children.length === 0) {
                 container.remove();
-                button.style.position = '';
+                button.classList.remove('particle-container-parent');
             }
         };
         
@@ -2686,8 +2811,19 @@ function toggleFavorite(event) {
             button.classList.remove('active');
             button.setAttribute('aria-pressed', 'false');
         }
+        // Re-renderizar lista de favoritos (sempre, se estiver visualizando)
+        if (player.viewingFavorites) {
+            displayFavoritesList();
+        }
     } else {
         // Adicionar aos favoritos
+        // Validar duplicacao (profissional: nunca confiar em cliques multiplos)
+        const alreadyExists = player.favorites.some(fav => fav.id === favoriteId);
+        if (alreadyExists) {
+            console.warn('Item ja esta nos favoritos');
+            return;
+        }
+        
         player.favorites.push({
             id: favoriteId,
             video: video,
@@ -2698,6 +2834,11 @@ function toggleFavorite(event) {
             button.setAttribute('aria-pressed', 'true');
             // Dispara explosão de partículas APENAS ao ADICIONAR
             createParticleExplosion(button);
+        }
+        
+        // Re-renderizar lista de favoritos (sempre, se estiver visualizando)
+        if (player.viewingFavorites) {
+            displayFavoritesList();
         }
     }
     
@@ -2713,11 +2854,14 @@ function toggleFavorite(event) {
     updateFavoriteButton();
 }
 
-function updateFavoriteButton() {
-    const video = player.currentPlaylist?.videos[player.currentVideoIndex];
-    if (!video) return;
+/**
+ * 🔥 SINCRONIZAÇÃO PROFISSIONAL: Sempre derivar UI do estado real
+ * Chamada sempre que carregar uma música para sincronizar o botão com favoritos reais
+ */
+function syncFavoriteState(track) {
+    if (!track) return;
     
-    // Usar o ID correto dependendo do contexto
+    // Derivar o estado de favorito da fonte de verdade (player.favorites)
     let favoriteId;
     if (player.viewingFavorites && player.currentFavoriteId) {
         favoriteId = player.currentFavoriteId;
@@ -2726,6 +2870,8 @@ function updateFavoriteButton() {
     }
     
     const isFavorite = player.favorites.some(fav => fav.id === favoriteId);
+    
+    // Atualizar UI baseado no estado real
     const button = document.getElementById('favButton');
     const icon = document.getElementById('favIcon');
     
@@ -2734,14 +2880,17 @@ function updateFavoriteButton() {
     }
     
     if (button) {
-        if (isFavorite) {
-            button.classList.add('active');
-            button.setAttribute('aria-pressed', 'true');
-        } else {
-            button.classList.remove('active');
-            button.setAttribute('aria-pressed', 'false');
-        }
+        button.classList.toggle('active', isFavorite);
+        button.setAttribute('aria-pressed', isFavorite ? 'true' : 'false');
     }
+}
+
+function updateFavoriteButton() {
+    const video = player.currentPlaylist?.videos[player.currentVideoIndex];
+    if (!video) return;
+    
+    // Derivar UI do estado real de favoritos
+    syncFavoriteState(video);
 }
 
 function saveFavorites() {
@@ -2836,6 +2985,9 @@ function displayFavoritesList() {
                 openItemOptionsModal(idx);
             });
         });
+        
+        // 🔥 CRÍTICO: Re-renderizar o indicador após reconstruir a lista
+        updatePlayingNowIndicator();
     });
 }
 
@@ -2849,6 +3001,7 @@ function setupMobileSearch() {
     const searchInput = document.getElementById('searchInput');
     const headerSearch = document.querySelector('.header-search');
     const btnSearchMobile = document.querySelector('.btn-search-mobile');
+    const searchModal = document.getElementById('searchModal');
     let searchTimeout;
     
     // Mobile: mostrar barra ao clicar no ícone de busca
@@ -2859,7 +3012,7 @@ function setupMobileSearch() {
         });
     }
     
-    // Fechar barra ao limpar o input no mobile
+    // Fechar barra ao perder foco (se vazio)
     searchInput.addEventListener('blur', (e) => {
         if (window.innerWidth <= 1023 && e.target.value.trim().length === 0) {
             headerSearch.classList.remove('show-search');
@@ -2881,11 +3034,18 @@ function setupMobileSearch() {
         }, 300);
     });
     
-    searchInput.addEventListener('blur', (e) => {
-        if (window.innerWidth <= 1023 && e.target.value.trim().length === 0) {
-            headerSearch.classList.remove('show-search');
-        }
-    });
+    // Fechar barra ao selecionar um resultado (no mobile)
+    if (searchModal) {
+        searchModal.addEventListener('click', (e) => {
+            const item = e.target.closest('.search-result-item');
+            if (item && window.innerWidth <= 1023) {
+                // Limpar pesquisa e fechar
+                searchInput.value = '';
+                searchModal.classList.remove('show');
+                headerSearch.classList.remove('show-search');
+            }
+        });
+    }
 }
 
 async function searchMusics(query) {

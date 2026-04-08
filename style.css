@@ -193,9 +193,69 @@ body.is-routing {
 
 #createPlaylistModal .create-playlist-actions {
     display: flex;
-    gap: 0.7rem;
+    gap: 1rem;
     justify-content: center;
-    margin-top: 0.5rem;
+    margin-top: 1.2rem;
+}
+
+#createPlaylistModal .create-playlist-actions button {
+    flex: 1;
+    max-width: 140px;
+    min-height: 44px;
+}
+
+/* ========== EDITAR PLAYLIST MODAL ========== */
+#editPlaylistModal .modal-header--item {
+    border-bottom: none;
+    padding-bottom: 0.2rem;
+}
+
+#editPlaylistModal .modal-body {
+    padding: 1.2rem 1.2rem 1.5rem 1.2rem;
+}
+
+#editPlaylistModal .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 1.3rem;
+}
+
+#editPlaylistModal label {
+    font-size: 1.04rem;
+    color: var(--text-dim);
+    font-weight: 500;
+    margin-bottom: 0.1rem;
+}
+
+#editPlaylistModal input[type="text"] {
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--border-rgba);
+    background: var(--bg-surface-light);
+    color: var(--text-main);
+    font-size: 1.13rem;
+    font-weight: 500;
+    outline: none;
+    transition: border 0.18s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+#editPlaylistModal input[type="text"]:focus {
+    border-color: var(--accent-red);
+}
+
+#editPlaylistModal .create-playlist-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.2rem;
+}
+
+#editPlaylistModal .create-playlist-actions button {
+    flex: 1;
+    max-width: 140px;
+    min-height: 44px;
 }
 
 
@@ -297,24 +357,6 @@ body.is-routing {
     padding: 0;
 }
 
-.bottom-sheet-content {
-    width: 100vw;
-    max-width: 100vw;
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
-    margin: 0;
-    animation: bottomSheetUp 0.25s cubic-bezier(.4, 0, .2, 1);
-    position: relative;
-    bottom: 0;
-}
-
-    @media (max-width: 1023px) {
-    .bottom-sheet-content {
-        width: 100vw;
-        max-width: 100vw;
-        border-radius: 16px 16px 0 0;
-    }
-}
 
 @keyframes bottomSheetUp {
     from {
@@ -435,10 +477,19 @@ body.is-routing {
     flex-shrink: 0;
 }
 
+/**
+ * Título padrão para headers de modal
+ * Usado em: Criar Playlist, Editar Playlist, etc.
+ */
+.modal-header-title {
+    font-size: 1.18rem;
+    font-weight: 700;
+}
+
 .toast-feedback.toast-mobile {
     left: 0;
-    bottom: var(--keyboard-offset, 0px);
-    transform: none;
+    bottom: 0;
+    transform: translateY(var(--keyboard-offset, 0px));
     width: 100%;
     border-radius: 0;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
@@ -618,107 +669,7 @@ body.is-routing {
     }
 
 
-    /* Modal base (simples) */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 5000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-    }
-
-    .modal.show {
-        display: flex;
-    }
-
-    .modal-content {
-        background: var(--bg-surface);
-        border-radius: 8px;
-        width: 100%;
-        max-width: 640px;
-        height: auto;
-        max-height: 90vh;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-        overflow: hidden;
-    }
-
-    /* Playlists e Artistas modais: ocupar tela inteira no mobile */
-    #playlistModal .modal-content,
-    #artistsModal .modal-content {
-        width: 100vw;
-        height: 100dvh;
-        max-width: 100%;
-        max-height: 100dvh;
-        border-radius: 0;
-        box-shadow: none;
-        display: flex;
-        flex-direction: column;
-        background: var(--bg-surface);
-        overflow: hidden;
-        animation: none;
-    }
-
-    #playlistModal,
-    #artistsModal {
-        align-items: stretch;
-        justify-content: flex-start;
-        padding: 0;
-        margin: 0;
-        top: 0;
-        left: 0;
-        z-index: 5000;
-    }
-
-    #playlistModal .modal-header,
-    #artistsModal .modal-header {
-        position: sticky;
-        top: 0;
-        flex-shrink: 0;
-        z-index: 10;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.2rem;
-        border-bottom: 1px solid var(--border-rgba);
-        background: var(--bg-surface);
-    }
-
-    #playlistModal .modal-header h2,
-    #artistsModal .modal-header h2 {
-        font-size: var(--font-lg);
-        margin: 0;
-        color: var(--text-main);
-    }
-
-    #playlistModal .cards-grid,
-    #artistsModal .cards-grid {
-        flex: 1;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1.5rem;
-        padding: 1.5rem;
-        padding-bottom: clamp(4rem, 15vh, var(--footer-height));
-        overflow-y: auto;
-        width: 100%;
-        min-height: 0;
-    }
-
-    /* Mobile modal header inherited from base .modal-header--item, no duplication needed */
-    .modal-body {
-        padding: 0;
-    }
-
-    .modal .modal-close {
-        background: transparent;
-        border: none;
-        color: var(--text-dim);
-    }
+    
 
     /* Lista simples das playlists do usuÃƒÂ¡rio */
     #userPlaylistsContainer .user-playlist {
@@ -815,7 +766,7 @@ body.is-routing {
         position: fixed;
         left: 0;
         right: 0;
-        bottom: var(--keyboard-offset, 0px);
+        bottom: 0;
         top: auto;
         margin: 0 auto;
         max-width: 100vw;
@@ -824,6 +775,9 @@ body.is-routing {
         animation: bottomSheetUp 0.25s cubic-bezier(.4, 0, .2, 1);
         box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
         z-index: 3001;
+        height: auto;
+        transform: translateY(var(--keyboard-offset, 0px));
+        transition: transform 0.25s ease;
     }
     
 }
@@ -1049,7 +1003,7 @@ img {
     right: 0;
     display: flex;
     z-index: var(--main-z-index);
-    overflow: hidden;
+    overflow-y: auto;
     padding-bottom: var(--footer-height);
 }
 
@@ -1264,6 +1218,35 @@ img {
     border-radius: 4px;
 }
 
+/* ========== Skeleton para Cards de Artistas ========== */
+.skeleton-card {
+    background: transparent;
+}
+
+.skeleton-card-image {
+    width: 100%;
+    height: 0;
+    background: var(--bg-surface-light);
+    display: block;
+    border-radius: 0.5rem 0.5rem 0 0;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.skeleton-card-title {
+    height: 1rem;
+    width: 80%;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+.skeleton-card-subtitle {
+    height: 0.75rem;
+    width: 60%;
+    border-radius: 4px;
+    animation: skeleton-loading 1.5s infinite;
+}
+
 /* ==========================================================================
    4.5 EFEITO EXPLOSÃƒO DE CORAÃ‡Ã•ES - FAVORITAR
    ========================================================================== */
@@ -1307,6 +1290,14 @@ img {
             rotate(var(--rotation));
         opacity: 0;
     }
+}
+
+/**
+ * Faz o botão ser container para partículas
+ * Aplicado via JavaScript quando necessário
+ */
+.particle-container-parent {
+    position: relative;
 }
 
 /**
@@ -1366,8 +1357,11 @@ img {
     pointer-events: none;
     user-select: none;
     
-    /* AnimaÃ§Ã£o - configuraÃ§Ãµes base */
+    /* Animação - usa variáveis CSS dinâmicas */
     animation: particle-float forwards;
+    animation-duration: var(--particle-duration, 600ms);
+    animation-delay: var(--particle-delay, 0ms);
+    animation-timing-function: var(--particle-timing, cubic-bezier(0.25, 0.46, 0.45, 0.94));
     
     /* Performance - GPU acceleration */
     will-change: transform, opacity;
@@ -1940,68 +1934,53 @@ img {
     }
 }
 
-/* ===== MOBILE HEADER SEARCH OVERLAY ===== */
+/* ===== MOBILE: HEADER SEARCH (max 1023px) ===== */
 @media (max-width: 1023px) {
     .header-search {
         display: none;
-    }
-
-    .header-actions .btn-search-mobile {
-        display: flex;
-        color: var(--text-dim);
-        font-size: clamp(1.3rem, 3vw, 1.8rem);
-        transition: color 0.2s;
-        background: none;
-        border: none;
-    }
-
-    .header-actions .btn-search-mobile:active {
-        color: var(--text-main);
-    }
-
-    .header-search.show-search {
-        position: fixed;
+        flex: 1;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        width: 100vw;
+        z-index: 1999;
+        background: var(--bg-main);
         height: var(--header-height);
-        background: var(--bg-surface);
-        z-index: 2000;
-        display: flex;
         align-items: center;
-        justify-content: center;
         padding: 0;
-        margin: 0;
     }
 
-    .header-search.show-search form {
-        width: clamp(85vw, 90vw, 95vw);
-        background: var(--bg-surface-light);
-        border-radius: clamp(1.5rem, 3vw, 2rem);
-        padding: clamp(0.3rem, 1vw, 0.5rem) clamp(0.8rem, 2vw, 1.2rem);
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+    .header-search.show-search {
         display: flex;
-        align-items: center;
+    }
+
+    .header-search form {
+        width: 100%;
+        background: transparent;
+        border-radius: 0;
+        padding: 0 var(--gap-md);
         gap: 0;
     }
 
-    .header-search.show-search input {
-        flex: 1;
-        font-size: clamp(0.95rem, 2vw, 1.1rem);
-        padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.8rem, 2vw, 1rem);
+    .header-search input {
         background: transparent;
+        border: none;
         border-radius: 0;
+        padding: 0.5rem 0;
+        color: var(--text-main);
     }
 
-    .header-search.show-search input::placeholder {
-        color: var(--text-dim);
+    .header-search input:focus {
+        background: transparent;
+        outline: none;
+        border-bottom: 2px solid var(--accent-red);
     }
 
-    .header-search.show-search .search-icon {
-        color: var(--text-dim);
-        font-size: clamp(1.2rem, 2.5vw, 1.5rem);
-        padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.5rem, 1.5vw, 0.75rem);
+    .header-search .search-icon {
+        border-radius: 0;
     }
 }
 
@@ -2113,11 +2092,15 @@ img {
     width: 100vw;
     height: 100dvh;
     background: rgba(0, 0, 0, 0.5);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     z-index: 9999;
     animation: fadeIn 0.3s ease-out;
+}
+
+.zoom-alert-modal.show {
+    display: flex;
 }
 
 .zoom-alert-content {
@@ -2202,7 +2185,7 @@ img {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100dvh;
     background: rgba(0, 0, 0, 0.5);
     z-index: 5000;
     align-items: flex-end;
@@ -2228,7 +2211,7 @@ img {
     border-radius: 16px 16px 0 0;
     width: 100%;
     min-width: 100vw;
-    height: auto;
+    height: 100dvh;
     overflow-y: auto;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
     animation: bottomSheetContentOpen 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -2295,7 +2278,7 @@ img {
     position: sticky;
     top: 0;
     background: var(--bg-surface);
-    z-index: 1;
+    z-index: 11;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -2359,32 +2342,16 @@ img {
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 15vw, 220px), 1fr));
+    gap: clamp(1.5rem, 2vw, 2rem);
     margin-top: 1rem;
-    padding: 0 1.25rem;
-}
-
-@media (min-width: 768px) {
-    .cards-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 2rem;
-        padding: 0 2rem;
-    }
-}
-
-@media (min-width: 1440px) {
-    .cards-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 2rem;
-        padding: 0 2rem;
-    }
+    padding: 0 clamp(1.25rem, 2vw, 2rem);
 }
 
 .card {
     position: relative;
     border-radius: 0.5rem;
-
+    overflow: hidden;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     background: var(--bg-surface-light);
@@ -2428,6 +2395,7 @@ img {
     aspect-ratio: 1 / 1;
     background: #333;
     object-fit: cover;
+    display: block;
 }
 
 .card-body {
@@ -2500,33 +2468,13 @@ img {
     }
 }
 
-@media (max-width: 640px) {
-    .modal-content {
-        max-height: 70vh;
-        border-radius: 12px 12px 0 0;
-    }
-}
-
 /* Manter search modal centered */
 #searchModal {
     align-items: center;
 }
 
 /* Search modal: permitir altura dinÃ¢mica para resultados */
-@media (min-width: 641px) {
-    #searchModal .modal-content {
-        height: auto;
-        max-height: 80vh;
-        display: flex;
-        flex-direction: column;
-    }
 
-    #searchModal .search-results {
-        flex: 1;
-        overflow-y: auto;
-        padding: 1.5rem;
-    }
-}
 
 
 /* Estilos para os botÃƒÂµes de adicionar/remover no modal de opÃƒÂ§ÃƒÂµes do item */
@@ -2619,86 +2567,6 @@ img {
 }
 
 /* Desktop: tornar modais fullscreen (exceto mobile) */
-@media (min-width: 641px) {
-    .modal {
-        
-        padding: 0;
-        /* remover padding para full bleed */
-        justify-content: center;
-    }
-
-    .modal-content {
-        max-width: 100%;
-        width: 100%;
-        height: 100dvh;
-        max-height: 100dvh;
-        border-radius: 0;
-        /* bordas retas em fullscreen */
-        box-shadow: none;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Ajustes de espaÃƒÂ§amento interno para header/body quando em fullscreen */
-    .modal-header {
-        padding: 1.5rem 1.5rem;
-        position: sticky;
-        top: 0;
-        border-bottom: 1px solid var(--border-rgba);
-    }
-
-    .modal-body {
-        padding: 0;
-        flex: 1 1 auto;
-        overflow-y: auto;
-    }
-
-    /* NÃƒÂ£o forÃƒÂ§ar fullscreen nos bottom-sheets (kebab, create) */
-    .modal.modal-bottom-sheet .modal-content,
-    .modal.modal-bottom-sheet .bottom-sheet-content {
-        max-height: 60vh;
-        height: auto;
-        border-radius: 16px 16px 0 0;
-        box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
-    }
-}
-
-/* Playlists e Artistas: ocupar 100% da tela em mobile, tamanho apropriado em desktop */
-@media (min-width: 641px) {
-
-    #playlistModal,
-    #artistsModal {
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        z-index: 5000;
-    }
-
-    #playlistModal .modal-header,
-    #artistsModal .modal-header {
-        position: sticky;
-        top: 0;
-        flex-shrink: 0;
-        z-index: 10;
-        border-radius: 16px 16px 0 0;
-    }
-
-    #artistsModal {
-        align-items: center;
-    }
-
-    #artistsModal .modal-content {
-        margin-top: 0;
-    }
-
-    .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 2rem;
-        padding: 2rem;
-    }
-}
 /* ==========================================================================
    9. ESTILOS ESPECIAIS PARA VÃƒÂDEO (OVERLAYS, LEGENDAS)
    ========================================================================== */
@@ -2743,9 +2611,13 @@ img {
     width: 100vw;
     height: 100dvh;
     z-index: 9997;
-    display: flex;
+    display: none;
     align-items: flex-end;
     justify-content: center;
+}
+
+.pwa-install-modal.show {
+    display: flex;
 }
 
 .pwa-install-overlay {
@@ -2857,4 +2729,5 @@ img {
 .material-symbols-outlined {
   font-weight: 400; 
 }
+
 
