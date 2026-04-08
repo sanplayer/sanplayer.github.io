@@ -68,5 +68,27 @@
     "name": "Reginaldo Rossi",
     "cover": "reginaldo-rossi.jpg",
     "url": "./data/playlists/reginaldo-rossi.json"
+  },
+  {
+    "id": "zezo-potiguar",
+    "title": "Zezo Potiguar",
+    "name": "Zezo Potiguar",
+    "cover": "zezo-potiguar.jpg",
+    "url": "./data/playlists/zezo-potiguar.json"
+  },
+  {
+    "id": "album-o-amor-e-brega",
+    "title": "O Amor é Brega",
+    "name": "O Amor é Brega",
+    "cover": "album-o-amor-e-brega.jpg",
+    "url": "./data/playlists/album-o-amor-e-brega.json"
+  },
+  {
+    "id": "refugio-de-adoracao",
+    "title": "Refúgio de Adoração",
+    "name": "Refúgio de Adoração",
+    "cover": "refugio-de-adoracao.jpg",
+    "url": "./data/playlists/refugio-de-adoracao.json"
   }
+
 ]

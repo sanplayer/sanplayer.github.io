@@ -1,0 +1,76 @@
+{
+  "playlists": [
+    {
+      "name": "Refúgio De Adoração",
+      "slug": "refugio-de-adoracao",
+      "cover": "refugio-de-adoracao.jpg",
+      "videos": [
+        {
+          "id": "Iwk3_sI2DXc",
+          "title": "Deus Me Ouviu",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "jG67W_caQB4",
+          "title": "Deserto",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "KFdrdxB6rQM",
+          "title": "Tua Presença Me Basta",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "pOWonI8SPPQ",
+          "title": "Eu Vou Testemunhar",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "ajotYkGaGuk",
+          "title": "Deus Nunca Soltou Minha Mão",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "3duY1S35sqE",
+          "title": "Quando Deus Se Levanta",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "yLpKseoWpbw",
+          "title": "Quando Deus Decidiu Ficar",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "WD6LfyoiBpw",
+          "title": "Deus Não Desistiu De Mim",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "ZYFf74p-poY",
+          "title": "O Céu Não Me Perdeu De Vista",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "o93bdPA8G5E",
+          "title": "Fogo Consumidor",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "oUHD3E3xyOQ",
+          "title": "Meu Passado Morreu",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "EjFbZgYDDOw",
+          "title": "Teu Amor Me Libertou",
+          "artist": "Refúgio De Adoração"
+        },
+        {
+          "id": "oe8ooltedzc",
+          "title": "A Casa É Sua",
+          "artist": "Refúgio De Adoração"
+        }
+      ]
+    }
+  ]
+}

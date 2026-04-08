@@ -1,0 +1,51 @@
+{
+  "playlists": [
+    {
+      "name": "Album - O Amor é Brega",
+      "slug": "album-o-amor-e-brega",
+      "cover": "album-o-amor-e-brega.jpg",
+      "videos": [
+        {
+          "id": "n2T4LWrZRB8",
+          "title": "Choro na Chuva",
+          "artist": "Pablo"
+        },
+        {
+          "id": "OiA_L7YWSOg",
+          "title": "O Amor é Brega",
+          "artist": "Pablo"
+        },
+        {
+          "id": "W3PbK1Pt3U0",
+          "title": "Amor I Love You",
+          "artist": "Pablo"
+        },
+        {
+          "id": "FU7GJLfjogI",
+          "title": "Toma uma que passa",
+          "artist": "Pablo"
+        },
+        {
+          "id": "rb3meE4x1as",
+          "title": "Rachaduras",
+          "artist": "Pablo"
+        },
+        {
+          "id": "rRB1I-iYpiw",
+          "title": "Ponto de partida",
+          "artist": "Pablo"
+        },
+        {
+          "id": "neBk6IZ5phY",
+          "title": "Coração de plástico",
+          "artist": "Pablo"
+        },
+        {
+          "id": "LMAPU3C1ReU",
+          "title": "Arquivos",
+          "artist": "Pablo"
+        }
+      ]
+    }
+  ]
+}

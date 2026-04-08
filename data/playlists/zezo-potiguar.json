@@ -1,0 +1,761 @@
+{
+  "playlists": [
+    {
+      "name": "Zezo Potiguar",
+      "slug": "zezo-potiguar",
+      "cover": "zezo-potiguar.jpg",
+      "videos": [
+        {
+          "id": "VIs2xSHKdQc",
+          "title": "Decida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "bMZFRwVmjlA",
+          "title": "Espumas Ao Vento",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Ms7TAjNeGLM",
+          "title": "Pot-pourri: O Que Tem Que Ser Será / Amar Você É Tão Bom / Só pra Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "fJLH6JWPE7A",
+          "title": "Lagrimas de Álcool",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "MW2drL48yOY",
+          "title": "Meu Vício É Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "DVuL-eCI9dY",
+          "title": "A Vida Tem Dessas Coisas",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "K-SSyocbUuE",
+          "title": "Tortura de Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "j3DIfg1cUHc",
+          "title": "O Vagabundo",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "EwLV1BJXzWI",
+          "title": "Diga Pra Mim",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "zb7Rfz_5myA",
+          "title": "Culpa Do Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "wNLi1kSVAlU",
+          "title": "Pra Não Pensar em Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "CFgnQtXVW-s",
+          "title": "Diga pra Mim",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "yrH0sSDI_Sw",
+          "title": "Eu Queria Dizer Que Te Amo Numa Canção",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "8F7G8r37ogQ",
+          "title": "Tô Fazendo Falta",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "qWFU9alwpBo",
+          "title": "Senhorita",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Y8LY65neFdM",
+          "title": "Rapariga da Minha Vida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "SDJmXiDciLE",
+          "title": "Fome de Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Rczu4n0KDRQ",
+          "title": "Decida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "UsxRyBM1DFM",
+          "title": "Malandragem",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "9sFQB5KWfuE",
+          "title": "Sofrendo em Miami",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "ONRB-_m8Hwk",
+          "title": "Dois",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "7065X5hj2jo",
+          "title": "Naquela Mesa",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "q48L4D5fg1I",
+          "title": "Farrapo Humano",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "ONtwJZDdsAo",
+          "title": "Quero Ver Amanhã",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "TktYWqJwmsc",
+          "title": "Mulherão da Porra",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "gyJAW11ipyg",
+          "title": "Evidências",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "sUOBJ7eiW-8",
+          "title": "Todo Tempo É Pouco Pra Te Amar",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Sv9Oc-rl5UI",
+          "title": "O Grande Amor da Minha Vida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "GJQaR1qRbkI",
+          "title": "Máquinas Humanas",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "0LNd69L7zKw",
+          "title": "Deixaria Tudo",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "o9gTYkzmNrE",
+          "title": "Nenhuma Esperança",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "_GmhSqfW0-c",
+          "title": "Lamento Sertanejo",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "P10VykkDNGU",
+          "title": "Sinfonia da Mata",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "CsgkgUAfvdw",
+          "title": "Frio da Solidão",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "lC5WkWEGvUM",
+          "title": "Saudade",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "1CWej2AjaWU",
+          "title": "Decida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "kQL8zs-ODK4",
+          "title": "Sem Céu e Sem Chão",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "F_lKaIMT-hQ",
+          "title": "O QUE EU FAÇO AMANHÃ?",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "UZf15vyahQE",
+          "title": "Indiferença",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "1Z46pyNM8EA",
+          "title": "Dois Corações e uma História",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "X1WzM-q33mw",
+          "title": "Eu Duvido",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "DJ-hZZ6VFI4",
+          "title": "A Noite de Meu Bem",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "bzKa0Ko_ues",
+          "title": "Eu Te Amo Fortaleza",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "YZCKcrHxu0w",
+          "title": "A Lenda",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "vVwsL2o56Ts",
+          "title": "Jardim Dos Animais",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "EmzCrTa1YdU",
+          "title": "A Dor Desse Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "spZJcNpfs6g",
+          "title": "A Gente Se Merece",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "HZ9PpCl8hXw",
+          "title": "Melhor Só do Que Mal",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "DwmTq9Kg3Pw",
+          "title": "Menino Bicho",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "T-I_AsiSMf4",
+          "title": "De Igual pra Igual",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "ixGijHXV9k4",
+          "title": "Só Pra Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "sNADIDTWPU0",
+          "title": "Bandeira Branca",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "3UZFwYoWthU",
+          "title": "Esta Noite Eu Queria Que o Mundo Acabasse",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "i_OgkCKvTP0",
+          "title": "Até Quando",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "ArcZzlZdX2Y",
+          "title": "Flores em Vida / Boa Sorte / Good Luck",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "-m77zjo0aSc",
+          "title": "Entre Ele e Eu",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "WueVAnf90SA",
+          "title": "A Desconhecida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "LX7wVd_ztvA",
+          "title": "Última Canção",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "A4jmV4jL6nk",
+          "title": "Você Não Me Ensinou a Te Esquecer",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "S0Zw1TZK6dw",
+          "title": "Lição de Vida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "x0BsuWn5nc0",
+          "title": "Eu Duvido",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "BKlSh_Vv1Lc",
+          "title": "Inesquecível",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "UsiccoP9J6E",
+          "title": "Problema Meu",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "i4qd4qp2sRA",
+          "title": "Escancarando de Vez",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "3xppH_OTP2c",
+          "title": "Mudar Pra Que?",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "aFgySFK4m6c",
+          "title": "Pedindo Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "AaQ5OWXZ6CY",
+          "title": "Brigas",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "RRsDB-61vzs",
+          "title": "Brigue Comigo Mas Não Vá",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Fuu4A0IyhKc",
+          "title": "Quer Casar Comigo",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "WHTEgvQUJB0",
+          "title": "Duas Taças",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "nIrWVdlzwME",
+          "title": "Lamento Sertanejo",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "39vFoToZB1c",
+          "title": "Tango pra Tereza",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Qz-HQfBn56o",
+          "title": "Decida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "SYT6qZhBrIo",
+          "title": "Eu Nunca Mais Vou Te Esquecer",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "29FuMIdBs1o",
+          "title": "A Beleza da Rosa",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "u0l3fKncsD4",
+          "title": "Agora Eu Sei",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "ozuwqAnXGO8",
+          "title": "Você Pode Me Perder",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "hy0qaUkd-1w",
+          "title": "Volta pra Mim",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "2BqGIo4zuDU",
+          "title": "A Vida É Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "q17Kwd2PZIk",
+          "title": "Seu Olhar Não Mente",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "QwcaIHQXfXk",
+          "title": "Seu Amor Ainda É Tudo / Tudo Passar",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "PcSEJJjDbY0",
+          "title": "Modo Conquista",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "PjGp5Nrn9Cc",
+          "title": "A Culpa É da Bebida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "4qiqzUDFFHo",
+          "title": "Veronica",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "N1wHH4AFc7w",
+          "title": "Zé do Rock",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "6t-x_uhyIYY",
+          "title": "Você Vai Ver",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "GhAJ3rmJuRA",
+          "title": "Vou Tirar Você Desse Lugar",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "AJW7PUvuxgA",
+          "title": "Ponto Final",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "yzzt-rOGxYg",
+          "title": "Na Hora do Adeus",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "BL00tMkXr64",
+          "title": "Minha Solidão",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Dj4vaUKjevM",
+          "title": "Se Tiver Coragem Joga Fora",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "wBgnIBPEuCc",
+          "title": "Dois Amigos",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "EFxHYc7goMs",
+          "title": "Boêmio do Colarinho Branco",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "_HUG1jVx7S8",
+          "title": "O Vagabundo",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Of77CzgSRis",
+          "title": "Quebra Topete / Velho Cuca / Coração Velho",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "P5wlmfR-fVk",
+          "title": "Eu Duvido",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "Ni3xFYf0rMw",
+          "title": "Tortura de Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "qPIJNUlz-j4",
+          "title": "Filho Adotivo",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "JoZ9g-rpDYM",
+          "title": "Jeito Maroto",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "E3n6gZvDlNk",
+          "title": "Respeita Januário / Riacho do Navio / Forró no Escuro",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "g5gzaHGUeWo",
+          "title": "Garoto Maroto",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "6Abq8tcfqLU",
+          "title": "Camas Separadas",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "600w4_QCyG0",
+          "title": "Desejo de Mulher",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "o3mZN-KGl-I",
+          "title": "Orgulho",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "GXgL7DuHFDo",
+          "title": "Eu Vou Sair pra Buscar Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "iQrSP6aw-iU",
+          "title": "Loucuras de Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "6Xrl3aj_WT8",
+          "title": "Enquanto Houver Coração",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "JvjN4eV26X8",
+          "title": "Desencontro de Primavera",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "xK12GCdbHuc",
+          "title": "ROSÁRIO DA ESPERANÇA",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "EeCPLcCDfyQ",
+          "title": "Ponta de Faca",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "cc3trtjTwuQ",
+          "title": "Com Você no Coração",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "5bt5mwY-kPo",
+          "title": "Fantasia",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "SnnKIDgb_pM",
+          "title": "Beijo Gelado",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "cL6Rv2BWNnI",
+          "title": "O Que Mata É a Solidão",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "vXBd-E2TmIc",
+          "title": "Como Vai Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "BL2dvpiCwpk",
+          "title": "O Grande Amor da Minha Vida",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "sUUc1OohWvs",
+          "title": "Devaneios",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "oXL5OyOYJTY",
+          "title": "Mulher Governanta",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "xeS871lYIZk",
+          "title": "Meu Cenário",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "qwcEHk0KGNM",
+          "title": "Que Pena",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "kYM1o3PDIXw",
+          "title": "Kriptônia",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "U9n4iMIhM08",
+          "title": "O Trovador",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "rH1ZbOsa_G0",
+          "title": "Eu Devia Te Odiar",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "y_Z0GYOMDzI",
+          "title": "Amor Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "08AZzHbiaME",
+          "title": "O Bebum - um Ébrio a Mais",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "G0mLyhISQA4",
+          "title": "Só Castigo / Se É Destino",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "e-0TL9WnlBM",
+          "title": "Impossível Acreditar Que Perdi Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "b0T6D96TJoA",
+          "title": "Quem Eu Quero Não Me Quer / Fica Comigo Esta Noite / Você Não Me Ensinou a Te Esquecer",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "ulTsaU8VbMM",
+          "title": "Dez a Dez",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "y3MWf-pjzZE",
+          "title": "Você Pode Me Perder",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "LZkkPuiOLPU",
+          "title": "As Canções Que Você Fez pra Mim",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "OIwg5jSUYJs",
+          "title": "Com Você no Coração",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "PEJUf02ByaE",
+          "title": "Retalhos de Cetim",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "oS71oUHGQd8",
+          "title": "Cadeira de Rodas",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "49YErTGdkRU",
+          "title": "Falhaste Coração",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "gAc6FSXc6Q0",
+          "title": "Meu Cenrio",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "R13-GILuGLs",
+          "title": "Desabafo",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "BE6DYRvZ6pk",
+          "title": "Laço Aberto",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "_GUS4mfvB2Y",
+          "title": "Dama de Vermelho",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "tLSlKTrMxpo",
+          "title": "Senhorita",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "X7UrlZ1Jrzw",
+          "title": "Meu Ex Amor",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "iMmWZLQ8A1I",
+          "title": "Toalha de Mesa / Pedrinhas de Cor / Idade de Fazer Bobagem / Marina / Balada Nº 7 / O Neguinho...",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "CxUqA9osJdQ",
+          "title": "Baião da Saudade",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "fYVfO2W-MVI",
+          "title": "Mãe um Pedaço do Céu",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "2BrBJ1OV6l8",
+          "title": "Onde Andar Você",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "QLvOLIcXoyA",
+          "title": "Paixão Errante",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "7IqmZ_PQrIo",
+          "title": "Pra Sempre",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "EvYu-pTfr64",
+          "title": "Amor Traquino",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "vX3nPfziZoE",
+          "title": "Doidivana",
+          "artist": "Zezo Potiguar"
+        },
+        {
+          "id": "QS9AwAGYUIg",
+          "title": "Selva Branca",
+          "artist": "Zezo Potiguar"
+        }
+      ]
+    }
+  ]
+}
