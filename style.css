@@ -2773,7 +2773,7 @@ img {
 .update-sheet.show { bottom: 0; }
 
 .update-content { display: flex; align-items: center; gap: 15px; }
-
+.update-content .material-symbols-outlined { font-size: 44px }
 .update-text strong { display: block; color: #fff; }
 .update-text p { margin: 0; font-size: 0.9rem; color: #aaa; }
 
