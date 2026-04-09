@@ -1,7 +1,7 @@
 {
   "name": "SanPlayer",
   "short_name": "SanPlayer",
-  "id": "/sanplayer-v1",
+  "id": "/sanplayer-v1.0.4",
   "description": "Player de músicas personalizado com experiência estilo YouTube Music. Acesse suas playlists, artistas favoritos e músicas em qualquer lugar.",
   "start_url": "index.html",
   "scope": "/",
