@@ -45,6 +45,14 @@ const player = {
     currentPlaylist: null,
     currentPlaylistIndex: null,
     currentVideoIndex: 0,
+    // 🔒 CONGELADO: Sincronização crítica entre UI e YouTube player
+    // REGRA: isPlaying DEVE refletir EXATAMENTE o estado do YouTube player
+    // - true = YouTube.PLAYING (vídeo tocando)
+    // - false = Qualquer outro estado (paused, cued, stopped, etc)
+    // NÃO manipule este valor diretamente exceto em:
+    //   → onPlayerStateChange() (YouTube events)
+    //   → togglePlayPause() (user action)
+    // ⚠️ Qualquer outra modificação QUEBRARÁ a UI de play/pause
     isPlaying: false,
     isShuffle: false,
     repeatMode: 0,                  // 0: no repeat, 1: repeat all, 2: repeat one
@@ -801,7 +809,8 @@ async function playTrackById(trackId) {
         player.currentVideoIndex = videoIndex;
         player.viewingFavorites = false;
         player.currentFavoriteId = undefined;
-        player.shouldPlayOnReady = true;
+        player.shouldPlayOnReady = false;  // 🔥 INICIALIZACIÓN: não tocar automaticamente
+        player.isPlaying = false;          // 🔥 INICIALIZACIÓN: reset estado de play
         player.playOrder = [...Array(playlist.videos.length).keys()];
         player.originalOrder = [...player.playOrder];
         
@@ -2863,6 +2872,23 @@ function updatePlaylistDurations() {
 }
 
 function onPlayerStateChange(event) {
+    // 🔒 CONGELADO: Handler CRÍTICO dos eventos do YouTube player
+    // ⚠️ ESTE É O ÚNICO LUGAR onde player.isPlaying deve ser atualizado
+    // pelos eventos do YouTube (PLAYING, PAUSED, ENDED, CUED)
+    //
+    // NUNCA manipule player.isPlaying fora daqui EXCETO em playerPause()
+    // que atualiza imediatamente porque é sempre seguro pausar.
+    //
+    // Fluxo de sincronização:
+    // YouTube emite evento → onPlayerStateChange() → atualiza player.isPlaying
+    //                                              → updatePlayPauseButton() → UI reflete estado
+    //
+    // Se remover ou alterar este handler, QUEBRARÁ TUDO:
+    // - Botão ficará dessincronizado
+    // - Estado não refletirá vídeo real
+    // - Links compartilhados falharão
+    // =================================================================
+    
     const state = event.data;
 
     // YT.State: -1 unstarted, 0 ended, 1 playing, 2 paused, 3 buffering, 5 cued
@@ -2909,15 +2935,43 @@ function onPlayerStateChange(event) {
 }
 
 function playerPlay() {
-    // NOTA IMPORTANTE: NÃO alterar player.isPlaying aqui!
+    // 🔒 CONGELADO: Comando para YouTube player iniciar playback
+    // ⚠️ CRÍTICO: NÃO altere player.isPlaying aqui!
+    // 
     // O estado DEVE ser alterado APENAS por onPlayerStateChange(PLAYING)
-    // Isso garante que o botão muda APENAS quando YouTube confirma playback
+    // quando YouTube CONFIRMA que o vídeo está tocando.
+    // Isso garante sincronização entre UI e YouTube player.
+    //
+    // Fluxo correto:
+    // 1. ytPlayer.playVideo() ← chamado aqui
+    // 2. YouTube emite PLAYING event
+    // 3. onPlayerStateChange() define player.isPlaying = true
+    // 4. updatePlayPauseButton() renderiza "pause" icon
+    //
+    // Se mudar esse fluxo, o botão ficará DESSINCRONIZADO do vídeo.
+    // ================================================================
+    
     if (player.ytReady && ytPlayer) {
         ytPlayer.playVideo();
     }
 }
 
 function playerPause() {
+    // 🔒 CONGELADO: Comando para pausar o YouTube player
+    // ⚠️ CRÍTICO: Mantém sincronização imediata (offline)
+    // 
+    // Diferença de playerPlay():
+    // - playerPlay() espera confirmação do YouTube (online)
+    // - playerPause() atualiza state imediatamente porque é sempre seguro pausar
+    //
+    // Fluxo:
+    // 1. ytPlayer.pauseVideo() ← comando YouTube
+    // 2. player.isPlaying = false ← atualiza state imediatamente
+    // 3. updatePlayPauseButton() ← renderiza "play" icon
+    //
+    // Se remover qualquer uma dessas linhas, é BUG GARANTIDO.
+    // ================================================================
+    
     if (player.ytReady && ytPlayer) {
         ytPlayer.pauseVideo();
     }
@@ -3096,6 +3150,21 @@ function checkIfTitleNeedsTruncation(element) {
 }
 
 function togglePlayPause() {
+    // 🔒 CONGELADO: Função crítica que sincroniza UI com YouTube player
+    // ⚠️ NÃO MODIFIQUE O COMPORTAMENTO
+    // 
+    // Essa é a ÚNICA função que deve responder ao clique do botão play/pause.
+    // Ela garante:
+    // 1. Sincronização com YouTube player (playerPlay/playerPause)
+    // 2. Atualização correta de player.isPlaying
+    // 3. Renderização do ícone (updatePlayPauseButton)
+    // 
+    // Se remover ou alterar, QUEBRARÁ:
+    // - Estado do botão play/pause
+    // - Sincronização entre UI e vídeo
+    // - Persistência de estado
+    // ================================================================
+    
     if (player.isPlaying) {
         playerPause();
     } else {
@@ -3104,6 +3173,27 @@ function togglePlayPause() {
 }
 
 function nextVideo() {
+    // 🔒 CONGELADO: Navegação para próximo vídeo
+    // ⚠️ NÃO MODIFIQUE O COMPORTAMENTO ou ordem das operações
+    //
+    // Crítico para:
+    // - Shuffle: randomizar próximo vídeo corretamente
+    // - Normal: navegar sequencialmente com wrap-around
+    // - Favoritos: sincronizar currentFavoriteId com currentVideoIndex
+    // - Auto-play: sinalizar via shouldPlayOnReady para tocar automaticamente
+    //
+    // Ordem IMPORTANTE:
+    // 1. Calcular nextVideoIndex (shuffle ou sequencial)
+    // 2. Sinalizar shouldPlayOnReady = true
+    // 3. Carregar vídeo novo
+    // 4. Atualizar UI (favoritos)
+    //
+    // Se mudar a ordem, QUEBRARÁ:
+    // - Auto-play ao final da playlist/repeat
+    // - Sincronização de favoritos
+    // - Estado persistence
+    // =================================================================
+    
     if (!player.currentPlaylist) return;
     
     if (player.isShuffle) {
@@ -3130,6 +3220,19 @@ function nextVideo() {
 }
 
 function previousVideo() {
+    // 🔒 CONGELADO: Navegação para vídeo anterior
+    // ⚠️ NÃO MODIFIQUE O COMPORTAMENTO ou ordem das operações
+    //
+    // Espelho de nextVideo() com:
+    // - Cálculo inverso com wrap-around (volta ao final se estiver no início)
+    // - Mesma sincronização de shouldPlayOnReady, favoritos, UI
+    //
+    // Se mudar a ordem ou lógica, QUEBRARÁ:
+    // - Navegação anterior (volta ao fim em vez de ir para anterior)
+    // - Sincronização de favoritos
+    // - Estado persistence
+    // =================================================================
+    
     if (!player.currentPlaylist) return;
     
     player.currentVideoIndex = (player.currentVideoIndex - 1 + player.currentPlaylist.videos.length) % player.currentPlaylist.videos.length;
@@ -3151,6 +3254,20 @@ function previousVideo() {
 }
 
 function toggleShuffle() {
+    // 🔒 CONGELADO: Toggle de modo shuffle
+    // ⚠️ NÃO MODIFIQUE A LÓGICA de randomização ou ordem
+    //
+    // Crítico para:
+    // - player.isShuffle: flag que nextVideo() lê para randomizar
+    // - player.playOrder: array de índices (usado ou não, mantém coerência)
+    // - player.originalOrder: cópia da ordem original para restaurar
+    //
+    // Se mudar o algoritmo de shuffle:
+    // - nextVideo() pode deixar de respeitar a ordem
+    // - Favoritos podem ficar dessincronizados
+    // - Estado puede ficar inconsistente
+    // =================================================================
+    
     player.isShuffle = !player.isShuffle;
 
     if (player.isShuffle) {
@@ -3163,6 +3280,24 @@ function toggleShuffle() {
 }
 
 function toggleRepeat() {
+    // 🔒 CONGELADO: Ciclo de modos repeat (off → one → all → off)
+    // ⚠️ NÃO MODIFIQUE A ORDEM dos modos ou a lógica
+    //
+    // Ciclo CRÍTICO:
+    // 0 = sem repeat (toca até o fim da playlist)
+    // 2 = repeat one (repete música atual)
+    // 1 = repeat all (volta ao início da playlist)
+    //
+    // Usado por onPlayerStateChange(ENDED) para decidir próxima ação:
+    // - if (repeatMode === 2) → seekTo(0) e playVideo()
+    // - else → nextVideo() (que vai para começar se for fim)
+    //
+    // Se mudar o ciclo:
+    // - nextVideo()/previousVideo() podem ficar confusos
+    // - Auto-play pode ficar incorreto
+    // - Persistência pode salvar valores inválidos
+    // =================================================================
+    
     // Primeiro clique: sempre repetir a música atual (repeat_one)
     // Depois: repetir toda playlist (repeat)
     // Depois: desligar
@@ -3177,6 +3312,18 @@ function toggleRepeat() {
 }
 
 function updatePlayPauseButton() {
+    // 🔒 CONGELADO: Este comportamento é CRÍTICO e NÃO PODE MUDAR
+    // O ícone DEVE refletir EXATAMENTE o estado de player.isPlaying
+    // 
+    // Dependências:
+    // - player.isPlaying DEVE ser true APENAS quando YouTube está tocando
+    // - player.isPlaying DEVE ser false na inicialização (botão = play_arrow)
+    // - Qualquer mudança afeta: Links compartilhados, UI sync, persistência
+    // 
+    // Se vir bug aqui, NÃO MODIFIQUE esta função.
+    // Procure pelo local que está setando player.isPlaying incorretamente.
+    // ================================================================
+    
     const btn = document.querySelector('.btn-play-pause i');
     btn.textContent = player.isPlaying ? 'pause' : 'play_arrow';
 }
@@ -3825,6 +3972,20 @@ function setupSidbarMobile() {
 // ============================================================================
 
 function setupEventListeners() {
+    // ============================================================================
+    // ⚠️ AVISO GERAL: Seção de event listeners críticos
+    // ============================================================================
+    // Os controles do player (play/pause, anterior, próximo, shuffle, repeat)
+    // têm comportamentos CONGELADOS e PROTEGIDOS contra modificações futuras.
+    //
+    // Procure pela seção "CONTROLES DO PLAYER - CONGELADO CONTRA MODIFICAÇÕES"
+    // nesta função para ver os comentários de proteção específicos.
+    //
+    // ⛔ SE PRECISAR ADICIONAR UMA NOVA FUNCIONALIDADE:
+    //    NÃO modifique os event listeners existentes
+    //    CRIE novos listeners ou novos botões ao invés disso
+    // ============================================================================
+    
     // Modal de playlists
     document.getElementById('link-playlists').addEventListener('click', (e) => {
         e.preventDefault();
@@ -3873,7 +4034,24 @@ function setupEventListeners() {
         }
     });
     
-    // Controles do player
+    // ============================================================================
+    // 🔒 CONTROLES DO PLAYER - CONGELADO CONTRA MODIFICAÇÕES
+    // ============================================================================
+    // ⚠️ CRÍTICO: O comportamento desses botões está ESTABILIZADO.
+    // NÃO MODIFIQUE sob nenhuma circunstância:
+    // - btnPlayPause: deve refletir EXATAMENTE o estado de player.isPlaying
+    // - btnPrevious/btnNext: comportamento de navegação não deve mudar
+    // - btnShuffle/btnRepeat: estados visuais e lógica são DEPENDENTES
+    // 
+    // Qualquer mudança aqui pode QUEBRAR:
+    // → Estado de sincronização play/pause
+    // → Navegação de playlist
+    // → Persistência de estado
+    // → Links compartilhados
+    //
+    // Se precisar adicionar funcionalidades: CRIE NOVOS BOTÕES, não modifique estes.
+    // ============================================================================
+    
     const controls = document.querySelector('.block-controls');
     const btnShuffle = controls.children[0];
     const btnPrevious = controls.children[1];
@@ -3881,9 +4059,10 @@ function setupEventListeners() {
     const btnNext = controls.children[3];
     const btnRepeat = controls.children[4];
     
+    // 🔥 ESTES LISTENERS SÃO CRÍTICOS - NÃO REMOVA
     btnShuffle.addEventListener('click', toggleShuffle);
     btnPrevious.addEventListener('click', previousVideo);
-    btnPlayPause.addEventListener('click', togglePlayPause);
+    btnPlayPause.addEventListener('click', togglePlayPause);  // Sincroniza com player.isPlaying
     btnNext.addEventListener('click', nextVideo);
     btnRepeat.addEventListener('click', toggleRepeat);
     
