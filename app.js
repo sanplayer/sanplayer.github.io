@@ -855,14 +855,15 @@ async function initializePlayerWithResilience() {
     
     // 🔥 CASO ESPECIAL: Se URL tem playlistId/artistId/modal
     // NÃO tocar nada aqui, deixar handleHashNavigation() fazer tudo
+    // ⚠️ CRÍTICO: Retornar IMEDIATAMENTE para não competir com handleHashNavigation()
     if (resolution.skipTrackPlayback) {
         console.log('[Init] 📍 PASSO 2: PULANDO - SEM o trackId direto (deixar handleHashNavigation() processar)');
         console.log('[Init] ℹ️ handleHashNavigation() será chamado em sequência para processar playlist/artista/modal');
-        // Não retornar ainda - deixar init continuar normal
-        // handleHashNavigation() será chamado logo depois
+        console.log('[Init] ✅ initializePlayerWithResilience() OK - handleHashNavigation() tomará conta');
+        return; // 🔥 CRÍTICO: Retornar para não competir nos PASSOs seguintes
     }
     // [PASSO 2] Se tem trackId E não é skipTrackPlayback, tentar tocar diretamente
-    else if (resolution.trackId) {
+    if (resolution.trackId) {
         console.log(`[Init] 📍 PASSO 2: Tentando tocar trackId = "${resolution.trackId}"`);
         played = await playTrackById(resolution.trackId);
         
