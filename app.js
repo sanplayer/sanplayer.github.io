@@ -590,19 +590,44 @@ async function loadDefaultState() {
  * @returns {Promise<{trackId: string|null, source: 'url'|'localStorage'|'fallback'|'home', context?: object}>}
  */
 async function resolveInitialTrack() {
-    // [PRIORIDADE 1] External Link (Deep Link via URL query string)
     const params = getRoutingParams();
-    const externalTrackId = params.get('videoId');
     
-    if (externalTrackId) {
-        console.log(`[Init] 🔗 Resolving from external link: ${externalTrackId}`);
+    // 🔥 PRIORIDADE 1 (MÁXIMA): External URL Params
+    // Se há QUALQUER parâmetro de navegação, IGNORAR localStorage completamente
+    // Isso garante que links compartilhados funcionem para outros usuários
+    const hasRouteParams = params.has('videoId') || params.has('playlistId') || params.has('artistId') || params.has('modal');
+    
+    if (hasRouteParams) {
+        console.log('[Init] 🔗 URL params detectados - IGNORANDO localStorage');
+        console.log('[Init] 🔗 Parâmetros encontrados:', {
+            videoId: params.get('videoId'),
+            playlistId: params.get('playlistId'),
+            artistId: params.get('artistId'),
+            modal: params.get('modal')
+        });
+        
+        // Se tem videoId, resolver direto e tocar
+        const videoId = params.get('videoId');
+        if (videoId) {
+            console.log(`[Init] 🎵 Resolvendo track direto da URL: ${videoId}`);
+            return {
+                trackId: videoId,
+                source: 'url',
+            };
+        }
+        
+        // Se tem playlistId, artistId ou modal, deixar handleHashNavigation processar
+        // Retornar sinal especial para NÃO tentar tocar diretamente
+        console.log('[Init] 📋 playlist/artista/modal detectado - deixar handleHashNavigation processar');
         return {
-            trackId: externalTrackId,
+            trackId: null,
             source: 'url',
+            skipTrackPlayback: true,  // 🔥 Sinal para puloar playTrackById
         };
     }
     
-    // [PRIORIDADE 2] Saved State (localStorage)
+    // 🔥 PRIORIDADE 2: Saved State (localStorage) - APENAS se SEM URL params
+    console.log('[Init] ℹ️ Nenhum parâmetro URL. Tentando localStorage...');
     try {
         const saved = localStorage.getItem('sanplayer-state');
         if (!saved) throw new Error('No saved state');
@@ -620,7 +645,7 @@ async function resolveInitialTrack() {
         
         // ✅ Se tem lastTrackId (novo formato), usar isso (MAIS ROBUSTO)
         if (state.lastTrackId) {
-            console.log(`[Init] 💾 Resolving from saved state (lastTrackId): ${state.lastTrackId}`);
+            console.log(`[Init] 💾 Resuming from saved state: ${state.lastTrackId}`);
             return {
                 trackId: state.lastTrackId,
                 source: 'localStorage',
@@ -630,9 +655,9 @@ async function resolveInitialTrack() {
         
         // ⚠️ Fallback para playlistIndex (formato antigo, retrocompatibilidade)
         if (state.playlistIndex >= 0 && state.videoIndex >= 0) {
-            console.log('[Init] 💾 Resolving from saved playlist state (legacy format)');
+            console.log('[Init] 💾 Resuming from saved playlist (legacy format)');
             return {
-                trackId: null, // Indica que deve restaurar via playlist
+                trackId: null,
                 source: 'localStorage',
                 context: state,
             };
@@ -643,8 +668,8 @@ async function resolveInitialTrack() {
         console.warn(`[Init] ℹ️ localStorage unavailable or invalid:`, error.message);
     }
     
-    // [PRIORIDADE 3] Fallback Seguro (primeiro uso ou error)
-    console.log(`[Init] 🎯 Resolving from INITIAL_TRACK_FALLBACK: ${INITIAL_TRACK_FALLBACK.id}`);
+    // 🔥 PRIORIDADE 3: Fallback Seguro (primeira execução ou erro)
+    console.log(`[Init] 🎯 Using INITIAL_TRACK_FALLBACK: ${INITIAL_TRACK_FALLBACK.id}`);
     return {
         trackId: INITIAL_TRACK_FALLBACK.id,
         source: 'fallback',
@@ -822,13 +847,22 @@ async function initializePlayerWithResilience() {
     console.log('[Init] 📍 PASSO 1 - Resolution:', { 
         source: resolution.source, 
         trackId: resolution.trackId,
+        skipTrackPlayback: resolution.skipTrackPlayback,
         hasSavedContext: !!resolution.context
     });
     
     let played = false;
     
-    // [PASSO 2] Se tem trackId, tentar tocar diretamente
-    if (resolution.trackId) {
+    // 🔥 CASO ESPECIAL: Se URL tem playlistId/artistId/modal
+    // NÃO tocar nada aqui, deixar handleHashNavigation() fazer tudo
+    if (resolution.skipTrackPlayback) {
+        console.log('[Init] 📍 PASSO 2: PULANDO - SEM o trackId direto (deixar handleHashNavigation() processar)');
+        console.log('[Init] ℹ️ handleHashNavigation() será chamado em sequência para processar playlist/artista/modal');
+        // Não retornar ainda - deixar init continuar normal
+        // handleHashNavigation() será chamado logo depois
+    }
+    // [PASSO 2] Se tem trackId E não é skipTrackPlayback, tentar tocar diretamente
+    else if (resolution.trackId) {
         console.log(`[Init] 📍 PASSO 2: Tentando tocar trackId = "${resolution.trackId}"`);
         played = await playTrackById(resolution.trackId);
         
@@ -1004,20 +1038,17 @@ async function initApp() {
     // ============================================================================
     
     // ✨ Roteamento: processa qualquer parâmetro (?modal=, ?artist=, etc)
-    // Nota: Na nova lógica, ?videoId= já foi processado em resolveInitialTrack
-    // Mas outros parâmetros como ?modal=playlists ainda precisam ser processados
+    // CRÍTICO para links compartilhados: handleHashNavigation() DEVE ser chamada
+    // quando hay playlistId, artistId ou modal, INDEPENDENTE da nova lógica
     const params = getRoutingParams();
-    const hasRouteParams = params.has('modal') || params.has('playlistId') || params.has('artistId');
+    const hasPlaylistParam = params.has('playlistId');
+    const hasArtistParam = params.has('artistId');
+    const hasModalParam = params.has('modal');
     
-    if (hasRouteParams) {
-        // Apenas processar parâmetros que não sejam videoId (já foi processado)
-        // E NUNCA sobrescrever quando usando nova lógica
-        if (!params.has('videoId') && !USE_NEW_INIT_LOGIC) {
-            await handleHashNavigation();
-        } else if (params.has('modal')) {
-            // Permitir abrir modais mesmo na nova lógica
-            await handleHashNavigation();
-        }
+    if (hasPlaylistParam || hasArtistParam || hasModalParam) {
+        console.log('[Init] 🔗 Parâmetros de navegação detectados, chamando handleHashNavigation()');
+        console.log('[Init] Params:', { playlistId: params.get('playlistId'), artistId: params.get('artistId'), modal: params.get('modal') });
+        await handleHashNavigation();
     }
     
     setupEventListeners();
