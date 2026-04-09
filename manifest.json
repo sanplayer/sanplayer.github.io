@@ -1,6 +1,7 @@
 {
   "name": "SanPlayer",
   "short_name": "SanPlayer",
+  "id": "/sanplayer-v1",
   "description": "Player de músicas personalizado com experiência estilo YouTube Music. Acesse suas playlists, artistas favoritos e músicas em qualquer lugar.",
   "start_url": "index.html",
   "scope": "/",
@@ -11,6 +12,23 @@
   "categories": [
     "music",
     "multimedia"
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "file_handlers": [
+    {
+      "action": "/index.html",
+      "accept": {
+        "audio/*": [".mp3", ".wav", ".ogg", ".m4a"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+sanplayer",
+      "url": "/index.html?action=%s"
+    }
   ],
   "screenshots": [
     {
