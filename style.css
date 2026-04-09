@@ -54,7 +54,7 @@
 :root {
     /* Paleta de Cores */
     --bg-main: #000000;
-    --bg-surface: #121212;
+    --bg-surface: radial-gradient(circle,rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --accent-red: #ff0000;
     --text-main: #ffffff;
@@ -1677,11 +1677,12 @@ img {
     bottom: 0;
     left: 0;
     width: 100%;
-    border-top: 1px solid var(--footer-border);
+    /*border-top: 1px solid var(--footer-border);*/
     display: flex;
     flex-direction: column;
     z-index: 999;
     transition: transform 0.2s ease;
+    background: #0f0f0f;
 }
 
 /* Mover footer para cima quando teclado abre (se necessÃ¡rio via JS) */
@@ -1758,7 +1759,6 @@ img {
 .footer-content-wrapper {
     display: flex;
     flex-direction: column;
-    /* Mobile stack */
 }
 
 @media (min-width: 768px) {
