@@ -1,0 +1,116 @@
+{
+  "playlists": [
+    {
+      "name": "Acústico MTV",
+      "slug": "acustico-mtv",
+      "cover": "acustico-mtv.jpg",
+      "videos": [
+        {
+          "id": "XIOtx7dIsTE",
+          "title": "O Papa é Pop",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "-6ijuvmWH4Q",
+          "title": "Até o Fim",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "kkXRbRU8iKs",
+          "title": "Armas Químicas e Poemas",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "c8nx0QUVku0",
+          "title": "O Preço",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "wyiE1SyPGbM",
+          "title": "A Revolta dos Dândis",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "UruSPFFbpZQ",
+          "title": "Pose",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "SnG6b7NhnKg",
+          "title": "Infinita Highway",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "tnWSyCfQKuk",
+          "title": "Dom Quixote",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "g9uYUZFbQho",
+          "title": "Vida Real",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "Uc3-ko20V4w",
+          "title": "Surfando Karmas & DNA",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "MF38bvU9p-8",
+          "title": "Outras Frequências",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "LiosneqtU4w",
+          "title": "Terra de Gigantes / Números",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "6mzL-vS8s4A",
+          "title": "3 x 4",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "Q1Wxm8si5ns",
+          "title": "Eu Que Não Amo Você",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "9wKoE_XwtvU",
+          "title": "Refrão de Bolero",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "W5dzH1B5dM4",
+          "title": "Terceira do Plural",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "feKQwS2ISQs",
+          "title": "Depois de Nós",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "pEM6vN6EtOI",
+          "title": "Somos Quem Podemos Ser",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "raMkocFclFM",
+          "title": "Era Um Garoto Que Como Eu",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "Oaw0M21KJqk",
+          "title": "De Fé",
+          "artist": "Engenheiros do Hawaii"
+        },
+        {
+          "id": "wkuYBhZDtyA",
+          "title": "Making Of do Acústico MTV",
+          "artist": "Engenheiros do Hawaii"
+        }
+      ]
+    }
+  ]
+}

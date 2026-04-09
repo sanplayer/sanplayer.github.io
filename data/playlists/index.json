@@ -89,6 +89,13 @@
     "name": "Refúgio de Adoração",
     "cover": "refugio-de-adoracao.jpg",
     "url": "./data/playlists/refugio-de-adoracao.json"
+  },
+  {
+    "id": "acustico-mtv",
+    "title": "Acústico MTV 2004",
+    "name": "Acústico MTV 2004",
+    "cover": "acustico-mtv.jpg",
+    "url": "./data/playlists/acustico-mtv.json"
   }
 
 ]
