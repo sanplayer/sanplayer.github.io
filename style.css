@@ -2778,6 +2778,3 @@ img {
 .update-text p { margin: 0; font-size: 0.9rem; color: #aaa; }
 
 .update-actions { display: flex; justify-content: flex-end; gap: 10px; }
-
-.btn-flat { background: transparent; border: none; color: #fff; padding: 10px; cursor: pointer; }
-
