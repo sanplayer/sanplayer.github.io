@@ -16,7 +16,7 @@ const URLS_TO_CACHE = [
 ];
 
 // ============================================================================
-// INSTALAÇÃO DO SERVICE WORKER
+// 1. INSTALAÇÃO DO SERVICE WORKER
 // ============================================================================
 
 self.addEventListener('install', (event) => {
@@ -35,7 +35,7 @@ self.addEventListener('install', (event) => {
 });
 
 // ============================================================================
-// ATIVAÇÃO DO SERVICE WORKER
+// 2. ATIVAÇÃO E LIMPEZA DE CACHE
 // ============================================================================
 
 self.addEventListener('activate', (event) => {
@@ -58,19 +58,18 @@ self.addEventListener('activate', (event) => {
 });
 
 // ============================================================================
-// BACKGROUND SYNC - Sincronização em segundo plano
+// 3. BACKGROUND SYNC (Sincronização em segundo plano)
 // ============================================================================
 
 self.addEventListener('sync', (event) => {
     if (event.tag === 'sync-playlists') {
         console.log('[ServiceWorker] Sincronizando dados pendentes...');
-        // Aqui você pode adicionar a lógica para enviar dados ao seu servidor ou banco local
-        // event.waitUntil(suaFuncaoDeSync()); 
+        // Lógica futura para enviar dados locais ao servidor quando a rede voltar
     }
 });
 
 // ============================================================================
-// PERIODIC BACKGROUND SYNC - Sincronização periódica
+// 4. PERIODIC BACKGROUND SYNC (Sincronização periódica)
 // ============================================================================
 
 self.addEventListener('periodicsync', (event) => {
@@ -85,18 +84,52 @@ self.addEventListener('periodicsync', (event) => {
 });
 
 // ============================================================================
-// ESTRATÉGIA: CACHE FIRST, FALLBACK PARA NETWORK
+// 5. PUSH NOTIFICATIONS (Notificações)
+// ============================================================================
+
+self.addEventListener('push', (event) => {
+    const data = event.data ? event.data.json() : { 
+        title: 'SanPlayer', 
+        body: 'Confira as novidades no seu player!' 
+    };
+
+    const options = {
+        body: data.body,
+        icon: './icons/icon192.png',
+        badge: './icons/favicon-96x96.png',
+        vibrate: [100, 50, 100],
+        data: {
+            dateOfArrival: Date.now(),
+            primaryKey: '1'
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
+
+// Ação ao clicar na notificação
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow('./index.html')
+    );
+});
+
+// ============================================================================
+// 6. ESTRATÉGIA DE BUSCA (FETCH) - Cache First com Fallback para Network
 // ============================================================================
 
 self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') {
-        return;
-    }
+    if (event.request.method !== 'GET') return;
 
+    // Ignorar requisições externas (YouTube/Google APIs)
     if (event.request.url.includes('youtube.com') || event.request.url.includes('googleapis.com')) {
         return;
     }
 
+    // Tratamento especial para o Manifest (sempre buscar versão nova)
     if (event.request.url.includes('manifest.json')) {
         event.respondWith(
             fetch(event.request)
@@ -109,18 +142,14 @@ self.addEventListener('fetch', (event) => {
                     }
                     return response;
                 })
-                .catch(() => {
-                    return caches.match(event.request);
-                })
+                .catch(() => caches.match(event.request))
         );
         return;
     }
 
     event.respondWith(
         caches.match(event.request).then((response) => {
-            if (response) {
-                return response;
-            }
+            if (response) return response;
 
             return fetch(event.request).then((response) => {
                 if (!response || response.status !== 200 || response.type === 'error') {
@@ -134,14 +163,14 @@ self.addEventListener('fetch', (event) => {
 
                 return response;
             }).catch(() => {
-                console.warn('[ServiceWorker] Falha na requisição:', event.request.url);
+                console.warn('[ServiceWorker] Falha na requisição offline:', event.request.url);
             });
         })
     );
 });
 
 // ============================================================================
-// MENSAGENS E ATUALIZAÇÃO
+// 7. MENSAGENS E ATUALIZAÇÃO
 // ============================================================================
 
 self.addEventListener('message', (event) => {
@@ -150,4 +179,4 @@ self.addEventListener('message', (event) => {
     }
 });
 
-console.log('[ServiceWorker] Service Worker carregado e pronto');
+console.log('[ServiceWorker] SanPlayer Service Worker Ativo');
