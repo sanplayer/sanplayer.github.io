@@ -589,29 +589,101 @@ async function loadDefaultState() {
 // ============================================================================
 
 /**
- * Resolve qual track inicial deve ser tocado
- * Segue prioridade: External Link → Saved State → Fallback Seguro → Home
+ * 🔒 CONGELADO: Resolução de Track Inicial - LÓGICA CRÍTICA
  * 
- * Esta função é o coração da nova lógica de inicialização.
- * Não toca nada, apenas resolve qual track usar.
+ * ⚠️ ATENÇÃO DESENVOLVEDORES: Esta função é fundamental para impedir desastres de UX.
  * 
- * @returns {Promise<{trackId: string|null, source: 'url'|'localStorage'|'fallback'|'home', context?: object}>}
+ * REGRAS OBRIGATÓRIAS (NÃO QUEBRE):
+ * 
+ * 1️⃣ DIFERENCIAÇÃO CRÍTICA: Params de CONTEÚDO vs Params de MODAL
+ *    - CONTEÚDO (videoId, playlistId, artistId): Representam o que tocar
+ *      → Devem PULAR carregamento normal (deixar handleHashNavigation processar)
+ *      → Exemplo: ?videoId=xyz123, ?playlistId=brega, ?artistId=paulo
+ *    
+ *    - MODAL ONLY (?modal=playlists sem videoId/playlistId/artistId): Apenas UI
+ *      → Devem CARREGAR música inicial NORMAL primeiro (localStorage/fallback)
+ *      → Depois handleHashNavigation() abre o modal POR CIMA
+ *      → Exemplo: ?modal=playlists (sem conteúdo)
+ * 
+ * 2️⃣ FLUXOS QUE DEVEM CONTINUAR FUNCIONANDO:
+ *    
+ *    ✅ Shortcut PWA para Playlists:
+ *       URL: index.html?modal=playlists
+ *       Esperado: Player carrega música salva + Modal de Playlists abre por cima
+ *       Se quebrar: Player fica vazio, modal não abre
+ *    
+ *    ✅ Shortcut PWA para Artistas:
+ *       URL: index.html?modal=artists
+ *       Esperado: Player carrega música salva + Modal de Artistas abre por cima
+ *       Se quebrar: Player fica vazio, modal não abre
+ *    
+ *    ✅ Shortcut PWA para Favoritos:
+ *       URL: index.html?modal=favorites
+ *       Esperado: Player carrega música salva + Lista de Favoritos abre por cima
+ *       Se quebrar: Player fica vazio, lista não abre
+ *    
+ *    ✅ Link Compartilhado de Vídeo (outro usuário):
+ *       URL: index.html?videoId=xyz123
+ *       Esperado: Player pula localStorage, toca o vídeo compartilhado
+ *       Se quebrar: Player carrega música anterior do localStorage, não a compartilhada
+ *    
+ *    ✅ Link Compartilhado de Playlist:
+ *       URL: index.html?playlistId=brega
+ *       Esperado: Player carrega a playlist "brega" com primeiro vídeo tocando
+ *       Se quebrar: Player carrega playlista anterior, não a compartilhada
+ * 
+ * 3️⃣ O QUE QUEBRARIA TUDO:
+ *    ❌ Tratar ?modal= igual a videoId/playlistId/artistId (retornar skipTrackPlayback)
+ *       → Resultado: Player fica VAZIO no init
+ *    
+ *    ❌ Alterar a condição `if (hasModalParam && !hasContentParams)` 
+ *       → Resultado: Shortcuts PWA carregam vazio
+ *    
+ *    ❌ Remover a diferenciação entre hasContentParams e hasModalParam
+ *       → Resultado: Quebra tanto shared links quanto PWA shortcuts
+ * 
+ * 4️⃣ PADRÃO DE PAIRING (OBRIGATÓRIO):
+ *    Esta função trabalha em DUPLA com handleHashNavigation():
+ *    
+ *    resolveInitialTrack() decide:
+ *      → skipTrackPlayback=true → "Não toque nada, deixe handleHashNavigation() fazer tudo"
+ *      → trackId=abc123 → "Toque este track diretamente"
+ *      → trackId=null (fluxo normal) → "Carregue localStorage/fallback"
+ *    
+ *    handleHashNavigation() executa:
+ *      → Se params têm videoId → busca e toca o vídeo
+ *      → Se params têm playlistId → carrega e toca a playlist
+ *      → Se params têm artistId → carrega e toca o artista
+ *      → Se params têm modal → abre o modal SOBRE a música já carregada
+ *    
+ *    NUNCA SEPARAR ESSAS DUAS FUNÇÕES!
+ * 
+ * ⛔ LIMITE DE MODIFICAÇÃO:
+ *    Você pode:
+ *      ✅ Adicionar novo tipo de modal (?modal=novo) → certifique de tratar igual a outros
+ *      ✅ Adicionar validações de formato de param
+ *      ✅ Adicionar logging mais detalhado
+ *    
+ *    Você NÃO PODE:
+ *      ❌ Mesclar a lógica de modal com conteúdo
+ *      ❌ Alterar o significado de skipTrackPlayback
+ *      ❌ Deixar player inicializar sem música quando há shortcut
+ *      ❌ Ignorar localStorage quando não há params de conteúdo
  */
 async function resolveInitialTrack() {
     const params = getRoutingParams();
     
-    // 🔥 PRIORIDADE 1 (MÁXIMA): External URL Params
-    // Se há QUALQUER parâmetro de navegação, IGNORAR localStorage completamente
-    // Isso garante que links compartilhados funcionem para outros usuários
-    const hasRouteParams = params.has('videoId') || params.has('playlistId') || params.has('artistId') || params.has('modal');
+    // 🔥 PRIORIDADE 1 (MÁXIMA): External URL Params (contenteful)
+    // Se há parâmetros de CONTEÚDO (videoId, playlistId, artistId), IGNORAR localStorage
+    const hasContentParams = params.has('videoId') || params.has('playlistId') || params.has('artistId');
+    const hasModalParam = params.has('modal');
     
-    if (hasRouteParams) {
-        console.log('[Init] 🔗 URL params detectados - IGNORANDO localStorage');
+    if (hasContentParams) {
+        console.log('[Init] 🔗 URL params de CONTEÚDO detectados - IGNORANDO localStorage');
         console.log('[Init] 🔗 Parâmetros encontrados:', {
             videoId: params.get('videoId'),
             playlistId: params.get('playlistId'),
             artistId: params.get('artistId'),
-            modal: params.get('modal')
         });
         
         // Se tem videoId, resolver direto e tocar
@@ -624,14 +696,22 @@ async function resolveInitialTrack() {
             };
         }
         
-        // Se tem playlistId, artistId ou modal, deixar handleHashNavigation processar
+        // Se tem playlistId ou artistId, deixar handleHashNavigation processar
         // Retornar sinal especial para NÃO tentar tocar diretamente
-        console.log('[Init] 📋 playlist/artista/modal detectado - deixar handleHashNavigation processar');
+        console.log('[Init] 📋 playlist/artista detectado - deixar handleHashNavigation processar');
         return {
             trackId: null,
             source: 'url',
-            skipTrackPlayback: true,  // 🔥 Sinal para puloar playTrackById
+            skipTrackPlayback: true,  // 🔥 Sinal para pular playTrackById
         };
+    }
+    
+    // 🔥 CASO ESPECIAL: Se tem APENAS ?modal= (sem conteúdo)
+    // Isso é um shortcut PWA, não um link compartilhado
+    // Deve carregar a música anterior NORMAL, depois handleHashNavigation abre o modal
+    if (hasModalParam && !hasContentParams) {
+        console.log('[Init] 🎯 Modal shortcut detectado (?modal=...) - carregar track normal, depois abrir modal');
+        // NÃO retorna aqui, continua fluxo normal de resolução (localStorage/fallback)
     }
     
     // 🔥 PRIORIDADE 2: Saved State (localStorage) - APENAS se SEM URL params
@@ -1056,7 +1136,17 @@ async function initApp() {
     const hasModalParam = params.has('modal');
     
     // 🔥 CRÍTICO: Registrar listeners ANTES de tentar usar btn.click() nos shortcuts
-    // handleHashNavigation() tentará clicar nos botões e precisa que os listeners já existam
+    // ORDEM OBRIGATÓRIA:
+    // 1️⃣ setupEventListeners() PRIMEIRO - registra todos os listeners
+    // 2️⃣ handleHashNavigation() DEPOIS - processa params e clica nos botões
+    // 
+    // ⚠️ SE INVERTER A ORDEM:
+    // - btn.click() será chamado ANTES dos listeners existirem
+    // - Nada acontece, modais não abrem
+    // - Player aparenta estar travado
+    // - O problema é SILENCIOSO (nenhum erro no console)
+    // 
+    // 🔒 JAMAIS SEPARAR ESSAS DUAS LINHAS OU INVERTER A ORDEM
     setupEventListeners();
     
     if (hasPlaylistParam || hasArtistParam || hasModalParam) {
@@ -1476,6 +1566,81 @@ function getRoutingParams() {
     return params;
 }
 
+/**
+ * 🔒 CONGELADO: Roteamento de Navegação - PAIRING CRÍTICO COM resolveInitialTrack()
+ * 
+ * ⚠️ ATENÇÃO DESENVOLVEDORES: Esta função é a SEGUNDA METADE de um sistema de duas partes.
+ * 
+ * RELAÇÃO OBRIGATÓRIA COM resolveInitialTrack():
+ * 
+ * resolveInitialTrack() DECIDE o que fazer:
+ * ├─ skipTrackPlayback=true → "NÃO toque nada, deixe handleHashNavigation() fazer tudo"
+ * ├─ trackId=videoId → "Toque este vídeo direto"
+ * └─ trackId=null (normal) → "Carregue localStorage/fallback, depois handleHashNavigation() processa modais"
+ * 
+ * handleHashNavigation() EXECUTA a decisão:
+ * ├─ ?videoId=xyz → busca e toca o vídeo
+ * ├─ ?playlistId=brega → carrega e toca a playlist
+ * ├─ ?artistId=paulo → carrega e toca o artista
+ * └─ ?modal=playlists → abre modal POR CIMA da musica já carregada
+ * 
+ * PAIRING CRÍTICO - O QUE NÃO QUEBRAR:
+ * 
+ * 1️⃣ ORDEM DE EXECUÇÃO OBRIGATÓRIA:
+ *    1. resolveInitialTrack() → decide o que fazer
+ *    2. initializePlayerWithResilience() → carrega musik ou pula
+ *    3. handleHashNavigation() → processa rutas e abre modais
+ *    
+ *    Se trocar a ordem → Modais abrem antes do player estar pronto, player fica vazio, etc.
+ * 
+ * 2️⃣ BUTTON LISTENERS DEVEM EXISTIR:
+ *    Quando handleHashNavigation() chama btn.click(), os event listeners
+ *    devem JÁ estar registrados via setupEventListeners()
+ *    
+ *    Se removerem setupEventListeners() ANTES de handleHashNavigation()
+ *    → btn.click() não dispara nada, modal fica fechado
+ * 
+ * 3️⃣ MODAIS DEVEM ESTAR NO DOM:
+ *    document.getElementById('link-playlists')
+ *    document.getElementById('link-artistas')
+ *    document.getElementById('link-favoritos')
+ *    
+ *    Se mudarem os IDs:
+ *    → getElementById retorna null
+ *    → btn.click() não funciona
+ *    → Modais não abrem
+ * 
+ * 4️⃣ FLUXO CORRETO ESPERADO:
+ *    
+ *    Cenário A - Shortcut PWA (?modal=playlists):
+ *    ├─ resolveInitialTrack() → trackId=null, continue normal
+ *    ├─ playTrackById(fallback) → carrega música padrão
+ *    ├─ handleHashNavigation() → deteccta modal=playlists
+ *    ├─ btn.click() → abre modal SOBRE a música
+ *    └─ Resultado: ✅ Música toca + Modal aberto
+ *    
+ *    Cenário B - Link compartilhado (?videoId=xyz123):
+ *    ├─ resolveInitialTrack() → trackId=xyz123
+ *    ├─ playTrackById(xyz123) → carrega vídeo compartilhado
+ *    ├─ handleHashNavigation() → deteccta videoId, busca e toca
+ *    └─ Resultado: ✅ Vídeo compartilhado toca imediatamente
+ * 
+ * ⛔ REGRA DE OURO:
+ *    NUNCA separar esta função de resolveInitialTrack()
+ *    Se alguém disser "vou remover handleHashNavigation()",
+ *    os shortcuts PWA quebram IMEDIATAMENTE
+ * 
+ * ✅ Você pode:
+ *    ✅ Adicionar novo tipo de modal (?modal=novo)
+ *    ✅ Adicionar mais validações
+ *    ✅ Melhorar o logging
+ * 
+ * ❌ Você NÃO PODE:
+ *    ❌ Mudar IDs dos botões sem atualizar aqui
+ *    ❌ Remover a chamada a setupEventListeners() ANTES desta função
+ *    ❌ Trocar a ordem de execução em initApp()
+ *    ❌ Remover a verificação de params.has('modal')
+ */
 async function handleHashNavigation() {
     const params = getRoutingParams();
     const hash = window.location.hash;
