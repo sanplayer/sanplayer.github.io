@@ -1055,13 +1055,16 @@ async function initApp() {
     const hasArtistParam = params.has('artistId');
     const hasModalParam = params.has('modal');
     
+    // 🔥 CRÍTICO: Registrar listeners ANTES de tentar usar btn.click() nos shortcuts
+    // handleHashNavigation() tentará clicar nos botões e precisa que os listeners já existam
+    setupEventListeners();
+    
     if (hasPlaylistParam || hasArtistParam || hasModalParam) {
         console.log('[Init] 🔗 Parâmetros de navegação detectados, chamando handleHashNavigation()');
         console.log('[Init] Params:', { playlistId: params.get('playlistId'), artistId: params.get('artistId'), modal: params.get('modal') });
         await handleHashNavigation();
     }
     
-    setupEventListeners();
     setupMobileSearch();
     setupSidbarMobile();
 
