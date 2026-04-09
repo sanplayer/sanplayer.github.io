@@ -12,9 +12,9 @@
  * IMPORTANTE: Valide manualmente que o ID existe em suas playlists JSON!
  */
 const INITIAL_TRACK_FALLBACK = {
-    id: "dgv7MBSjYsw",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
-    title: "Don't Look Back",
-    artist: "Costa Mee",
+    id: "GP9IB2ji02s",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
+    title: "Knife",
+    artist: "Rockwell",
     // Descrição para debugging
     _description: "Track de fallback padrão - primeira execução ou erro de resolução"
 };
@@ -582,12 +582,12 @@ async function loadDefaultState() {
 
 /**
  * Resolve qual track inicial deve ser tocado
- * Segue prioridade: External Link → Saved State → Fallback Seguro
+ * Segue prioridade: External Link → Saved State → Fallback Seguro → Home
  * 
  * Esta função é o coração da nova lógica de inicialização.
  * Não toca nada, apenas resolve qual track usar.
  * 
- * @returns {Promise<{trackId: string|null, source: 'url'|'localStorage'|'fallback', context?: object}>}
+ * @returns {Promise<{trackId: string|null, source: 'url'|'localStorage'|'fallback'|'home', context?: object}>}
  */
 async function resolveInitialTrack() {
     // [PRIORIDADE 1] External Link (Deep Link via URL query string)
@@ -613,12 +613,12 @@ async function resolveInitialTrack() {
         const age = Date.now() - state.timestamp;
         const MAX_STATE_AGE = 30 * 24 * 60 * 60 * 1000; // 30 dias
         if (age > MAX_STATE_AGE) {
-            console.log('[Init] Saved state too old, discarding');
+            console.log('[Init] ⏰ Saved state too old (>30 days), discarding');
             localStorage.removeItem('sanplayer-state');
             throw new Error('State expired');
         }
         
-        // ✅ Se tem lastTrackId (novo formato), usar isso
+        // ✅ Se tem lastTrackId (novo formato), usar isso (MAIS ROBUSTO)
         if (state.lastTrackId) {
             console.log(`[Init] 💾 Resolving from saved state (lastTrackId): ${state.lastTrackId}`);
             return {
@@ -638,13 +638,13 @@ async function resolveInitialTrack() {
             };
         }
         
-        throw new Error('Invalid saved state');
+        throw new Error('Invalid saved state format');
     } catch (error) {
-        console.warn(`[Init] Failed to resolve from localStorage:`, error.message);
+        console.warn(`[Init] ℹ️ localStorage unavailable or invalid:`, error.message);
     }
     
-    // [PRIORIDADE 3] Fallback Seguro
-    console.log(`[Init] ⚠️ Using fallback track: ${INITIAL_TRACK_FALLBACK.id}`);
+    // [PRIORIDADE 3] Fallback Seguro (primeiro uso ou error)
+    console.log(`[Init] 🎯 Resolving from INITIAL_TRACK_FALLBACK: ${INITIAL_TRACK_FALLBACK.id}`);
     return {
         trackId: INITIAL_TRACK_FALLBACK.id,
         source: 'fallback',
@@ -655,30 +655,34 @@ async function resolveInitialTrack() {
  * Valida e carrega um track específico pelo ID
  * Busca em cache primeiro, depois em todas as playlists se necessário
  * 
+ * NOVO: Logging melhorado para diagnosticar problemas
+ * 
  * @param {string} trackId - ID único do vídeo
- * @returns {Promise<{track, playlist, playlistIndex, videoIndex}|null>}
+ * @returns {Promise<{video, playlist, playlistIndex, videoIndex}|null>}
  */
 async function resolveTrack(trackId) {
     if (!trackId) {
-        console.warn('[Init] resolveTrack called with empty trackId');
+        console.warn('[Init] ❌ resolveTrack: Empty trackId');
         return null;
     }
     
-    console.log(`[Init] 🔍 resolveTrack: Procurando por trackId = "${trackId}"`);
+    console.log(`[Init] 🔍 resolveTrack: Buscando trackId="${trackId}"`);
     
     try {
-        // Usar findVideoById que já verifica cache + todas as playlists
+        // Chamar findVideoById que já verifica cache + todas as playlists
         const result = await findVideoById(trackId);
         
         if (result) {
-            console.log(`[Init] ✅ resolveTrack SUCCESS: "${result.video.title}" by ${result.video.artist}`);
+            console.log(`[Init] ✅ resolveTrack: ENCONTRADO - "${result.video.title}" by ${result.video.artist}`);
+            console.log(`[Init] ℹ️ Localização: Playlist "${result.playlist.name}", índice ${result.videoIndex}`);
             return result;
         }
         
-        console.warn(`[Init] ❌ resolveTrack: Track not found in any playlist: ${trackId}`);
+        console.error(`[Init] ❌ resolveTrack: Track NÃO ENCONTRADO em nenhuma playlist`);
+        console.error(`[Init] ⚠️ Verifique: O ID "${trackId}" existe em um dos arquivos JSON de playlist?`);
         return null;
     } catch (error) {
-        console.error(`[Init] ❌ resolveTrack EXCEPTION for ${trackId}:`, error);
+        console.error(`[Init] ❌ resolveTrack: EXCEÇÃO ao procurar "${trackId}":`, error);
         return null;
     }
 }
@@ -721,25 +725,23 @@ async function restorePlaylistState(context) {
  * Responsável por: validar → carregar → configurar player → renderizar
  * 
  * @param {string} trackId - ID único do vídeo
- * @returns {Promise<boolean>} true se conseguiu tocar
+ * @returns {Promise<boolean>} true se conseguiu tocar, false caso contrário
  */
 async function playTrackById(trackId) {
     if (!trackId) {
-        console.warn('[Init] playTrackById called with empty trackId');
+        console.warn('[Init] ❌ playTrackById: Empty trackId provided');
         return false;
     }
     
-    console.log(`[Init] 🎯 playTrackById called with trackId = "${trackId}"`);
+    console.log(`[Init] 🎯 playTrackById: Tentando tocar trackId="${trackId}"`);
     
     try {
         // [PASSO 1] Validar e carregar track
         const trackData = await resolveTrack(trackId);
         
-        // 🔍 DEBUG: Verificar o que foi retornado
-        console.log('[DEBUG] trackData returned from resolveTrack:', trackData);
-        
         if (!trackData) {
-            console.error(`[Init] ❌ playTrackById: Failed to resolve track: ${trackId}`);
+            console.error(`[Init] ❌ playTrackById: resolveTrack retornou null/undefined para "${trackId}"`);
+            console.warn(`[Init] ⚠️ Dica: Verifique se o ID "${trackId}" existe em uma das suas playlists JSON`);
             return false;
         }
         
@@ -749,16 +751,15 @@ async function playTrackById(trackId) {
         let playlistIndex = trackData.playlistIndex;
         let videoIndex = trackData.videoIndex;
         
-        console.log('[DEBUG] Destructured:', { video, playlist, playlistIndex, videoIndex });
-        
         if (!video) {
-            console.error('[Init] ❌ playTrackById: Video inválido:', trackData);
+            console.error('[Init] ❌ playTrackById: video é null/undefined');
+            console.error('[Init] trackData:', trackData);
             return false;
         }
 
-        // 🔥 GARANTIR PLAYLIST MESMO SE NÃO VIER
+        // 🔥 GARANTIR PLAYLIST MESMO SE NÃO VIER (fallback playlist wrapper)
         if (!playlist) {
-            console.warn('[Init] ⚠️ playTrackById: Playlist não encontrada, criando fallback');
+            console.warn('[Init] ⚠️ playTrackById: Playlist não encontrada, criando wrapper');
 
             playlist = {
                 name: 'Single Track',
@@ -779,16 +780,21 @@ async function playTrackById(trackId) {
         player.playOrder = [...Array(playlist.videos.length).keys()];
         player.originalOrder = [...player.playOrder];
         
-        console.log('[Init] 📍 playTrackById: Player state configured');
+        console.log('[Init] 📝 playTrackById: Player state configured', {
+            currentVideoIndex: player.currentVideoIndex,
+            playlistName: playlist.name,
+            videosCount: playlist.videos.length
+        });
         
         // [PASSO 3] Renderizar UI
         updateCurrentVideoDisplay();
         loadPlaylistVideos();
         
-        console.log('[Init] 📍 playTrackById: UI rendered');
+        console.log('[Init] 🎨 playTrackById: UI rendered');
         
-        // [PASSO 4] Carregar vídeo no player
+        // [PASSO 4] Carregar vídeo no player YouTube
         loadVideo(video);
+        console.log('[Init] ▶️ playTrackById: Video loaded to YouTube player');
         
         // [PASSO 5] Salvar estado persistido
         saveCurrentState();
@@ -797,6 +803,7 @@ async function playTrackById(trackId) {
         return true;
     } catch (error) {
         console.error(`[Init] ❌ playTrackById EXCEPTION for "${trackId}":`, error);
+        console.error('[Init] Stack:', error.stack);
         return false;
     }
 }
@@ -804,13 +811,19 @@ async function playTrackById(trackId) {
 /**
  * Camada de resiliência: tenta múltiplas resoluções de forma agressiva
  * Se uma falha, tenta a próxima em sequência
+ * 
+ * NOVO: Garante que SEMPRE toca algo - não deixa player vazio
  */
 async function initializePlayerWithResilience() {
     console.log('[Init] 🚀 Starting resilient player initialization...');
     
     // [PASSO 1] Resolver qual track deve soar
     const resolution = await resolveInitialTrack();
-    console.log('[Init] Resolution result:', { source: resolution.source, trackId: resolution.trackId });
+    console.log('[Init] 📍 PASSO 1 - Resolution:', { 
+        source: resolution.source, 
+        trackId: resolution.trackId,
+        hasSavedContext: !!resolution.context
+    });
     
     let played = false;
     
@@ -818,37 +831,61 @@ async function initializePlayerWithResilience() {
     if (resolution.trackId) {
         console.log(`[Init] 📍 PASSO 2: Tentando tocar trackId = "${resolution.trackId}"`);
         played = await playTrackById(resolution.trackId);
-        console.log(`[Init] 📍 PASSO 2 resultado: played = ${played}`);
+        
+        if (played) {
+            console.log(`[Init] ✅ PASSO 2: SUCCESS - Track playing`);
+            return; // 🔥 CRÍTICO: Não prosseguir se conseguiu
+        } else {
+            console.warn(`[Init] ⚠️ PASSO 2: FALHOU - playTrackById retornou false`);
+        }
     }
     
     // [PASSO 3] Se falhou e tem contexto de playlist, restaurar assim
     if (!played && resolution.context?.playlistIndex >= 0) {
-        console.log('[Init] 📍 PASSO 3: Primary track resolution failed, trying playlist restoration...');
+        console.log(`[Init] 📍 PASSO 3: Restaurando playlist salva (index=${resolution.context.playlistIndex})`);
         played = await restorePlaylistState(resolution.context);
-        console.log(`[Init] 📍 PASSO 3 resultado: played = ${played}`);
+        
+        if (played) {
+            console.log(`[Init] ✅ PASSO 3: SUCCESS - Playlist restored`);
+            return; // 🔥 CRÍTICO: Não prosseguir se conseguiu
+        } else {
+            console.warn(`[Init] ⚠️ PASSO 3: FALHOU - restorePlaylistState retornou false`);
+        }
     }
     
-    // [PASSO 4] Última tentativa: usar fallback
-    if (!played) {
-        console.warn(`[Init] 📍 PASSO 4: All resolutions failed, forcing fallback track: ${INITIAL_TRACK_FALLBACK.id}`);
+    // [PASSO 4] Se O FALLBACK é diferente do que tentou antes, tentar novamente
+    // (Protege contra bugs de fallback ID inválido sendo tentado em PASSO 2)
+    if (!played && resolution.source !== 'fallback') {
+        console.warn(`[Init] 📍 PASSO 4: Fallback direto (source era ${resolution.source}, tentando ${INITIAL_TRACK_FALLBACK.id})`);
         played = await playTrackById(INITIAL_TRACK_FALLBACK.id);
-        console.log(`[Init] 📍 PASSO 4 resultado: played = ${played}`);
+        
+        if (played) {
+            console.log(`[Init] ✅ PASSO 4: SUCCESS - Fallback playing`);
+            return; // 🔥 CRÍTICO
+        } else {
+            console.warn(`[Init] ⚠️ PASSO 4: FALHOU - Fallback ID também não encontrado!`);
+        }
     }
     
-    // [PASSO 5] Última linha de defesa: carregar primeira playlist
-    if (!played && player.playlistsIndex.length > 0) {
-        console.warn('[Init] 📍 PASSO 5: CRITICAL - Nenhum track tocou. Carregando primeira playlist como último recurso...');
-        console.warn('[Init] 📍 PASSO 5: Isso significa que playTrackById falhou completamente!');
+    // [PASSO 5] ÚLTIMA LINHA DE DEFESA: Carregar primeira playlist
+    // Se chegou aqui, significa que:
+    // - Fallback ID não existe nas playlists
+    // - Ou há erro crítico no sistema
+    if (player.playlistsIndex.length > 0) {
+        console.error('[Init] 🆘 PASSO 5: CRITICAL - Nenhum track conseguiu tocar. Carregando primeira playlist como último recurso.');
+        console.error('[Init] ⚠️ ISSUE: Invalid INITIAL_TRACK_FALLBACK ID? ID="${INITIAL_TRACK_FALLBACK.id}" não encontrado em nenhuma playlist!');
+        
         await selectPlaylistByIndex(0);
+        played = !!player.currentPlaylist;
     }
     
     // Validação final
-    if (!player.currentPlaylist) {
-        console.error('[Init] ❌ CRITICAL: Player still has no playlist after all recovery attempts!');
-        // TODO: Mostrar erro ao usuário
+    if (!played || !player.currentPlaylist) {
+        console.error('[Init] ❌ CRÍTICO: Player não conseguiu inicializar em nenhum nível!');
+        console.error('[Init] ❌ Isso indica falha completa do sistema de inicialização');
+    } else {
+        console.log('[Init] ✅ Player initialization complete');
     }
-    
-    console.log('[Init] ✅ Player initialization complete');
 }
 
 /**
@@ -944,7 +981,11 @@ async function initApp() {
         // Usar nova lógica com resiliência
         await initializePlayerWithResilience();
         
-        // 🔒 MARCA COMO INICIALIZADO (bloqueia overlays)
+        // � CRÍTICO: Atualizar UI IMEDIATAMENTE após inicializar
+        // Garante que o novo track está visível na UI
+        refreshPlayerUI();
+        
+        // �🔒 MARCA COMO INICIALIZADO (bloqueia overlays)
         playerInitialized = true;
         console.log('[Init] 🔒 Player initialized. Lock acquired.');
     } else {
@@ -1545,6 +1586,13 @@ async function loadPlaylists() {
 
         if (player.playlistsIndex.length === 0) {
             console.warn('Nenhuma playlist encontrada no índice');
+            return;
+        }
+
+        // 🔥 CRÍTICO: Se usa nova lógica, NÃO carregar nada aqui
+        // Deixar `initializePlayerWithResilience()` fazer o trabalho
+        if (USE_NEW_INIT_LOGIC) {
+            console.log('[Init] ℹ️ loadPlaylists: Pulando seleção (USE_NEW_INIT_LOGIC=true), deixar para initializePlayerWithResilience()');
             return;
         }
 
