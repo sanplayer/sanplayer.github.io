@@ -1468,21 +1468,10 @@ async function handleHashNavigation() {
     const params = getRoutingParams();
     const hash = window.location.hash;
     
-    // 🔒 PROTEÇÃO: Se nova lógica está ativada e player já foi inicializado,
-    // não deixar essa função sobrescrever a inicialización
     const videoId = params.get('videoId');
     const playlistId = params.get('playlistId');
     const artistId = params.get('artistId');
     const modal = params.get('modal');
-    
-    if (USE_NEW_INIT_LOGIC && playerInitialized) {
-        // Permitir APENAS modalnavegação (modal=playlists, etc)
-        // Bloquear navegação de conteúdo (videoId, playlistId, artistId)
-        if (!modal && (videoId || playlistId || artistId)) {
-            console.warn('[Navigation] 🔒 Player já inicializado. Ignorando roteamento de conteúdo.');
-            return;
-        }
-    }
     
     // ✨ Suporte a atalhos de modais (PWA shortcuts) - via query string OU hash
     if (modal === 'playlists') {
