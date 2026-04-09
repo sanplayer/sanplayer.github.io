@@ -12,9 +12,9 @@
  * IMPORTANTE: Valide manualmente que o ID existe em suas playlists JSON!
  */
 const INITIAL_TRACK_FALLBACK = {
-    id: "GP9IB2ji02s",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
-    title: "Knife",
-    artist: "Rockwell",
+    id: "Iwk3_sI2DXc",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
+    title: "Deus Me Ouviu",
+    artist: "Refúgio De Adoração",
     // Descrição para debugging
     _description: "Track de fallback padrão - primeira execução ou erro de resolução"
 };
