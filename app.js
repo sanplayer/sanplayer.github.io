@@ -1338,6 +1338,17 @@ function initServiceWorker() {
         navigator.serviceWorker.register('./service-worker.js').then((registration) => {
             console.log('[App] Service Worker registrado com sucesso:', registration);
             
+            // Escuta por novas atualizações sendo instaladas
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                    // Quando o novo worker termina de instalar e fica 'waiting'
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        showUpdateBanner(newWorker);
+                    }
+                });
+            });
+
             // Verificar atualizações a cada 1 minuto
             setInterval(() => {
                 registration.update();
@@ -1346,6 +1357,24 @@ function initServiceWorker() {
             console.warn('[App] Erro ao registrar Service Worker:', error);
         });
     }
+}
+
+// Função para exibir o banner e configurar os botões
+function showUpdateBanner(worker) {
+    const banner = document.getElementById('update-banner');
+    const btnNow = document.getElementById('btn-update-now');
+    const btnLater = document.getElementById('btn-update-later');
+
+    banner.classList.add('show');
+
+    btnNow.onclick = () => {
+        worker.postMessage({ type: 'SKIP_WAITING' });
+        window.location.reload();
+    };
+
+    btnLater.onclick = () => {
+        banner.classList.remove('show');
+    };
 }
 
 // ============================================================================
