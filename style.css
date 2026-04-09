@@ -36,6 +36,19 @@
   src: url('fonts/roboto-v51-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
+.material-symbols-outlined {
+  /* Impede que o texto cause um "pulo" no layout */
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  
+  /* Se o ícone não carregou, o texto fica invisível */
+  font-display: block; 
+  overflow: hidden;
+  width: 1em;
+  height: 1em;
+}
 /* end fonts */
 
 :root {
@@ -605,7 +618,7 @@ body.is-routing {
         width: 100vw;
         min-height: 0;
         overflow-y: auto;
-        /*background: var(--bg-surface);*/
+        background: var(--bg-surface);
         border-left: none;
         border-top: 1px solid var(--border-rgba);
         padding: 1rem 0rem;
@@ -1047,6 +1060,9 @@ img {
     border-radius: 0.5rem;
     transition: background 0.2s;
 }
+.sidebar-nav li a:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
 
 .sidebar-nav li a:active {
     background: rgba(255, 255, 255, 0.05);
@@ -1111,6 +1127,10 @@ img {
     border-bottom: 1px solid var(--border-rgba);
     cursor: pointer;
     transition: background 0.2s;
+}
+
+.playlist-item:hover {
+    background: rgba(0,0,0,.3);
 }
 
 .playlist-item:active {
@@ -1657,7 +1677,6 @@ img {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: linear-gradient(180deg, var(--footer-block-2) 80%, var(--footer-block-1) 100%);
     border-top: 1px solid var(--footer-border);
     display: flex;
     flex-direction: column;
@@ -1835,7 +1854,7 @@ img {
 
 /* Bloco 2: Controles de Playback */
 .block-controls {
-    background-color: var(--footer-block-2);
+    
     justify-content: center;
     gap: clamp(1.5rem, 2vw, 2rem);
 }
