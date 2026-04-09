@@ -3179,6 +3179,11 @@ function playerPause() {
 
 
 function updateCurrentVideoDisplay() {
+    // ⚠️ Validação defensiva: evitar erro se currentPlaylist ainda não está pronto
+    if (!player.currentPlaylist || !player.currentPlaylist.videos) {
+        return;
+    }
+    
     const video = player.currentPlaylist.videos[player.currentVideoIndex];
     
     // Atualizar apenas os dados, sem recriar DOM
