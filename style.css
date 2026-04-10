@@ -1,66 +1,78 @@
-﻿
-/* ==========================================================================
+﻿/* ==========================================================================
    1. CONFIGURAÃƒâ€¡Ãƒâ€¢ES DE FONTE E VARIÃƒÂVEIS
    ========================================================================== */
 
 /* roboto-regular - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 400;
-  src: url('fonts/roboto-v51-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    font-display: swap;
+    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: url('fonts/roboto-v51-latin-regular.woff2') format('woff2');
+    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
 /* roboto-500 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 500;
-  src: url('fonts/roboto-v51-latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    font-display: swap;
+    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    src: url('fonts/roboto-v51-latin-500.woff2') format('woff2');
+    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
 /* roboto-600 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 600;
-  src: url('fonts/roboto-v51-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    font-display: swap;
+    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 600;
+    src: url('fonts/roboto-v51-latin-600.woff2') format('woff2');
+    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
+
 /* roboto-700 - latin */
 @font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 700;
-  src: url('fonts/roboto-v51-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    font-display: swap;
+    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('fonts/roboto-v51-latin-700.woff2') format('woff2');
+    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
 .material-symbols-outlined {
-  /* Impede que o texto cause um "pulo" no layout */
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  
-  /* Se o ícone não carregou, o texto fica invisível */
-  font-display: block; 
-  overflow: hidden;
-  width: 1em;
-  height: 1em;
+    /* Impede que o texto cause um "pulo" no layout */
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+
+    /* Se o ícone não carregou, o texto fica invisível */
+    font-display: block;
+    /* san desabilitado icon banner update */
+    /*overflow: hidden;*/
+    width: 1em;
+    height: 1em;
 }
+
 /* end fonts */
 
 :root {
     /* Paleta de Cores */
     --bg-main: #000000;
-    --bg-surface: radial-gradient(circle,rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
+    --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --accent-red: #ff0000;
     --text-main: #ffffff;
     --text-dim: #aaaaaa;
     --border-rgba: rgba(255, 255, 255, 0.1);
-    
+
     /* Gradient Background (YouTube Music Style) */
     --gradient-top: #1f1f1f;
     --gradient-bottom: #070707;
@@ -93,15 +105,19 @@
     --footer-height: clamp(60px, 12vh, 100px);
     --btn-size: clamp(36px, 8vw, 48px);
     --icon-size: clamp(1.25rem, 3vw, 1.8rem);
-    
+
     /* Hierarquia de Ãcones (ProporÃ§Ã£o do Container) */
-    --icon-size-main: clamp(1.75rem, 5vw, 2.25rem);      /* Play/Pause: 60% do container */
-    --icon-size-sub: clamp(1.25rem, 3.5vw, 1.75rem);     /* NavegaÃ§Ã£o: 50% do container */
-    
+    --icon-size-main: clamp(1.75rem, 5vw, 2.25rem);
+    /* Play/Pause: 60% do container */
+    --icon-size-sub: clamp(1.25rem, 3.5vw, 1.75rem);
+    /* NavegaÃ§Ã£o: 50% do container */
+
     /* Touch Target e Feedback (YouTube Music Pattern) */
-    --touch-target: 42px;                                 /* Minimum tap area */
-    --feedback-color: rgba(255, 255, 255, 0.1);          /* Subtle highlight on hover/active */
-    
+    --touch-target: 42px;
+    /* Minimum tap area */
+    --feedback-color: rgba(255, 255, 255, 0.1);
+    /* Subtle highlight on hover/active */
+
     /* Button with Text Pattern */
     --btn-padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 1.5rem);
     --btn-border-radius: 8px;
@@ -119,10 +135,10 @@
     --z-sidebar-overlay: 3000;
     --z-modal-toast: 3001;
     --z-overlay-max: 5000;
-    
+
     /* Keyboard Offset (ajustado dinamicamente pelo JS) */
     --keyboard-offset: 0px;
-    
+
     --main-z-index: 10;
 }
 
@@ -139,7 +155,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     /*color-scheme: dark;*/
     background-color: #0f0f0f;
 }
@@ -151,10 +168,14 @@ body {
     color: var(--text-main);
     line-height: 1.4;
     overflow-x: hidden;
-    min-height: 100vh; /* Fallback para navegadores antigos */
-    min-height: 100dvh; /* PreferÃªncia em navegadores modernos */
-    padding-top: env(safe-area-inset-top); /*san*/
-    padding-bottom: env(safe-area-inset-bottom); /*san*/
+    min-height: 100vh;
+    /* Fallback para navegadores antigos */
+    min-height: 100dvh;
+    /* PreferÃªncia em navegadores modernos */
+    padding-top: env(safe-area-inset-top);
+    /*san*/
+    padding-bottom: env(safe-area-inset-bottom);
+    /*san*/
     transition: opacity 0.2s ease;
 }
 
@@ -466,8 +487,9 @@ body.is-routing {
     width: auto;
     box-sizing: border-box;
 }
+
 .feedback-empty {
-	display: flex;
+    display: flex;
     align-items: center;
     gap: var(--gap-md);
     padding: var(--gap-md);
@@ -621,9 +643,9 @@ body.is-routing {
 
 /* === MOBILE: GRID VÃƒÂDEO + PLAYLIST === */
 @media (max-width: 1023px) {
-    
+
     .sidebar-nav li {
-    margin-bottom: var(--gap-sm);
+        margin-bottom: var(--gap-sm);
     }
 
     .app-main-grid {
@@ -699,7 +721,7 @@ body.is-routing {
         background: var(--feedback-color);
         color: var(--text-main);
     }
-    
+
     .kebab-btn:active {
         background: var(--feedback-color);
         color: var(--text-main);
@@ -732,7 +754,7 @@ body.is-routing {
     }
 
 
-    
+
 
     /* Lista simples das playlists do usuÃƒÂ¡rio */
     #userPlaylistsContainer .user-playlist {
@@ -842,7 +864,7 @@ body.is-routing {
         transform: translateY(var(--keyboard-offset, 0px));
         transition: transform 0.25s ease;
     }
-    
+
 }
 
 
@@ -861,12 +883,12 @@ button {
     border-radius: 50%;
     color: inherit;
     transition: background 0.2s ease;
-    
+
     /* Perfect icon centering */
     aspect-ratio: 1 / 1;
     line-height: 0;
     padding: 0;
-    
+
     /* Touch Target: Minimum 42px */
     min-width: var(--touch-target);
     min-height: var(--touch-target);
@@ -932,12 +954,11 @@ button:active {
 }
 
 .btn-primary:hover {
-    
-    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+    background: var(--accent-red);
 }
 
 .btn-primary:active {
-    
+
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -1110,6 +1131,7 @@ img {
     border-radius: 0.5rem;
     transition: background 0.2s;
 }
+
 .sidebar-nav li a:hover {
     background: rgba(0, 0, 0, 0.4);
 }
@@ -1180,7 +1202,7 @@ img {
 }
 
 .playlist-item:hover {
-    background: rgba(0,0,0,.3);
+    background: rgba(0, 0, 0, .3);
 }
 
 .playlist-item:active {
@@ -1207,7 +1229,7 @@ img {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    
+
 }
 
 .playlist-info .m-title {
@@ -1341,24 +1363,20 @@ img {
 @keyframes particle-float {
     0% {
         /* Nasce no centro do botÃ£o */
-        transform: 
-            translate(0, 0) 
-            scale(var(--scale-start)) 
-            rotate(0deg);
+        transform:
+            translate(0, 0) scale(var(--scale-start)) rotate(0deg);
         opacity: 1;
     }
-    
+
     /* Movimento ativo - 70% da duraÃ§Ã£o */
     70% {
         opacity: 0.8;
     }
-    
+
     /* Fim - partÃ­cula atinge destino com fade out */
     100% {
-        transform: 
-            translate(var(--end-x), var(--end-y)) 
-            scale(var(--scale-end)) 
-            rotate(var(--rotation));
+        transform:
+            translate(var(--end-x), var(--end-y)) scale(var(--scale-end)) rotate(var(--rotation));
         opacity: 0;
     }
 }
@@ -1381,17 +1399,17 @@ img {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    
+
     /* DimensÃµes - cobre o botÃ£o */
     width: 100%;
     height: 100%;
-    
+
     /* NÃ£o interfere em cliques */
     pointer-events: none;
-    
+
     /* Garante que partÃ­culas apareÃ§am acima do Ã­cone */
     z-index: 1001;
-    
+
     /* Performance */
     will-change: transform;
 }
@@ -1416,30 +1434,30 @@ img {
     position: absolute;
     top: 50%;
     left: 50%;
-    
+
     /* Emoji do coraÃ§Ã£o */
     width: 24px;
     height: 24px;
     line-height: 24px;
     text-align: center;
     font-size: 20px;
-    
+
     /* NÃ£o interfere em eventos */
     pointer-events: none;
     user-select: none;
-    
+
     /* Animação - usa variáveis CSS dinâmicas */
     animation: particle-float forwards;
     animation-duration: var(--particle-duration, 600ms);
     animation-delay: var(--particle-delay, 0ms);
     animation-timing-function: var(--particle-timing, cubic-bezier(0.25, 0.46, 0.45, 0.94));
-    
+
     /* Performance - GPU acceleration */
     will-change: transform, opacity;
     backface-visibility: hidden;
     transform-style: preserve-3d;
     -webkit-font-smoothing: antialiased;
-    
+
     /* Suavidade */
     transform: translate(-50%, -50%);
 }
@@ -1460,12 +1478,12 @@ img {
     0% {
         transform: scale(1);
     }
-    
+
     /* Pico da animaÃ§Ã£o no meio */
     50% {
         transform: scale(1.25);
     }
-    
+
     /* Volta ao estado original */
     100% {
         transform: scale(1);
@@ -1488,16 +1506,16 @@ img {
     cursor: pointer;
     font-size: var(--icon-size);
     color: var(--text-dim);
-    
+
     /* TransiÃ§Ã£o suave de cor */
     transition: color 0.2s ease, filter 0.2s ease;
-    
+
     /* Performance */
     will-change: color, transform;
     transform-origin: center;
     -webkit-user-select: none;
     user-select: none;
-    
+
     /* Acessibilidade */
     outline-offset: 2px;
 }
@@ -1563,11 +1581,8 @@ img {
  * Similar ao utilizado no Material Design e Samsung One UI
  */
 .favorite-btn.pulse {
-    animation: 
-        favorite-pulse 
-        300ms 
-        cubic-bezier(0.34, 1.56, 0.64, 1) 
-        1;
+    animation:
+        favorite-pulse 300ms cubic-bezier(0.34, 1.56, 0.64, 1) 1;
 }
 
 /**
@@ -1619,12 +1634,15 @@ img {
     0% {
         transform: scaleY(0.3);
     }
+
     40% {
         transform: scaleY(0.8);
     }
+
     60% {
         transform: scaleY(0.35);
     }
+
     100% {
         transform: scaleY(0.3);
     }
@@ -1635,12 +1653,15 @@ img {
     0% {
         transform: scaleY(0.3);
     }
+
     35% {
         transform: scaleY(0.4);
     }
+
     70% {
         transform: scaleY(0.32);
     }
+
     100% {
         transform: scaleY(0.3);
     }
@@ -1651,12 +1672,15 @@ img {
     0% {
         transform: scaleY(0.3);
     }
+
     45% {
         transform: scaleY(1);
     }
+
     65% {
         transform: scaleY(0.33);
     }
+
     100% {
         transform: scaleY(0.3);
     }
@@ -1667,12 +1691,15 @@ img {
     0% {
         transform: scaleY(0.3);
     }
+
     38% {
         transform: scaleY(0.6);
     }
+
     55% {
         transform: scaleY(0.31);
     }
+
     100% {
         transform: scaleY(0.3);
     }
@@ -1783,12 +1810,12 @@ img {
     flex-direction: column;
     gap: 0rem;
     /*espaco entre progresso e contadores*/
-    
+
     /* 🔒 HITBOX EXPANDIDA MOBILE: Aumenta zona de toque para 40px+ */
     /* Usando padding para criar área clicável invisível sem alterar visual */
     padding: 18.5px 0;
     margin: -18.5px 0;
-    
+
     /* 🔒 REMOÇÃO DE FEEDBACK VISUAL DO NAVEGADOR - Aparência Nativa */
     /* Remove o efeito "azulado" e bordas de foco em mobile */
     -webkit-tap-highlight-color: transparent;
@@ -1814,7 +1841,7 @@ img {
     transition: background-size 0.1s ease, opacity 0.2s ease;
     cursor: pointer;
     position: relative;
-    
+
     /* 🔒 REMOÇÃO DE FEEDBACK VISUAL DO NAVEGADOR - Aparência Nativa */
     /* Remove tap highlight (azulado em mobile), outlines e bordas de foco */
     -webkit-tap-highlight-color: transparent;
@@ -1931,7 +1958,7 @@ img {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    
+
     position: relative;
     overflow: hidden;
     /* garantir clip interno */
@@ -1941,7 +1968,8 @@ img {
     display: block;
     font-weight: bold;
     font-size: var(--font-mt);
-    white-space: nowrap; /* Impede que o texto quebre linha */
+    white-space: nowrap;
+    /* Impede que o texto quebre linha */
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 0;
@@ -2037,7 +2065,7 @@ img {
 @media (max-width: 1023px) {
     .app-sidebar {
         display: none;
-        
+
     }
 
     .footer-content-wrapper {
@@ -2150,7 +2178,7 @@ img {
 
     .header-search form {
         width: 100%;
-        background: rgba(0,0,0,0.3);
+        background: rgba(0, 0, 0, 0.3);
         border-radius: 25px;
     }
 
@@ -2307,6 +2335,7 @@ img {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -2317,6 +2346,7 @@ img {
         transform: translateY(20px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -2377,6 +2407,7 @@ img {
     from {
         background: rgba(0, 0, 0, 0);
     }
+
     to {
         background: rgba(0, 0, 0, 0.5);
     }
@@ -2388,6 +2419,7 @@ img {
         transform: translateY(100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -2400,6 +2432,7 @@ img {
     from {
         background: rgba(0, 0, 0, 0.5);
     }
+
     to {
         background: rgba(0, 0, 0, 0);
     }
@@ -2412,6 +2445,7 @@ img {
         transform: translateY(0);
         opacity: 1;
     }
+
     to {
         transform: translateY(100%);
         opacity: 0;
@@ -2727,13 +2761,14 @@ img {
    9. ESTILOS ESPECIAIS PARA VÃƒÂDEO (OVERLAYS, LEGENDAS)
    ========================================================================== */
 
-    .overlay-layer {
+.overlay-layer {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 10; /* Garante que fique acima do vÃ­deo/conteÃºdo */
+    z-index: 10;
+    /* Garante que fique acima do vÃ­deo/conteÃºdo */
     /* Opcional: para centralizar conteÃºdo dentro da camada sobreposta */
     display: flex;
     align-items: center;
@@ -2741,7 +2776,7 @@ img {
 }
 
 /* OVERLAY LEGENGA SAN */
-    .overlay-layer-legendas {
+.overlay-layer-legendas {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -2752,7 +2787,7 @@ img {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    background: linear-gradient(0deg,rgba(19, 19, 19, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+    background: linear-gradient(0deg, rgba(19, 19, 19, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
     backdrop-filter: blur(3px);
     color: rgba(255, 255, 255, 0.8);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
@@ -2801,7 +2836,9 @@ img {
     flex-direction: column;
     gap: clamp(1rem, 2.5vw, 1.75rem);
 }
-
+.pwa-install-content .btn-primary:hover{
+    background: var(--accent-red);
+}
 .pwa-install-header {
     display: flex;
     align-items: center;
@@ -2837,9 +2874,12 @@ img {
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-8px);
     }
@@ -2850,6 +2890,7 @@ img {
         transform: translateY(100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -2885,33 +2926,54 @@ img {
 }
 
 .material-symbols-outlined {
-  font-weight: 400; 
+    font-weight: 400;
 }
 
 /* PUSH NOTIFICATIONS */
 
 .update-sheet {
-  position: fixed;
-  bottom: -100%; /* Começa escondido abaixo da tela */
-  left: 0;
-  right: 0;
-  background: #1f1f1f; /* Cor de fundo levemente mais clara que o fundo geral */
-  padding: 20px;
-  border-top: 1px solid #333;
-  border-radius: 16px 16px 0 0;
-  z-index: 9999;
-  transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background: #1f1f1f;
+    padding: 20px;
+    border-top: 1px solid #333;
+    border-radius: 16px 16px 0 0;
+    z-index: 9999;
+    transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
 }
 
-.update-sheet.show { bottom: 0; }
+.update-sheet.show {
+    bottom: 0;
+}
 
-.update-content { display: flex; align-items: center; gap: 15px; }
-.update-content .material-symbols-outlined { font-size: 44px }
-.update-text strong { display: block; color: #fff; }
-.update-text p { margin: 0; font-size: 0.9rem; color: #aaa; }
+.update-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-.update-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.update-content .material-symbols-outlined {
+    font-size: 44px
+}
+
+.update-text strong {
+    display: block;
+    color: #fff;
+}
+
+.update-text p {
+    margin: 0;
+    color: #ddd;
+}
+
+.update-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
