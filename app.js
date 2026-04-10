@@ -12,9 +12,9 @@
  * IMPORTANTE: Valide manualmente que o ID existe em suas playlists JSON!
  */
 const INITIAL_TRACK_FALLBACK = {
-    id: "Iwk3_sI2DXc",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
-    title: "Deus Me Ouviu",
-    artist: "Refúgio De Adoração",
+    id: "m21zfosnqls",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
+    title: "Chill Out Mix 2023🍓 Chillout Lounge 117",
+    artist: "Helios Deep",
     // Descrição para debugging
     _description: "Track de fallback padrão - primeira execução ou erro de resolução"
 };
@@ -2028,6 +2028,10 @@ function updatePlaylistCardsInModal() {
 }
 
 function closePlaylistsModal() {
+    // Limpar filtro de busca
+    const searchInput = document.getElementById('playlistSearchInput');
+    if (searchInput) searchInput.value = '';
+    
     closeModalWithAnimation('playlistModal', () => {
         // 🔥 CRÍTICO: Garantir que sidebar mostra a playlist atual
         // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
@@ -2036,6 +2040,126 @@ function closePlaylistsModal() {
         } else if (player.viewingFavorites) {
             displayFavoritesList();
         }
+    });
+}
+
+// ============================================================================
+// UTILITÁRIO: NORMALIZAÇÃO DE STRINGS PARA BUSCA (Remove acentos)
+// ============================================================================
+
+/**
+ * 🔒 CONGELADO: Normaliza strings removendo diacríticos (acentos)
+ * 
+ * Permite buscar "fabio" e encontrar "Fábio", "paulo" encontra "Paulô", etc.
+ * 
+ * ⚠️ TÉCNICA:
+ * 1. .normalize('NFD') - Decompõe caracteres acentuados em base + diacrítrico
+ * 2. .replace(/[\u0300-\u036f]/g, '') - Remove os diacríticos (acentos)
+ * 3. .toLowerCase() - Converte para minúsculas
+ * 4. .trim() - Remove espaços extras
+ * 
+ * Exemplos:
+ * - "Fábio" → "fabio"
+ * - "José" → "jose"
+ * - "São Paulo" → "sao paulo"
+ * - "Frida Kahlo" → "frida kahlo"
+ * 
+ * PAIRING CRÍTICO: Usada em filterPlaylistCards(), filterArtistCards(), searchMusics()
+ * Se remover esta função, TODAS as buscas quebram
+ */
+function normalizeString(str) {
+    if (!str) return '';
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+// ============================================================================
+// FILTRO DE PLAYLISTS - BUSCA EM TEMPO REAL
+// ============================================================================
+
+/**
+ * 🔒 CONGELADO: Filtra cards de playlists em tempo real
+ * 
+ * ⚠️ LÓGICA CRÍTICA:
+ * - Itera sobre cada card no container
+ * - Normaliza query e títulos (remove acentos via normalizeString)
+ * - Oculta/mostra cards usando display: none
+ * - Não reordena ou remove cards do DOM
+ * 
+ * ⛔ O QUE QUEBRARIA:
+ * ❌ Remover normalizeString() → busca com acentos quebra
+ * ❌ Usar `.remove()` em vez de `display: none` → quebra re-filtragem
+ * ❌ Comparar com title.toLowerCase() ao invés de normalizeString() → acentos quebram
+ */
+function filterPlaylistCards(query) {
+    const container = document.getElementById('playlistCardsContainer');
+    if (!container) return;
+    
+    const normalizedQuery = normalizeString(query);
+    const cards = container.querySelectorAll('.card');
+    
+    // Se query vazia, mostrar todos os cards
+    if (!normalizedQuery) {
+        cards.forEach(card => card.style.display = '');
+        return;
+    }
+    
+    // Filtrar baseado no título da playlist (contido no primeiro elemento .card-title)
+    cards.forEach(card => {
+        const titleEl = card.querySelector('.card-title');
+        const subtitleEl = card.querySelector('.card-subtitle');
+        
+        if (!titleEl) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        // Normalizar título e subtítulo (remove acentos para comparação)
+        const normalizedTitle = normalizeString(titleEl.textContent);
+        const normalizedSubtitle = subtitleEl ? normalizeString(subtitleEl.textContent) : '';
+        
+        const matches = normalizedTitle.includes(normalizedQuery) || normalizedSubtitle.includes(normalizedQuery);
+        card.style.display = matches ? '' : 'none';
+    });
+}
+
+/**
+ * 🔒 CONGELADO: Filtra cards de artistas em tempo real
+ * 
+ * ⚠️ LÓGICA CRÍTICA:
+ * - Itera sobre cada card no container
+ * - Normaliza query e nomes (remove acentos via normalizeString)
+ * - Oculta/mostra cards usando display: none
+ * - Permite buscar "paulo" e encontrar "Paulo", "jose" encontra "José"
+ */
+function filterArtistCards(query) {
+    const container = document.getElementById('artistsCardsContainer');
+    if (!container) return;
+    
+    const normalizedQuery = normalizeString(query);
+    const cards = container.querySelectorAll('.card');
+    
+    // Se query vazia, mostrar todos os cards
+    if (!normalizedQuery) {
+        cards.forEach(card => card.style.display = '');
+        return;
+    }
+    
+    // Filtrar baseado no nome do artista (contido no primeiro elemento .card-title)
+    cards.forEach(card => {
+        const titleEl = card.querySelector('.card-title');
+        const subtitleEl = card.querySelector('.card-subtitle');
+        
+        if (!titleEl) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        // Normalizar nome do artista e contagem de músicas (remove acentos)
+        const normalizedTitle = normalizeString(titleEl.textContent);
+        const normalizedSubtitle = subtitleEl ? normalizeString(subtitleEl.textContent) : '';
+        
+        const matches = normalizedTitle.includes(normalizedQuery) || normalizedSubtitle.includes(normalizedQuery);
+        card.style.display = matches ? '' : 'none';
     });
 }
 
@@ -2136,6 +2260,10 @@ async function openArtistsModal() {
 }
 
 function closeArtistsModal() {
+    // Limpar filtro de busca
+    const searchInput = document.getElementById('artistSearchInput');
+    if (searchInput) searchInput.value = '';
+    
     closeModalWithAnimation('artistsModal', () => {
         // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
         // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
@@ -3992,16 +4120,20 @@ function setupMobileSearch() {
 async function searchMusics(query) {
     try {
         const results = [];
-        const lowerQuery = query.toLowerCase();
+        const normalizedQuery = normalizeString(query);
 
         // Carregar todas as playlists para busca
         const allPlaylists = await loadAllPlaylists();
 
         allPlaylists.forEach((playlist, playlistIndex) => {
             playlist.videos?.forEach((video, videoIndex) => {
+                // Usar normalizeString para comparação tolerante a acentos
+                const normalizedTitle = normalizeString(video.title);
+                const normalizedArtist = normalizeString(video.artist);
+                
                 if (
-                    video.title.toLowerCase().includes(lowerQuery) ||
-                    video.artist.toLowerCase().includes(lowerQuery)
+                    normalizedTitle.includes(normalizedQuery) ||
+                    normalizedArtist.includes(normalizedQuery)
                 ) {
                     results.push({
                         video: video,
@@ -4229,12 +4361,47 @@ function setupEventListeners() {
     document.getElementById('closeSearchModal').addEventListener('click', () => {
         closeModalWithAnimation('searchModal');
     });
-    
+
     document.getElementById('searchModal').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) {
             closeModalWithAnimation('searchModal');
         }
     });
+
+    // ============================================================================
+    // 🔍 FILTRO DE BUSCA NOS MODAIS - Novo padrão de navegação
+    // ============================================================================
+    // Listener para o input de busca do modal de Playlists
+    const playlistSearchInput = document.getElementById('playlistSearchInput');
+    if (playlistSearchInput) {
+        playlistSearchInput.addEventListener('input', (e) => {
+            filterPlaylistCards(e.target.value);
+        });
+        
+        // Limpar filtro ao fechar o modal
+        const playlistModal = document.getElementById('playlistModal');
+        if (playlistModal) {
+            playlistModal.addEventListener('auxClick', () => {
+                playlistSearchInput.value = '';
+            });
+        }
+    }
+    
+    // Listener para o input de busca do modal de Artistas
+    const artistSearchInput = document.getElementById('artistSearchInput');
+    if (artistSearchInput) {
+        artistSearchInput.addEventListener('input', (e) => {
+            filterArtistCards(e.target.value);
+        });
+        
+        // Limpar filtro ao fechar o modal
+        const artistsModal = document.getElementById('artistsModal');
+        if (artistsModal) {
+            artistsModal.addEventListener('auxClick', () => {
+                artistSearchInput.value = '';
+            });
+        }
+    }
     
     // ============================================================================
     // 🔒 CONTROLES DO PLAYER - CONGELADO CONTRA MODIFICAÇÕES
@@ -4268,7 +4435,23 @@ function setupEventListeners() {
     btnNext.addEventListener('click', nextVideo);
     btnRepeat.addEventListener('click', toggleRepeat);
     
-    // Barra de progresso real (range input)
+    // 🔒 BARRA DE PROGRESSO - HITBOX EXPANDIDA PARA MOBILE (40px)
+    // ============================================================================
+    // ⚠️ CRÍTICO: A hitbox foi expandida via CSS (padding + margin + pseudo-elementos)
+    // mas os eventos seguem o padrão normal. A zona de toque agora é ~40px,
+    // facilitando cliques/toques no mobile sem alterar a aparência (barra continua 3px).
+    // 
+    // Eventos suportados:
+    // - input: Dispara continuamente enquanto arrasta (progressDragging = true)
+    // - change: Dispara ao soltar (progressDragging = false, executa seek)
+    // - pointerdown/up: Captura robusta cross-browser (mouse, touch, pen)
+    // 
+    // ⛔ O QUE QUEBRARIA:
+    // ❌ Remover event listeners
+    // ❌ Remover progressBar.addEventListener (input/change/pointerdown/up)
+    // ❌ Alterar logic de progressDragging
+    // ❌ Remover onProgressChange call no pointerup
+    // ============================================================================
     const progressBar = document.getElementById('progressBar');
     if (progressBar) {
         // Input contínuo (arrastar) e change (finalizar)

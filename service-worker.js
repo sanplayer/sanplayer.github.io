@@ -2,7 +2,7 @@
 // SERVICE WORKER - SanPlayer PWA
 // ============================================================================
 
-const CACHE_NAME = 'sanplayer-v1.0.4';
+const CACHE_NAME = 'sanplayer-v1.0.5';
 const URLS_TO_CACHE = [
     '/',
     '/index.html',
@@ -95,8 +95,8 @@ self.addEventListener('push', (event) => {
 
     const options = {
         body: data.body,
-        icon: './icons/icon192.png',
-        badge: './icons/favicon-96x96.png',
+        icon: '/icons/icon192.png',
+        badge: '/icons/favicon-96x96.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
@@ -113,7 +113,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
-        clients.openWindow('./index.html')
+        clients.openWindow('/index.html')
     );
 });
 

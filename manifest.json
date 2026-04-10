@@ -1,9 +1,9 @@
 {
   "name": "SanPlayer",
   "short_name": "SanPlayer",
-  "id": "/sanplayer-v1.0.4",
+  "id": "/sanplayer-v1.0.5",
   "description": "Player de músicas personalizado com experiência estilo YouTube Music. Acesse suas playlists, artistas favoritos e músicas em qualquer lugar.",
-  "start_url": "index.html",
+  "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
@@ -32,25 +32,25 @@
   ],
   "screenshots": [
     {
-      "src": "screenshots/tela1.jpg",
+      "src": "/screenshots/tela1.jpg",
       "sizes": "1080x1920",
       "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "screenshots/tela2.jpg",
+      "src": "/screenshots/tela2.jpg",
       "sizes": "1080x1920",
       "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "screenshots/tela3.jpg",
+      "src": "/screenshots/tela3.jpg",
       "sizes": "1080x1920",
       "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "screenshots/screenshot-wide.jpg",
+      "src": "/screenshots/screenshot-wide.jpg",
       "sizes": "1920x1080",
       "type": "image/jpeg",
       "form_factor": "wide"
@@ -58,13 +58,13 @@
   ],
   "icons": [
     {
-      "src": "icons/icon192.png",
+      "src": "/icons/icon192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon512.png",
+      "src": "/icons/icon512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -76,10 +76,10 @@
       "name": "Playlists",
       "short_name": "Playlists",
       "description": "Acesse suas playlists salvas",
-      "url": "index.html?modal=playlists",
+      "url": "/index.html?modal=playlists",
       "icons": [
         {
-          "src": "shortcuts/playlist.png",
+          "src": "/shortcuts/playlist.png",
           "sizes": "128x128",
           "type": "image/png"
         }
@@ -89,10 +89,10 @@
       "name": "Artistas",
       "short_name": "Artistas",
       "description": "Veja seus artistas favoritos",
-      "url": "index.html?modal=artists",
+      "url": "/index.html?modal=artists",
       "icons": [
         {
-          "src": "shortcuts/artist.png",
+          "src": "/shortcuts/artist.png",
           "sizes": "128x128",
           "type": "image/png"
         }
@@ -102,10 +102,10 @@
       "name": "Favoritos",
       "short_name": "Favoritos",
       "description": "Suas múscas favoritas",
-      "url": "index.html?modal=favorites",
+      "url": "/index.html?modal=favorites",
       "icons": [
         {
-          "src": "shortcuts/heart.png",
+          "src": "/shortcuts/heart.png",
           "sizes": "128x128",
           "type": "image/png"
         }
