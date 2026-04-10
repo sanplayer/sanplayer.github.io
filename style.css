@@ -2037,7 +2037,7 @@ img {
 @media (max-width: 1023px) {
     .app-sidebar {
         display: none;
-        -webkit-tap-highlight-color: transparent;
+        
     }
 
     .footer-content-wrapper {
@@ -2756,7 +2756,6 @@ img {
     backdrop-filter: blur(3px);
     color: rgba(255, 255, 255, 0.8);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-    -webkit-tap-highlight-color: transparent;
 }
 
 /* ==========================================================================
