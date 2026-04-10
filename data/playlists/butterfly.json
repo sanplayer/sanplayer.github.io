@@ -1,0 +1,111 @@
+{
+  "playlists": [
+    {
+      "name": "Butterfly",
+      "slug": "butterfly",
+      "cover": "butterfly.jpg",
+      "videos": [
+        {
+          "id": "R6GvngInVmc",
+          "title": "Honey",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "LlOVlJU4CZU",
+          "title": "Butterfly",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "IvCf2J1r4EA",
+          "title": "My All",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "_PAt_3WCOeM",
+          "title": "The Roof",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "myf2YKCt9g8",
+          "title": "Fourth of July",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "bMen93aiBNw",
+          "title": "Breakdown",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "TuliqgIJo2c",
+          "title": "Babydoll",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "oFq4kerc-w0",
+          "title": "Close My Eyes",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "5MzCtdKblUM",
+          "title": "Whenever You Call",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "2ievgOsH7a0",
+          "title": "Fly Away",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "CwqMOScXLWI",
+          "title": "The Beautiful Ones",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "SOWKBtxoXH0",
+          "title": "Outside",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "j6vQMl7M210",
+          "title": "Whenever You Call",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "ep499_-WDjo",
+          "title": "The Roof",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "7rAtrTxb6B0",
+          "title": "Butterfly",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "osKyfIvW4ww",
+          "title": "My All",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "jNg0X0UuYos",
+          "title": "Fourth of July",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "bTYq1nQ5HrA",
+          "title": "Outside",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "3KiNK-3FIEw",
+          "title": "Butterfly",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "1gQrZz6_56c",
+          "title": "Honey",
+          "artist": "Mariah Carey"
+        }
+      ]
+    }
+  ]
+}

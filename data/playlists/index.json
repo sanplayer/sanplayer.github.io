@@ -28,6 +28,13 @@
     "url": "./data/playlists/sertanejo.json"
   },
   {
+    "id": "butterfly",
+    "title": "Butterfly",
+    "name": "Butterfly",
+    "cover": "butterfly.jpg",
+    "url": "./data/playlists/butterfly.json"
+  },
+  {
     "id": "helios-deep",
     "title": "Helios Deep",
     "name": "Helios Deep",
