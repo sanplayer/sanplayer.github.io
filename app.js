@@ -87,6 +87,9 @@ let videoToAdd = null;              // Guardar vídeo a ser adicionado
 let pwaInstallPrompt = null;        // Será preenchido pelo evento beforeinstallprompt
 let pwaInstallTimeout = null;       // Timer para mostrar o prompt depois de 30s
 
+// 🔔 Service Worker Update
+let pendingWorker = null;           // Referência ao worker em espera para atualização
+
 // Keyboard offset throttle & cache
 let keyboardOffsetTimeout = null;   // Throttle para updateKeyboardOffset
 let lastKeyboardOffset = 0;         // Cache do último offset calculado (evita reflow desnecessário)
@@ -1150,6 +1153,10 @@ async function initApp() {
     // 🔒 JAMAIS SEPARAR ESSAS DUAS LINHAS OU INVERTER A ORDEM
     setupEventListeners();
     
+    // 🔔 Inicializar sistema de notificações (atualização SW)
+    updateNotificationIconState();  // Restaurar estado ao carregar
+    setupNotificationButtonListener();  // Setup listener do botão
+    
     if (hasPlaylistParam || hasArtistParam || hasModalParam) {
         console.log('[Init] 🔗 Parâmetros de navegação detectados, chamando handleHashNavigation()');
         console.log('[Init] Params:', { playlistId: params.get('playlistId'), artistId: params.get('artistId'), modal: params.get('modal') });
@@ -1366,16 +1373,69 @@ function showUpdateBanner(worker) {
     const btnNow = document.getElementById('btn-update-now');
     const btnLater = document.getElementById('btn-update-later');
 
+    // 🔒 Guardar referência do worker para uso posterior
+    pendingWorker = worker;
+
     banner.classList.add('show');
 
+    // ✅ ATUALIZAR AGORA
     btnNow.onclick = () => {
         worker.postMessage({ type: 'SKIP_WAITING' });
+        // Limpar estado de atualização pendente
+        localStorage.removeItem('hasUpdatePending');
+        updateNotificationIconState();
         window.location.reload();
     };
 
+    // ⏸️ DEPOIS - Persistir estado e mostrar indicador no header
     btnLater.onclick = () => {
+        // Salvar em localStorage que há atualização pendente
+        localStorage.setItem('hasUpdatePending', 'true');
+        
+        // Esconder banner
         banner.classList.remove('show');
+        
+        // Atualizar ícone de notificações no header
+        updateNotificationIconState();
     };
+}
+
+// ============================================================================
+// SERVICE WORKER - GERENCIAMENTO DE ESTADO DE NOTIFICAÇÃO
+// ============================================================================
+
+/**
+ * Atualiza o estado visual do ícone de notificações no header
+ * Verifica localStorage para saber se há atualização pendente
+ */
+function updateNotificationIconState() {
+    const notificationBtn = document.getElementById('btn-notifications');
+    const hasUpdatePending = localStorage.getItem('hasUpdatePending') === 'true';
+
+    if (hasUpdatePending) {
+        notificationBtn.classList.add('unread');
+    } else {
+        notificationBtn.classList.remove('unread');
+    }
+}
+
+/**
+ * Listener para botão de notificações
+ * Se há atualização pendente, reabre o banner
+ */
+function setupNotificationButtonListener() {
+    const notificationBtn = document.getElementById('btn-notifications');
+    
+    notificationBtn.addEventListener('click', () => {
+        const hasUpdatePending = localStorage.getItem('hasUpdatePending') === 'true';
+        
+        if (hasUpdatePending && pendingWorker) {
+            // Reabrir banner
+            const banner = document.getElementById('update-banner');
+            banner.classList.add('show');
+        }
+        // Aqui você pode adicionar outras ações de notificação no futuro
+    });
 }
 
 // ============================================================================

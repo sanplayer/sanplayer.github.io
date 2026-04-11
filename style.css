@@ -1073,6 +1073,48 @@ img {
     cursor: pointer;
 }
 
+/* 🔔 Button de Notificações com indicador visual */
+.notification-btn {
+    position: relative;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+}
+
+.notification-btn:hover {
+    opacity: 0.8;
+}
+
+/* Badge vermelho que aparece quando há notificação pendente */
+.notification-btn.unread::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-red);
+    border-radius: 50%;
+    animation: pulse-badge 1.5s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
 /* ==========================================================================
    4. LAYOUT PRINCIPAL (Sidebar, VÃƒÂ­deo, Playlist)
    ========================================================================== */
@@ -2786,7 +2828,7 @@ img {
     padding-right: 2rem;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     background: linear-gradient(0deg, rgba(19, 19, 19, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
     backdrop-filter: blur(3px);
     color: rgba(255, 255, 255, 0.8);
