@@ -1375,26 +1375,50 @@ function initServiceWorker() {
  * Handler para botão "ATUALIZAR AGORA"
  * Executa o skipWaiting e recarrega a página
  */
-function handleUpdateNow() {
-    if (!pendingWorker) {
-        console.warn('[SW] Nenhum worker pendente para atualizar');
-        return;
-    }
+function handleUpdateNow(event) {
+    event.preventDefault();
+    event.stopPropagation();
     
-    pendingWorker.postMessage({ type: 'SKIP_WAITING' });
+    if (!pendingWorker) return;
+    
+    // Limpar localStorage ANTES de atualizar
     localStorage.removeItem('hasUpdatePending');
     updateNotificationIconState();
-    window.location.reload();
+    
+    // Enviar mensagem ao worker para pular a fase de "waiting"
+    pendingWorker.postMessage({ type: 'SKIP_WAITING' });
+    
+    // Aguardar o novo controller assumir controle
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+            window.location.reload();
+            refreshing = true;
+        }
+    });
+    
+    // Timeout de segurança: se o controllerchange não disparar em 2s, reload mesmo assim
+    setTimeout(() => {
+        if (!refreshing) {
+            window.location.reload();
+            refreshing = true;
+        }
+    }, 2000);
 }
 
 /**
  * Handler para botão "DEPOIS"
  * Salva o estado e fecha o banner
  */
-function handleUpdateLater() {
+function handleUpdateLater(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
     localStorage.setItem('hasUpdatePending', 'true');
+    
     const banner = document.getElementById('update-banner');
     banner.classList.remove('show');
+    
     updateNotificationIconState();
 }
 
@@ -1407,18 +1431,16 @@ function showUpdateBanner(worker) {
     // 🔒 Guardar referência do worker para uso posterior
     pendingWorker = worker;
 
-    banner.classList.add('show');
-
-    // 🔄 Remover listeners anteriores para evitar duplicação
-    // (importante se updatefound for disparado múltiplas vezes)
+    // 🔄 Remover listeners anteriores para começar limpo
     btnNow.removeEventListener('click', handleUpdateNow);
     btnLater.removeEventListener('click', handleUpdateLater);
 
-    // ✅ ATUALIZAR AGORA
+    // ✅ Adicionar listeners frescos
     btnNow.addEventListener('click', handleUpdateNow);
-
-    // ⏸️ DEPOIS - Persistir estado e mostrar indicador no header
     btnLater.addEventListener('click', handleUpdateLater);
+
+    // Mostrar banner
+    banner.classList.add('show');
 }
 
 // ============================================================================
@@ -1447,16 +1469,27 @@ function updateNotificationIconState() {
 function setupNotificationButtonListener() {
     const notificationBtn = document.getElementById('btn-notifications');
     
-    notificationBtn.addEventListener('click', () => {
+    notificationBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const hasUpdatePending = localStorage.getItem('hasUpdatePending') === 'true';
         
         if (hasUpdatePending) {
-            // Reabrir banner - sempre abre se há update pendente
-            // (pendingWorker será usado quando usuário clica "ATUALIZAR AGORA")
+            // Reabrir banner com listeners frescos
             const banner = document.getElementById('update-banner');
             banner.classList.add('show');
+            
+            // Registrar listeners novamente (importante para a segunda vez)
+            const btnNow = document.getElementById('btn-update-now');
+            const btnLater = document.getElementById('btn-update-later');
+            
+            btnNow.removeEventListener('click', handleUpdateNow);
+            btnLater.removeEventListener('click', handleUpdateLater);
+            
+            btnNow.addEventListener('click', handleUpdateNow);
+            btnLater.addEventListener('click', handleUpdateLater);
         }
-        // Aqui você pode adicionar outras ações de notificação no futuro
     });
 }
 
