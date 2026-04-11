@@ -2,7 +2,7 @@
 // SERVICE WORKER - SanPlayer PWA
 // ============================================================================
 
-const CACHE_NAME = 'sanplayer-v1.1.5';
+const CACHE_NAME = 'sanplayer-v1.1.7';
 const URLS_TO_CACHE = [
     './',
     'index.html',
@@ -175,6 +175,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
+        console.log('[ServiceWorker] SKIP_WAITING recebido - ativando novo worker...');
         self.skipWaiting();
     }
 });
