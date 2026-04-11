@@ -66,6 +66,7 @@ const player = {
     viewingFavorites: false,
     currentFavoriteId: null,        // ID do favorito quando visualizando favoritos
     isLoadingPlaylist: false,       // Flag para indicar carregamento
+    previewVideo: null,             // 🎬 Rastreia qual vídeo está em preview na tela (pode não estar tocando)
 };
 
 // ============================================================================
@@ -2871,6 +2872,129 @@ function showToast(message) {
     showFeedbackModal(message);
 }
 
+// ============================================================================
+// NOVA ARQUITETURA: COMPARTILHAMENTO DESACOPLADO
+// ============================================================================
+// Em vez de lógica duplicada em cada botão, centralizamos:
+// 1. shareVideo() → função única de compartilhamento
+// 2. resolveVideoContext() → resolver qual video/contexto compartilhar
+// 3. handleShare() → handler genérico reutilizável
+// ============================================================================
+
+/**
+ * 🎯 FUNÇÃO CENTRAL DE COMPARTILHAMENTO
+ * Responsável ÚNICA por compartilhar um vídeo usando navigator.share + fallback
+ * 
+ * @param {Object} video - Objeto vídeo { id, title, artist }
+ * @param {Object} playlist - Objeto playlist opcional (para contexto apenas)
+ */
+function shareVideo(video, playlist) {
+    if (!video || !video.id) {
+        console.warn('[Share] Vídeo inválido:', video);
+        return;
+    }
+
+    // 🌐 Construir URL de compartilhamento
+    const url = `${window.location.origin}${window.location.pathname}?videoId=${video.id}`;
+    
+    // 📝 Construir texto de compartilhamento
+    const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
+    
+    const shareData = {
+        title: 'SanPlayer',
+        text: text,
+        url: url
+    };
+    
+    // 📤 Tentar Web Share API
+    if (navigator.share) {
+        navigator.share(shareData).catch(() => {});
+    } else {
+        // 📋 Fallback: clipboard
+        const shareText = `${text}\n${url}`;
+        try { 
+            navigator.clipboard.writeText(shareText);
+            showToast('Link copiado para compartilhamento!');
+        } catch (e) {
+            console.warn('[Share] Erro ao copiar para clipboard:', e);
+        }
+    }
+}
+
+/**
+ * 🧠 RESOLVER DE CONTEXTO
+ * Determina qual vídeo/playlist compartilhar baseado na fonte (player, list, preview)
+ * 
+ * @param {String} source - Fonte de ação: 'player', 'list', 'preview'
+ * @param {Object} extra - Dados extras { video, index, ...}
+ * @returns {Object} { video, playlist }
+ */
+function resolveVideoContext(source, extra = {}) {
+    const DEFAULT_CONTEXT = { video: null, playlist: null };
+    
+    switch (source) {
+        case 'player':
+            // 🎵 Contexto do player: música atual
+            if (!player.currentPlaylist || player.currentVideoIndex === undefined) {
+                return DEFAULT_CONTEXT;
+            }
+            return {
+                video: player.currentPlaylist.videos[player.currentVideoIndex],
+                playlist: player.currentPlaylist
+            };
+        
+        case 'list':
+            // 📃 Contexto da lista: item específico
+            if (extra.video) {
+                return {
+                    video: extra.video,
+                    playlist: player.currentPlaylist
+                };
+            }
+            return DEFAULT_CONTEXT;
+        
+        case 'preview':
+            // 🔥 Contexto de preview: vídeo na tela (pode não estar tocando)
+            if (player.previewVideo) {
+                return {
+                    video: player.previewVideo,
+                    playlist: null
+                };
+            }
+            return DEFAULT_CONTEXT;
+        
+        default:
+            console.warn('[Share] Contexto desconhecido:', source);
+            return DEFAULT_CONTEXT;
+    }
+}
+
+/**
+ * 🔘 HANDLER GENÉRICO DE COMPARTILHAMENTO
+ * Chamada por TODOS os botões de "compartilhar" de qualquer contexto
+ * Resolve o contexto + chama shareVideo()
+ * 
+ * @param {String} source - Fonte: 'player', 'list', 'preview'
+ * @param {Object} extra - Dados extras (ex: { video, index })
+ */
+function handleShare(source, extra = {}) {
+    const context = resolveVideoContext(source, extra);
+    
+    if (!context.video) {
+        console.warn('[Share] Nenhum vídeo encontrado para compartilhar');
+        showToast('Impossível compartilhar: nenhum vídeo selecionado');
+        return;
+    }
+    
+    // Validar e mesclar dados extras — extra.video deve ter .id válido
+    const video = (extra?.video && extra.video.id) 
+        ? extra.video 
+        : context.video;
+    const playlist = context.playlist;
+    
+    shareVideo(video, playlist);
+}
+
 function shareItem(index) {
     const video = player.currentPlaylist.videos[index];
     const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
@@ -2935,12 +3059,11 @@ function shareArtist(artistName) {
  * Compartilhar a música atual
  * Usa navigator.share (Web Share API) se disponível
  * Fallback: copia para clipboard
+ * 
+ * ✅ REFATORADO para usar nova arquitetura centralizada
  */
 function shareMusic() {
-    if (!player.currentPlaylist) return;
-    const video = player.currentPlaylist.videos[player.currentVideoIndex];
-    if (!video) return;
-    shareItem(player.currentVideoIndex);
+    handleShare('player');
 }
 
 async function selectArtist(artist) {
@@ -4563,6 +4686,75 @@ function setupEventListeners() {
             checkIfTitleNeedsTruncation(cTitle);
         }, 150);
     });
+
+    // ============================================================================
+    // 🎬 BOTÕES DO OVERLAY-LAYER-LEGENDAS (Vídeo em Preview)
+    // ============================================================================
+    // Listeners para os botões que ficam sobre o vídeo:
+    // 1️⃣ queue_music (adicionar à playlist)
+    // 2️⃣ add (nova playlist)
+    // 3️⃣ share (NOVO: compartilhar vídeo em preview)
+    // 4️⃣ more_vert (opções do item)
+    // ============================================================================
+    const overlayLegendas = document.querySelector('.overlay-layer-legendas');
+    if (overlayLegendas) {
+        const legendButtons = overlayLegendas.querySelectorAll('button');
+        
+        // Botão 3: Compartilhar vídeo em preview
+        // Usa o novo sistema centralizado de compartilhamento
+        if (legendButtons[2]) {
+            legendButtons[2].addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Garantir que player.previewVideo está definido
+                if (!player.previewVideo && player.currentPlaylist) {
+                    // Fallback: usar vídeo atual se preview não estiver definido
+                    player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
+                }
+                handleShare('preview');
+            });
+        }
+        
+        // Botão 1: Abrir modal de playlists (adicionar item)
+        if (legendButtons[0]) {
+            legendButtons[0].addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Definir vídeo em preview para contexto
+                if (player.currentPlaylist) {
+                    player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
+                }
+                openPlaylistsModal();
+            });
+        }
+        
+        // Botão 2: Criar nova playlist (a partir do vídeo em preview)
+        if (legendButtons[1]) {
+            legendButtons[1].addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Definir vídeo em preview para contexto
+                if (player.currentPlaylist) {
+                    player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
+                }
+                openCreatePlaylistModal();
+            });
+        }
+        
+        // Botão 4: Opções do item (mais_vert)
+        if (legendButtons[3]) {
+            legendButtons[3].addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Definir vídeo em preview para contexto
+                if (player.currentPlaylist) {
+                    player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
+                    currentKebabIndex = player.currentVideoIndex;
+                }
+                openItemOptionsModal(player.currentVideoIndex);
+            });
+        }
+    }
 }
 
 function onProgressInput(event) {
