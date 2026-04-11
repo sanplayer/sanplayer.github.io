@@ -6,6 +6,11 @@
       "cover": "sertanejo.jpg",
       "videos": [
         {
+          "id": "YobLtqIldHI",
+          "title": "Clássicos",
+          "artist": "Bruno & Marrone"
+        },
+        {
           "id": "EJ97zrK1H08",
           "title": "Acústico - Sou Eu",
           "artist": "Chrystian & Ralf"
