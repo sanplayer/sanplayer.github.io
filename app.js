@@ -1367,6 +1367,37 @@ function initServiceWorker() {
     }
 }
 
+// ============================================================================
+// SERVICE WORKER UPDATE - HANDLERS DOS BOTÕES
+// ============================================================================
+
+/**
+ * Handler para botão "ATUALIZAR AGORA"
+ * Executa o skipWaiting e recarrega a página
+ */
+function handleUpdateNow() {
+    if (!pendingWorker) {
+        console.warn('[SW] Nenhum worker pendente para atualizar');
+        return;
+    }
+    
+    pendingWorker.postMessage({ type: 'SKIP_WAITING' });
+    localStorage.removeItem('hasUpdatePending');
+    updateNotificationIconState();
+    window.location.reload();
+}
+
+/**
+ * Handler para botão "DEPOIS"
+ * Salva o estado e fecha o banner
+ */
+function handleUpdateLater() {
+    localStorage.setItem('hasUpdatePending', 'true');
+    const banner = document.getElementById('update-banner');
+    banner.classList.remove('show');
+    updateNotificationIconState();
+}
+
 // Função para exibir o banner e configurar os botões
 function showUpdateBanner(worker) {
     const banner = document.getElementById('update-banner');
@@ -1378,26 +1409,16 @@ function showUpdateBanner(worker) {
 
     banner.classList.add('show');
 
+    // 🔄 Remover listeners anteriores para evitar duplicação
+    // (importante se updatefound for disparado múltiplas vezes)
+    btnNow.removeEventListener('click', handleUpdateNow);
+    btnLater.removeEventListener('click', handleUpdateLater);
+
     // ✅ ATUALIZAR AGORA
-    btnNow.onclick = () => {
-        worker.postMessage({ type: 'SKIP_WAITING' });
-        // Limpar estado de atualização pendente
-        localStorage.removeItem('hasUpdatePending');
-        updateNotificationIconState();
-        window.location.reload();
-    };
+    btnNow.addEventListener('click', handleUpdateNow);
 
     // ⏸️ DEPOIS - Persistir estado e mostrar indicador no header
-    btnLater.onclick = () => {
-        // Salvar em localStorage que há atualização pendente
-        localStorage.setItem('hasUpdatePending', 'true');
-        
-        // Esconder banner
-        banner.classList.remove('show');
-        
-        // Atualizar ícone de notificações no header
-        updateNotificationIconState();
-    };
+    btnLater.addEventListener('click', handleUpdateLater);
 }
 
 // ============================================================================
