@@ -1429,8 +1429,9 @@ function setupNotificationButtonListener() {
     notificationBtn.addEventListener('click', () => {
         const hasUpdatePending = localStorage.getItem('hasUpdatePending') === 'true';
         
-        if (hasUpdatePending && pendingWorker) {
-            // Reabrir banner
+        if (hasUpdatePending) {
+            // Reabrir banner - sempre abre se há update pendente
+            // (pendingWorker será usado quando usuário clica "ATUALIZAR AGORA")
             const banner = document.getElementById('update-banner');
             banner.classList.add('show');
         }
