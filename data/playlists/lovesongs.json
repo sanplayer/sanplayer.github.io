@@ -296,11 +296,6 @@
           "artist": "ICEHOUSE"
         },
         {
-          "id": "aQlFN3srRE",
-          "title": "Always Somewhere",
-          "artist": "Scorpions"
-        },
-        {
           "id": "7pOr3dBFAeY",
           "title": "Still Loving You",
           "artist": "Scorpions"
@@ -544,6 +539,51 @@
           "id": "WQnAxOQxQIU",
           "title": "Truly Madly Deeply",
           "artist": "Savage Garden"
+        },
+        {
+          "id": "NAWQxIq-9-Q",
+          "title": "Adagio",
+          "artist": "Lara Fabian"
+        },
+        {
+          "id": "BP2KnLemT78",
+          "title": "Caruso",
+          "artist": "Lara Fabian"
+        },
+        {
+          "id": "_D6L_NNcEUs",
+          "title": "Je t'aime (Live on The Voice, Romania, 2024)",
+          "artist": "Lara Fabian"
+        },
+        {
+          "id": "0IA3ZvCkRkQ",
+          "title": "Hero",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "Hat1Hc9SNwE",
+          "title": "Without You",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "rXPfovXw2tw",
+          "title": "Back At One",
+          "artist": "Brian McKnight"
+        },
+        {
+          "id": "HyTpu6BmE88",
+          "title": "That's What Friends Are For",
+          "artist": "Dionne Warwick"
+        },
+        {
+          "id": "UXxRyNvTPr8",
+          "title": "One Sweet Day",
+          "artist": "Mariah Carey"
+        },
+        {
+          "id": "AIBv2GEnXlc",
+          "title": "Never Tear Us Apart",
+          "artist": "INXS"
         }
       ]
     }

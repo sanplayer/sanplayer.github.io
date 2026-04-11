@@ -15,6 +15,13 @@
   },
   {
     "id": "boleros",
+    "title": "DVD Priscila Senna 15 Anos",
+    "name": "DVD Priscila Senna 15 Anos",
+    "cover": "dvd-priscila-senna-15-anos-completo.jpg",
+    "url": "./data/playlists/dvd-priscila-senna-15-anos-completo.json"
+  },
+  {
+    "id": "boleros",
     "title": "Boleros",
     "name": "Boleros",
     "cover": "boleros.jpg",
