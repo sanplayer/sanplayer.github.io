@@ -6,11 +6,6 @@
       "cover": "rezilienza.jpg",
       "videos": [
         {
-          "id": "pz_Zr3U6t3k",
-          "title": "Costa Mee - Stay Another Night",
-          "artist": "Rezilienza"
-        },
-        {
           "id": "pXKwkVFL6pE",
           "title": "N.Z. - Moonlight",
           "artist": "Rezilienza"
@@ -1668,6 +1663,11 @@
         {
           "id": "0O_2I9vDoiA",
           "title": "DJ Tarkan ft. Yalena - Get Better",
+          "artist": "Rezilienza"
+        },
+        {
+          "id": "pz_Zr3U6t3k",
+          "title": "Costa Mee - Stay Another Night",
           "artist": "Rezilienza"
         }
       ]
