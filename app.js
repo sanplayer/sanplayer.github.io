@@ -1344,14 +1344,19 @@ function closeZoomAlert() {
 function initServiceWorker() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js').then((registration) => {
-            console.log('[App] Service Worker registrado com sucesso:', registration);
+            console.log('[App] ✅ Service Worker registrado:', registration.scope);
             
             // Escuta por novas atualizações sendo instaladas
             registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
+                console.log('[App] 🔍 updatefound: novo worker detectado');
+                
                 newWorker.addEventListener('statechange', () => {
+                    console.log('[App] Worker state changed:', newWorker.state);
+                    
                     // Quando o novo worker termina de instalar e fica 'waiting'
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        console.log('[App] 📢 Novo worker está waiting, mostrando banner');
                         showUpdateBanner(newWorker);
                     }
                 });
@@ -1359,6 +1364,7 @@ function initServiceWorker() {
 
             // Verificar atualizações a cada 1 minuto
             setInterval(() => {
+                console.log('[App] 🔄 Verificando atualizações do Service Worker...');
                 registration.update();
             }, 60 * 1000);
         }).catch((error) => {
@@ -1370,40 +1376,90 @@ function initServiceWorker() {
 // ============================================================================
 // SERVICE WORKER UPDATE - HANDLERS DOS BOTÕES
 // ============================================================================
+// ============================================================================
+
+// ============================================================================
+// SERVICE WORKER UPDATE - HANDLERS DOS BOTÕES
+// ============================================================================
 
 /**
  * Handler para botão "ATUALIZAR AGORA"
  * Executa o skipWaiting e recarrega a página
+ * 
+ * 🧠 Lógica robusta:
+ * - Se registration.waiting existe: enviar SKIP_WAITING
+ * - Se não existe: o worker já foi promovido, fazer reload simples
+ * - Resultado: funciona sempre
  */
-function handleUpdateNow(event) {
+async function handleUpdateNow(event) {
     event.preventDefault();
     event.stopPropagation();
     
-    if (!pendingWorker) return;
+    console.log('[Update] ⏱️ handleUpdateNow disparado');
     
-    // Limpar localStorage ANTES de atualizar
-    localStorage.removeItem('hasUpdatePending');
-    updateNotificationIconState();
-    
-    // Enviar mensagem ao worker para pular a fase de "waiting"
-    pendingWorker.postMessage({ type: 'SKIP_WAITING' });
-    
-    // Aguardar o novo controller assumir controle
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
+    try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        
+        console.log('[Update] Registration:', {
+            scope: registration?.scope,
+            waiting: registration?.waiting?.state,
+            active: registration?.active?.state,
+            installing: registration?.installing?.state
+        });
+        
+        if (registration?.waiting) {
+            console.log('[Update] ✅ Waiting worker encontrado, enviando SKIP_WAITING');
+            
+            // Limpar localStorage ANTES de atualizar
+            localStorage.removeItem('hasUpdatePending');
+            updateNotificationIconState();
+            
+            // Enviar mensagem ao worker para pular a fase de "waiting"
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            
+            console.log('[Update] 👂 Aguardando controllerchange...');
+            
+            // Aguardar o novo controller assumir controle
+            let refreshing = false;
+            const controllerChangeHandler = () => {
+                console.log('[Update] 🔄 controllerchange disparado!');
+                if (!refreshing) {
+                    console.log('[Update] 🔄 Recarregando página...');
+                    window.location.reload();
+                    refreshing = true;
+                }
+            };
+            
+            navigator.serviceWorker.addEventListener('controllerchange', controllerChangeHandler);
+            
+            // Timeout de segurança: se o controllerchange não disparar em 3s, reload mesmo assim
+            setTimeout(() => {
+                console.log('[Update] ⏰ Timeout atingido, refreshing:', refreshing);
+                if (!refreshing) {
+                    console.log('[Update] 🔄 Recarregando página (timeout)...');
+                    window.location.reload();
+                    refreshing = true;
+                }
+                navigator.serviceWorker.removeEventListener('controllerchange', controllerChangeHandler);
+            }, 3000);
+            
+        } else {
+            // Caso B: waiting foi promovido para active (browser atualizou sozinho)
+            // Solução: reload simples carrega a versão nova
+            console.warn('[Update] ⚠️ Nenhum waiting encontrado (browser pode ter atualizado)');
+            console.log('[Update] 🔄 Forçando reload para carregar versão atualizada...');
+            
+            localStorage.removeItem('hasUpdatePending');
+            updateNotificationIconState();
+            
+            // Reload simples = carrega nova versão
             window.location.reload();
-            refreshing = true;
         }
-    });
-    
-    // Timeout de segurança: se o controllerchange não disparar em 2s, reload mesmo assim
-    setTimeout(() => {
-        if (!refreshing) {
-            window.location.reload();
-            refreshing = true;
-        }
-    }, 2000);
+        
+    } catch (error) {
+        console.error('[Update] ❌ Erro ao atualizar:', error);
+        alert('Erro ao atualizar. Tentando novamente...');
+    }
 }
 
 /**
@@ -1424,14 +1480,21 @@ function handleUpdateLater(event) {
 
 // Função para exibir o banner e configurar os botões
 function showUpdateBanner(worker) {
+    console.log('[Update] 📢 Mostrando banner de atualização');
+    
     const banner = document.getElementById('update-banner');
     const btnNow = document.getElementById('btn-update-now');
     const btnLater = document.getElementById('btn-update-later');
+    
+    if (!banner || !btnNow || !btnLater) {
+        console.error('[Update] ❌ Elementos do banner não encontrados');
+        return;
+    }
 
-    // 🔒 Guardar referência do worker para uso posterior
+    // 🔒 Guardar referência do worker (pode ser perdida depois)
     pendingWorker = worker;
 
-    // 🔄 Remover listeners anteriores para começar limpo
+    // 🔄 Remover listeners anteriores
     btnNow.removeEventListener('click', handleUpdateNow);
     btnLater.removeEventListener('click', handleUpdateLater);
 
@@ -1441,6 +1504,7 @@ function showUpdateBanner(worker) {
 
     // Mostrar banner
     banner.classList.add('show');
+    console.log('[Update] ✅ Banner aberto');
 }
 
 // ============================================================================
@@ -1474,15 +1538,20 @@ function setupNotificationButtonListener() {
         e.stopPropagation();
         
         const hasUpdatePending = localStorage.getItem('hasUpdatePending') === 'true';
+        console.log('[Update] 🔔 Ícone clicado, hasUpdatePending:', hasUpdatePending);
         
         if (hasUpdatePending) {
-            // Reabrir banner com listeners frescos
+            console.log('[Update] 📋 Reabrindo banner de atualização');
+            
+            // Reabrir banner
             const banner = document.getElementById('update-banner');
             banner.classList.add('show');
             
-            // Registrar listeners novamente (importante para a segunda vez)
+            // Registrar listeners novamente
             const btnNow = document.getElementById('btn-update-now');
             const btnLater = document.getElementById('btn-update-later');
+            
+            console.log('[Update] 🔄 Re-registrando listeners dos botões');
             
             btnNow.removeEventListener('click', handleUpdateNow);
             btnLater.removeEventListener('click', handleUpdateLater);
@@ -4073,20 +4142,22 @@ function toggleFavorite(event) {
     if (!player.currentPlaylist) return;
     
     const video = player.currentPlaylist.videos[player.currentVideoIndex];
+    if (!video || !video.id) {
+        console.error('[Favoritos] Vídeo ou ID do vídeo não encontrado');
+        return;
+    }
+    
     const button = document.getElementById('favButton');
     
-    // Usar o ID correto dependendo do contexto
-    let favoriteId;
-    if (player.viewingFavorites && player.currentFavoriteId) {
-        favoriteId = player.currentFavoriteId;
-    } else {
-        favoriteId = `${player.currentPlaylistIndex}-${player.currentVideoIndex}`;
-    }
+    // 🔥 USAR video.id (YouTube ID) como identificador único
+    // Isso resolve o problema de duplicatas quando a track é tocada de contextos diferentes
+    const favoriteId = video.id;
     
     const index = player.favorites.findIndex(fav => fav.id === favoriteId);
     
     if (index > -1) {
         // Remover de favoritos
+        console.log('[Favoritos] Removendo favorito:', favoriteId);
         player.favorites.splice(index, 1);
         if (button) {
             button.classList.remove('active');
@@ -4098,15 +4169,20 @@ function toggleFavorite(event) {
         }
     } else {
         // Adicionar aos favoritos
-        // Validar duplicacao (profissional: nunca confiar em cliques multiplos)
+        // Validar duplicação (profissional: nunca confiar em cliques múltiplos)
         const alreadyExists = player.favorites.some(fav => fav.id === favoriteId);
         if (alreadyExists) {
-            console.warn('Item ja esta nos favoritos');
+            console.warn('[Favoritos] Item já está nos favoritos:', favoriteId);
             return;
         }
         
+        console.log('[Favoritos] Adicionando favorito:', favoriteId);
+        
         player.favorites.push({
             id: favoriteId,
+            videoId: video.id,
+            title: video.title,
+            artist: video.artist || 'Desconhecido',
             video: video,
             playlist: player.currentPlaylist.name,
         });
@@ -4140,30 +4216,21 @@ function toggleFavorite(event) {
  * Chamada sempre que carregar uma música para sincronizar o botão com favoritos reais
  */
 function syncFavoriteState(track) {
-    if (!track) return;
+    if (!track || !track.id) {
+        console.warn('[Favoritos] Track ou ID não disponível');
+        return;
+    }
     
-    // 🔥 CRÍTICO: Determinar qual favoriteId usar baseado no contexto
-    let favoriteId;
+    // 🔥 CRÍTICO: Usar video.id (YouTube ID) como identificador único
+    // Isso garante sincronização correta independente de onde a track foi tocada
+    // (playlist, busca, favoritos, artista, etc.)
+    const favoriteId = track.id;
     
-    // Se está vendo favoritos E tem um ID válido, usar esse
-    if (player.viewingFavorites && player.currentFavoriteId) {
-        favoriteId = player.currentFavoriteId;
-    } 
-    // Se está em uma playlist normal, construir ID com playlistIndex + videoIndex
-    else if (!player.viewingFavorites && player.currentPlaylistIndex >= 0) {
-        favoriteId = `${player.currentPlaylistIndex}-${player.currentVideoIndex}`;
-    }
-    // Caso especial: artista ou outro contexto
-    else if (player.currentPlaylistIndex === -1) {
-        // Playlist virtual (artista, favoritos antigas, etc)
-        favoriteId = track.id;
-    }
-    // Fallback: usar ID do vídeo se tudo mais falhar
-    else {
-        favoriteId = track.id;
-    }
+    console.log('[Favoritos] Sincronizando estado para track:', favoriteId);
     
     const isFavorite = player.favorites.some(fav => fav.id === favoriteId);
+    
+    console.log('[Favoritos] Resultado da busca:', { favoriteId, isFavorite, totalFavoritos: player.favorites.length });
     
     // Atualizar UI baseado no estado real
     const button = document.getElementById('favButton');

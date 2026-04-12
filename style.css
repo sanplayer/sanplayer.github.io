@@ -1241,6 +1241,7 @@ img {
     border-bottom: 1px solid var(--border-rgba);
     cursor: pointer;
     transition: background 0.2s;
+    user-select: none;
 }
 
 .playlist-item:hover {
