@@ -2,7 +2,7 @@
 // SERVICE WORKER - SanPlayer PWA
 // ============================================================================
 
-const CACHE_NAME = 'sanplayer-v1.1.7';
+const CACHE_NAME = 'sanplayer-v1.2.9';
 const URLS_TO_CACHE = [
     './',
     'index.html',
@@ -20,7 +20,7 @@ const URLS_TO_CACHE = [
 // ============================================================================
 
 self.addEventListener('install', (event) => {
-    console.log('[ServiceWorker] Installing...');
+    console.log('[ServiceWorker] Installing... CACHE_NAME:', CACHE_NAME);
     
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -39,10 +39,11 @@ self.addEventListener('install', (event) => {
 // ============================================================================
 
 self.addEventListener('activate', (event) => {
-    console.log('[ServiceWorker] Activating...');
+    console.log('[ServiceWorker] Activating... CACHE_NAME:', CACHE_NAME);
     
     event.waitUntil(
         caches.keys().then((cacheNames) => {
+            console.log('[ServiceWorker] Caches existentes:', cacheNames);
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== CACHE_NAME) {
@@ -55,6 +56,7 @@ self.addEventListener('activate', (event) => {
     );
     
     self.clients.claim();
+    console.log('[ServiceWorker] Ativado e reclamou todos os clientes');
 });
 
 // ============================================================================
@@ -174,9 +176,12 @@ self.addEventListener('fetch', (event) => {
 // ============================================================================
 
 self.addEventListener('message', (event) => {
+    console.log('[ServiceWorker] Mensagem recebida:', event.data);
+    
     if (event.data && event.data.type === 'SKIP_WAITING') {
-        console.log('[ServiceWorker] SKIP_WAITING recebido - ativando novo worker...');
+        console.log('[ServiceWorker] 🔄 SKIP_WAITING recebido - ativando novo worker...');
         self.skipWaiting();
+        console.log('[ServiceWorker] ✅ skipWaiting() chamado');
     }
 });
 
