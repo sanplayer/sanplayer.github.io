@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 🎵 SAN PLAYER - APP.JS
  * 
  * ⚠️ ARCHITECHT PROTECTION ATIVO ⚠️
