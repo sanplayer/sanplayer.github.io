@@ -56,6 +56,27 @@
     "url": "./data/playlists/rezilienza.json"
   },
   {
+    "id": "deep-heaven",
+    "title": "Deep Heaven",
+    "name": "Deep Heaven",
+    "cover": "deep-heaven.jpg",
+    "url": "./data/playlists/deep-heaven.json"
+  },
+  {
+    "id": "deepchill-melody",
+    "title": "DeepChill Melody",
+    "name": "DeepChill Melody",
+    "cover": "deepchill-melody.jpg",
+    "url": "./data/playlists/deepchill-melody.json"
+  },
+  {
+    "id": "music-brokers",
+    "title": "Music Brokers",
+    "name": "Music Brokers",
+    "cover": "music-brokers.jpg",
+    "url": "./data/playlists/music-brokers.json"
+  },
+  {
     "id": "costa-mee",
     "title": "Costa Mee",
     "name": "Costa Mee",
