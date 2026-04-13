@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 🎵 SAN PLAYER - APP.JS
  * 
  * ⚠️ ARCHITECHT PROTECTION ATIVO ⚠️
@@ -2616,22 +2616,56 @@ async function handleHashNavigation() {
 // Listeners para alterações de rota
 // ✨ Hashchange: quando usuário muda #hash manualmente
 window.addEventListener('hashchange', async () => {
+    // 🔒 GUARDRAIL: Não processar roteamento durante inicialização
+    if (!appInitComplete) {
+        console.log('[hashchange] 🔄 Ignorando - app ainda está inicializando');
+        return;
+    }
+    
     // Garantir que playlistsIndex está disponível antes de navegar
     if (player.playlistsIndex.length === 0) {
         await loadPlaylistsIndex();
     }
+    
+    // 💾 CRÍTICO: Se vai processar artistId, carregar TODAS as playlists
+    const params = getRoutingParams();
+    if (params.has('artistId') && playlistCache.size === 0) {
+        console.log('[hashchange] 📦 Pré-carregando playlists antes de selectArtist()...');
+        await loadAllPlaylists();
+    }
+    
     await handleHashNavigation();
 });
 
 // 🔥 Load: fallback robusto para acesso direto via URL (?modal=playlists)
 // Alguns cenários de PWA/shortcuts não disparam hashchange no init
 window.addEventListener('load', async () => {
+    // 🔒 GUARDRAIL: Não processar roteamento durante inicialização
+    if (!appInitComplete) {
+        console.log('[load] 🔄 Ignorando - app ainda está inicializando (appInitComplete=false)');
+        return;
+    }
+    
     const params = getRoutingParams();
     // Se houver parâmetros de rota, garantir que foram processados
     if (params.has('modal') || params.has('videoId') || params.has('playlistId') || params.has('artistId')) {
+        console.log('[load] 🔍 Parâmetros de rota detectados:', {
+            modal: params.get('modal'),
+            videoId: params.get('videoId'),
+            playlistId: params.get('playlistId'),
+            artistId: params.get('artistId')
+        });
+        
         if (player.playlistsIndex.length === 0) {
             await loadPlaylistsIndex();
         }
+        
+        // 💾 CRÍTICO: Se vai processar artistId, carregar TODAS as playlists
+        if (params.has('artistId') && playlistCache.size === 0) {
+            console.log('[load] 📦 Pré-carregando playlists antes de selectArtist()...');
+            await loadAllPlaylists();
+        }
+        
         // handleHashNavigation() já foi chamada em initApp(), mas chamar novamente garante
         // que PWA shortcuts diretos funcionam mesmo em casos edge
         await handleHashNavigation();
@@ -4343,24 +4377,49 @@ function shareMusic() {
 }
 
 async function selectArtist(artist) {
-    console.log('[SelectArtist] INICIADO', { artist });
-    console.log('[SelectArtist] Estado atual:', {
-        isPlaying: player.isPlaying,
-        shouldPlayOnReady: player.shouldPlayOnReady,
-        temPlaylistAtual: !!player.currentPlaylist
+    console.log('[SelectArtist] 🎯 INICIADO', { 
+        artist,
+        appInitComplete,
+        playlistCacheSize: playlistCache.size,
+        playlistsIndexLength: player.playlistsIndex.length
     });
     
     try {
-        console.log('[SelectArtist] Carregando todas as playlists...');
+        console.log('[SelectArtist] 📂 Carregando todas as playlists...');
         // Carregar todas as playlists para filtrar por artista
         const allPlaylists = await loadAllPlaylists();
-        console.log('[SelectArtist] Total de playlists carregadas:', allPlaylists.length);
+        console.log('[SelectArtist] ✅ Playlists carregadas:', {
+            total: allPlaylists.length,
+            cacheSize: playlistCache.size
+        });
+        
+        // 🔍 DEBUG: Listar primeiros artistas para validar dados
+        const allArtists = new Set();
+        allPlaylists.forEach(pl => {
+            pl.videos?.forEach(v => allArtists.add(v.artist));
+        });
+        console.log('[SelectArtist] 🎤 Artistas únicos no sistema:', Array.from(allArtists).slice(0, 10));
 
         // Filtrar vídeos do artista
         const artistVideos = [];
         allPlaylists.forEach(playlist => {
             playlist.videos?.forEach(video => {
-                if (normalize(video.artist) === normalize(artist)) {
+                const videoArtistNormalized = normalize(video.artist);
+                const parameterNormalized = normalize(artist);
+                const matches = videoArtistNormalized === parameterNormalized;
+                
+                // 🔍 DEBUG: Mostrar comparação para "Fábio Jr." 
+                if (video.artist && (video.artist.includes('Fábio') || artist.includes('Fábio'))) {
+                    console.log('[SelectArtist] 🔍 DEBUG comparação "Fábio Jr.":', {
+                        videoArtist: video.artist,
+                        videoNormalized: videoArtistNormalized,
+                        parameterArtist: artist,
+                        parameterNormalized: parameterNormalized,
+                        matches: matches
+                    });
+                }
+                
+                if (matches) {
                     artistVideos.push({
                         ...video,
                         playlistName: playlist.name
@@ -4369,7 +4428,10 @@ async function selectArtist(artist) {
             });
         });
 
-        console.log('[SelectArtist] Vídeos encontrados para artista:', artistVideos.length);
+        console.log('[SelectArtist] ✅ Vídeos encontrados para artista:', {
+            total: artistVideos.length,
+            artistRequested: artist
+        });
 
         // Validação: artista sem vídeos → fallback para home
         if (artistVideos.length === 0) {
