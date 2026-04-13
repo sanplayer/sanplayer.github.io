@@ -518,7 +518,7 @@ async function restorePlayerState() {
         for (const playlist of player.playlistsIndex) {
             const data = await loadPlaylistByUrl(playlist.url);
             if (data?.videos) {
-                const filtered = data.videos.filter(v => safeCompare(v.artist, artistName));
+                const filtered = data.videos.filter(v => normalize(v.artist) === normalize(artistName));
                 artistVideos.push(...filtered);
             }
         }
@@ -3232,29 +3232,24 @@ function closePlaylistsModal() {
  * - "José" → "jose"
  * - "São Paulo" → "sao paulo"
  * - "Frida Kahlo" → "frida kahlo"
- * 
- // Sincronizar estado favorito atual
- * Se remover esta função, TODAS as buscas quebram
- */
-function normalizeString(str) {
-    if (!str) return '';
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-}
-
 /**
- * 🔒 Comparação segura de nomes de artista
- * Trata encoding, trim, e normalização de Unicode para evitar falsos negativos
+ * 🔧 Normalização robusta para comparação de strings e filtragem
+ * Remove acentos, trata encoding Unicode, lowercase e trim
  * 
- * CRÍTICO: Usar SEMPRE para comparação de artist.artist === artistId
+ * Resolve:
+ * - "Fábio Jr." === "Fábio Jr." (mesmo com variações)
+ * - Busca "fabio" encontra "Fábio"
+ * - "São Paulo" === "sao paulo"
  * 
- * Problema corrigido: "Fábio Jr." comparava como diferente por encoding/trim
- * @param {String} a - Primeiro valor (ex: video.artist do JSON)
- * @param {String} b - Segundo valor (ex: artistId da URL)
- * @returns {Boolean} true se são iguais após normalização
+ * Se remover esta função, BUSCA e COMPARAÇÃO DE ARTISTA quebram
  */
-function safeCompare(a, b) {
-    if (!a || !b) return a === b;
-    return a.trim().normalize('NFC') === b.trim().normalize('NFC');
+function normalize(str) {
+    if (!str) return '';
+    return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
 }
 
 // ============================================================================
@@ -3266,20 +3261,20 @@ function safeCompare(a, b) {
  * 
  * ⚠️ LÓGICA CRÍTICA:
  * - Itera sobre cada card no container
- * - Normaliza query e títulos (remove acentos via normalizeString)
+ * - Normaliza query e títulos (remove acentos via normalize())
  * - Oculta/mostra cards usando display: none
  * - Não reordena ou remove cards do DOM
  * 
  * ⛔ O QUE QUEBRARIA:
- * ❌ Remover normalizeString() → busca com acentos quebra
+ * ❌ Remover normalize() → busca com acentos quebra
  * ❌ Usar `.remove()` em vez de `display: none` → quebra re-filtragem
- * ❌ Comparar com title.toLowerCase() ao invés de normalizeString() → acentos quebram
+ * ❌ Comparar com title.toLowerCase() ao invés de normalize() → acentos quebram
  */
 function filterPlaylistCards(query) {
     const container = document.getElementById('playlistCardsContainer');
     if (!container) return;
     
-    const normalizedQuery = normalizeString(query);
+    const normalizedQuery = normalize(query);
     const cards = container.querySelectorAll('.card');
     
     // Se query vazia, mostrar todos os cards
@@ -3299,8 +3294,8 @@ function filterPlaylistCards(query) {
         }
         
         // Normalizar título e subtítulo (remove acentos para comparação)
-        const normalizedTitle = normalizeString(titleEl.textContent);
-        const normalizedSubtitle = subtitleEl ? normalizeString(subtitleEl.textContent) : '';
+        const normalizedTitle = normalize(titleEl.textContent);
+        const normalizedSubtitle = subtitleEl ? normalize(subtitleEl.textContent) : '';
         
         const matches = normalizedTitle.includes(normalizedQuery) || normalizedSubtitle.includes(normalizedQuery);
         card.style.display = matches ? '' : 'none';
@@ -3312,7 +3307,7 @@ function filterPlaylistCards(query) {
  * 
  * ⚠️ LÓGICA CRÍTICA:
  * - Itera sobre cada card no container
- * - Normaliza query e nomes (remove acentos via normalizeString)
+ * - Normaliza query e nomes (remove acentos via normalize)
  * - Oculta/mostra cards usando display: none
  * - Permite buscar "paulo" e encontrar "Paulo", "jose" encontra "José"
  */
@@ -3320,7 +3315,7 @@ function filterArtistCards(query) {
     const container = document.getElementById('artistsCardsContainer');
     if (!container) return;
     
-    const normalizedQuery = normalizeString(query);
+    const normalizedQuery = normalize(query);
     const cards = container.querySelectorAll('.card');
     
     // Se query vazia, mostrar todos os cards
@@ -3340,8 +3335,8 @@ function filterArtistCards(query) {
         }
         
         // Normalizar nome do artista e contagem de músicas (remove acentos)
-        const normalizedTitle = normalizeString(titleEl.textContent);
-        const normalizedSubtitle = subtitleEl ? normalizeString(subtitleEl.textContent) : '';
+        const normalizedTitle = normalize(titleEl.textContent);
+        const normalizedSubtitle = subtitleEl ? normalize(subtitleEl.textContent) : '';
         
         const matches = normalizedTitle.includes(normalizedQuery) || normalizedSubtitle.includes(normalizedQuery);
         card.style.display = matches ? '' : 'none';
@@ -4349,15 +4344,6 @@ function shareMusic() {
 
 async function selectArtist(artist) {
     console.log('[SelectArtist] INICIADO', { artist });
-    // 🔍 DEBUG: Validar o parâmetro artistId recebido
-    console.log('[SelectArtist] 🔍 DEBUG - Análise de entrada:', {
-        artistId_raw: artist,
-        artistId_length: artist?.length,
-        artistId_startChar: artist?.charCodeAt(0),
-        artistId_endChar: artist?.charCodeAt(artist?.length - 1),
-        artistId_trimmed: artist?.trim(),
-        artistId_normalized: artist?.trim().normalize('NFC')
-    });
     console.log('[SelectArtist] Estado atual:', {
         isPlaying: player.isPlaying,
         shouldPlayOnReady: player.shouldPlayOnReady,
@@ -4374,20 +4360,7 @@ async function selectArtist(artist) {
         const artistVideos = [];
         allPlaylists.forEach(playlist => {
             playlist.videos?.forEach(video => {
-                // 🔍 DEBUG específico para "Fábio Jr."
-                if (video.artist && video.artist.includes('Fábio')) {
-                    console.log('[SelectArtist] 🔍 DEBUG Comparação Fábio Jr.:', {
-                        video_artist: video.artist,
-                        video_artist_bytes: video.artist.split('').map(c => c.charCodeAt(0)),
-                        artist_param: artist,
-                        artist_param_bytes: artist.split('').map(c => c.charCodeAt(0)),
-                        safeCompare_result: safeCompare(video.artist, artist),
-                        strict_equals: video.artist === artist,
-                        trim_then_equals: video.artist.trim() === artist.trim(),
-                        normalized_equals: video.artist.normalize('NFC') === artist.normalize('NFC')
-                    });
-                }
-                if (safeCompare(video.artist, artist)) {
+                if (normalize(video.artist) === normalize(artist)) {
                     artistVideos.push({
                         ...video,
                         playlistName: playlist.name
@@ -5811,16 +5784,16 @@ function setupMobileSearch() {
 async function searchMusics(query) {
     try {
         const results = [];
-        const normalizedQuery = normalizeString(query);
+        const normalizedQuery = normalize(query);
 
         // Carregar todas as playlists para busca
         const allPlaylists = await loadAllPlaylists();
 
         allPlaylists.forEach((playlist, playlistIndex) => {
             playlist.videos?.forEach((video, videoIndex) => {
-                // Usar normalizeString para comparação tolerante a acentos
-                const normalizedTitle = normalizeString(video.title);
-                const normalizedArtist = normalizeString(video.artist);
+                // Usar normalize para comparação tolerante a acentos
+                const normalizedTitle = normalize(video.title);
+                const normalizedArtist = normalize(video.artist);
                 
                 if (
                     normalizedTitle.includes(normalizedQuery) ||
