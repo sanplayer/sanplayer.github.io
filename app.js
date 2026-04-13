@@ -518,7 +518,7 @@ async function restorePlayerState() {
         for (const playlist of player.playlistsIndex) {
             const data = await loadPlaylistByUrl(playlist.url);
             if (data?.videos) {
-                const filtered = data.videos.filter(v => v.artist === artistName);
+                const filtered = data.videos.filter(v => safeCompare(v.artist, artistName));
                 artistVideos.push(...filtered);
             }
         }
@@ -3241,6 +3241,22 @@ function normalizeString(str) {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 }
 
+/**
+ * 🔒 Comparação segura de nomes de artista
+ * Trata encoding, trim, e normalização de Unicode para evitar falsos negativos
+ * 
+ * CRÍTICO: Usar SEMPRE para comparação de artist.artist === artistId
+ * 
+ * Problema corrigido: "Fábio Jr." comparava como diferente por encoding/trim
+ * @param {String} a - Primeiro valor (ex: video.artist do JSON)
+ * @param {String} b - Segundo valor (ex: artistId da URL)
+ * @returns {Boolean} true se são iguais após normalização
+ */
+function safeCompare(a, b) {
+    if (!a || !b) return a === b;
+    return a.trim().normalize('NFC') === b.trim().normalize('NFC');
+}
+
 // ============================================================================
 // FILTRO DE PLAYLISTS - BUSCA EM TEMPO REAL
 // ============================================================================
@@ -4333,6 +4349,15 @@ function shareMusic() {
 
 async function selectArtist(artist) {
     console.log('[SelectArtist] INICIADO', { artist });
+    // 🔍 DEBUG: Validar o parâmetro artistId recebido
+    console.log('[SelectArtist] 🔍 DEBUG - Análise de entrada:', {
+        artistId_raw: artist,
+        artistId_length: artist?.length,
+        artistId_startChar: artist?.charCodeAt(0),
+        artistId_endChar: artist?.charCodeAt(artist?.length - 1),
+        artistId_trimmed: artist?.trim(),
+        artistId_normalized: artist?.trim().normalize('NFC')
+    });
     console.log('[SelectArtist] Estado atual:', {
         isPlaying: player.isPlaying,
         shouldPlayOnReady: player.shouldPlayOnReady,
@@ -4349,7 +4374,20 @@ async function selectArtist(artist) {
         const artistVideos = [];
         allPlaylists.forEach(playlist => {
             playlist.videos?.forEach(video => {
-                if (video.artist === artist) {
+                // 🔍 DEBUG específico para "Fábio Jr."
+                if (video.artist && video.artist.includes('Fábio')) {
+                    console.log('[SelectArtist] 🔍 DEBUG Comparação Fábio Jr.:', {
+                        video_artist: video.artist,
+                        video_artist_bytes: video.artist.split('').map(c => c.charCodeAt(0)),
+                        artist_param: artist,
+                        artist_param_bytes: artist.split('').map(c => c.charCodeAt(0)),
+                        safeCompare_result: safeCompare(video.artist, artist),
+                        strict_equals: video.artist === artist,
+                        trim_then_equals: video.artist.trim() === artist.trim(),
+                        normalized_equals: video.artist.normalize('NFC') === artist.normalize('NFC')
+                    });
+                }
+                if (safeCompare(video.artist, artist)) {
                     artistVideos.push({
                         ...video,
                         playlistName: playlist.name
