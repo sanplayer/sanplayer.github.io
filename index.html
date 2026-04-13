@@ -110,18 +110,28 @@
                 <div id="player" class="player-embed"></div>
                 <div class="overlay-layer"></div>
             <!-- LEGENDAS -->
-                <div class="overlay-layer-legendas">
+            <div class="overlay-layer-legendas">         
                 <button><i class="material-icons">queue_music</i></button>
                 <button><i class="material-icons">add</i></button>
                 <button alt="compartilhar item da tela" title="compartilha item da tela"><i class="material-icons">share</i></button>
                 <button><i class="material-icons">more_vert</i></button>
-                </div>
+            </div>
             </div>
 
         </main>
 
         <aside class="playlist-aside">
-            <h2 class="title-pl">Playlist</h2>
+            <div class="sidebar-header">
+                <h2 class="title-pl">Playlist</h2>
+                <div class="sidebar-nav-buttons">
+                    <button class="sidebar-nav-btn hidden" id="sidebarBackBtn" title="Voltar" aria-label="Voltar na navegação">
+                        <span class="material-icons">arrow_back</span>
+                    </button>
+                    <button class="sidebar-nav-btn hidden" id="sidebarForwardBtn" title="Avançar" aria-label="Avançar na navegação">
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
             <div class="playlist-items"></div>
         </aside>
     </div>

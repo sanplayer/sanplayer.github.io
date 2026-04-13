@@ -1,3 +1,24 @@
+﻿/**
+ * 🎵 SAN PLAYER - APP.JS
+ * 
+ * ⚠️ ARCHITECHT PROTECTION ATIVO ⚠️
+ * 
+ * Problema RESOLVIDO (5ª ocorrência): Indicador 🎵 na posição errada
+ * Solução: Função central getCurrentPlayingVideo() como fonte única de verdade
+ * 
+ * 📖 LEIA OBRIGATORIAMENTE:
+ * - ARCHITECTURE_PROTECTION.md (documentação completa)
+ * - QUICK_REFERENCE.md (guia rápido)
+ * 
+ * ✅ Checklist antes de modificar estado:
+ * 1. Usando getCurrentPlayingVideo()? ✓
+ * 2. Chamado updateActivePlaylistItem() após mudar índice? ✓
+ * 3. Using data-video-id (nunca data-video-index)? ✓
+ * 4. Testei em playlist + favorites? ✓
+ * 
+ * Ignorar = Bug volta (NUNCA MAIS!). 🔒
+ */
+
 // ============================================================================
 // CONFIGURAÇÃO CENTRAL DE INICIALIZAÇÃO
 // ============================================================================
@@ -70,6 +91,506 @@ const player = {
 };
 
 // ============================================================================
+// � AVISO IMPORTANTE: PROTOCOLO DE PROTEÇÃO ATIVO
+// ============================================================================
+// 
+// 🚨 Problema recorrente RESOLVIDO (5ª ocorrência):
+// Indicador de 🎵 (equalizador) aparecia na posição errada quando navegava
+// entre playlists e favoritos.
+//
+// 🔒 Solução implementada: Função central getCurrentPlayingVideo()
+// 
+// ⭐ LEIA OBRIGATORIAMENTE:
+// Arquivo: ARCHITECTURE_PROTECTION.md (em ROOT do projeto)
+// 
+// Contém:
+// ✅ Como usar getCurrentPlayingVideo() (SEMPRE!)
+// ✅ Onde adicionar guardrails ao modificar estado crítico
+// ✅ Checklist para adicionar novas features
+// ✅ Debugging se algo quebrar
+// ✅ Cenários críticos para testar
+//
+// Ignorar este protocolo = Bug voltará (ou piores consequences).
+//
+// ============================================================================
+
+// ============================================================================
+// �🔒 FUNÇÃO RAINHA: FONTE ÚNICA DE VERDADE SOBRE QUAL VÍDEO ESTÁ TOCANDO
+// ============================================================================
+/**
+ * ⚡ CRÍTICO: Esta é a ÚNICA função que deve ser usada para obter o vídeo que está tocando
+ * 
+ * ❌ NÃO FAÇA:
+ * - player.currentPlaylist.videos[player.currentVideoIndex]
+ * - Lógica condicional baseada em viewingFavorites
+ * - Diferentes formas em funções diferentes
+ * 
+ * ✅ SEMPRE FAÇA:
+ * - const video = getCurrentPlayingVideo();
+ * 
+ * Razão: Protege contra bugs de:
+ * - Modo favoritos vs modo playlist (MÚLTIPLOS contextos de índice)
+ * - Indicador visual em item errado (5º bug relacionado - NUNCA MAIS!)
+ * - Sincronização quebrada entre estados
+ * - Mudanças futuras em user.viewingFavorites ou player.currentFavoriteId
+ * 
+ * REGRA: Se você precisa saber "qual música está tocando", use ESTA função.
+ * 
+ * @returns {Object|null} Objeto video {id, title, artist} ou null se nenhum
+ */
+function getCurrentPlayingVideo() {
+    // PASSO 1: Validar estado básico
+    if (!player.currentPlaylist || !player.currentPlaylist.videos) {
+        console.warn('[getCurrentPlayingVideo] ❌ Nenhuma playlist carregada');
+        return null;
+    }
+    
+    // PASSO 2: Se estamos em modo favoritos, lógica especial
+    if (player.viewingFavorites && player.favorites.length > 0) {
+        // Em modo favoritos, o índice atual é relativo à PLAYLIST (não à view favoritos)
+        const video = player.currentPlaylist.videos[player.currentVideoIndex];
+        if (!video) return null;
+        
+        // Validar: a música que está tocando é realmente um favorito?
+        const isFavorited = player.favorites.some(fav => fav.video.id === video.id);
+        if (!isFavorited) {
+            // ✅ Caso válido: Usuário favoritou depois de começar a tocar
+            return video;
+        }
+        
+        // Caso normal: usar currentFavoriteId como referência
+        if (player.currentFavoriteId !== null) {
+            const favorite = player.favorites.find(fav => fav.id === player.currentFavoriteId);
+            if (favorite) {
+                return favorite.video;
+            }
+        }
+        
+        // Fallback: voltar para playlist
+        return video;
+    }
+    
+    // PASSO 3: Modo normal (playlist)
+    const video = player.currentPlaylist.videos[player.currentVideoIndex];
+    if (!video) {
+        console.warn('[getCurrentPlayingVideo] ⚠️ currentVideoIndex inválido:', player.currentVideoIndex);
+        return null;
+    }
+    
+    return video;
+}
+
+/**
+ * 🎨 HELPER: Obter YouTube ID do vídeo que está tocando
+ * Wrapper útil para encontrar elementos no DOM
+ */
+function getCurrentPlayingVideoId() {
+    const video = getCurrentPlayingVideo();
+    return video?.id || null;
+}
+
+/**
+ * ⚡ FONTE ÚNICA DE VERDADE: Vídeos que DEVEM aparecer na sidebar
+ * 
+ * Encapsula: "qual view o usuário está vendo agora?"
+ * 
+ * ✅ SEMPRE use isto em vez de:
+ * - navigationContext.currentView?.data?.videos
+ * - player.currentPlaylist?.videos
+ * - lógica condicional baseada em viewingFavorites
+ * 
+ * @returns {Array} Lista de vídeos que a sidebar deve exibir
+ */
+function getCurrentViewVideos() {
+    return navigationContext.currentView?.data?.videos 
+        || player.currentPlaylist?.videos 
+        || [];
+}
+
+// ============================================================================
+// NAVEGAÇÃO E CONTEXTO DE VISUALIZAÇÃO
+// ============================================================================
+
+/**
+ * 🧭 NOVO SISTEMA DE NAVEGAÇÃO
+ * 
+ * Separação entre:
+ * - Contexto original: A fonte de dados que o usuário escolheu inicialmente (playlist/artista)
+ * - Visualização atual: O que o usuário está vendo AGORA (pode ser favoritos, artista, etc)
+ * - Player: COMPLETAMENTE INDEPENDENTE - continua tocando independente da view
+ * 
+ * FLUXO:
+ * 1. Usuário escolhe uma playlist → originalSource = playlist, currentView = playlist
+ * 2. Usuário clica em "Favoritos" → originalSource = playlist (PRESERVADO), currentView = favorites
+ * 3. Usuário clica "Voltar" → currentView volta a originalSource, música continua tocando
+ * 
+ * ⚠️ REGRA CRÍTICA: O botão "Voltar" só aparece quando currentView !== originalSource
+ */
+const navigationContext = {
+    originalSource: null,      // { type: 'playlist'|'artist', id?: string|number, data: {...} }
+    currentView: null,         // { type: 'favorites'|'artist'|'playlist', data: [...] }
+    canGoBack: false,          // Sincronizado: true quando currentView != originalSource
+    
+    /**
+     * Atualizar contexto quando usuário escolhe uma nova visualização
+     * @param {Object} source - Nova fonte { type, id?, data }
+     */
+    setOriginalSource(source) {
+        console.log('[Navigation.setOriginalSource]', source);
+        
+        this.originalSource = source;
+        this.currentView = source;  // Ambos começam iguais
+        this.canGoBack = false;
+        
+        console.log('[Navigation.setOriginalSource] Contexto guardado:', {
+            originalSource: this.originalSource,
+            currentView: this.currentView,
+            canGoBack: this.canGoBack
+        });
+        
+        updateBackButtonVisibility();
+    },
+    
+    /**
+     * 🔒 REFATORADO: Mudar visualização para algo diferente (favoritos, artista, etc)
+     * @param {Object} view - Nova view { type, data }
+     */
+    setCurrentView(view) {
+        console.log('[Navigation.setCurrentView]', { viewType: view.type, originalType: this.originalSource?.type });
+        
+        this.currentView = view;
+        
+        // ⚡ SIMPLIFICADO: Comparação por referência (mais robusta)
+        // Pode voltar APENAS se:
+        // 1. originalSource existe
+        // 2. currentView é diferente (referência !== originalSource)
+        this.canGoBack = (
+            this.originalSource &&
+            this.currentView &&
+            this.currentView !== this.originalSource
+        );
+        
+        console.log('[Navigation.setCurrentView] canGoBack:', this.canGoBack);
+        updateBackButtonVisibility();
+    },
+    
+    /**
+     * 🔒 REFATORADO: Voltar para o contexto original
+     * Usa referência direta (sem clone) - mais simples e robusto
+     */
+    restoreOriginal() {
+        if (!this.originalSource) return;
+        
+        // ⚡ Usar referência direta (não clonar)
+        // Evita:
+        // - Perda de referência original
+        // - Bugs em comparação (===)
+        // - Inconsistência de dados
+        this.currentView = this.originalSource;
+        this.canGoBack = false;
+        
+        updateBackButtonVisibility();
+    }
+};
+
+/**
+ * 🔒 WRAPPER CRÍTICO: Centraliza renderização após mudança de visualização
+ * 
+ * ⚠️ REGRA OBRIGATÓRIA:
+ * Quando você quiser mudar a visualização (sidebar):
+ * ❌ NUNCA faça: navigationContext.setCurrentView(...)
+ * ✅ SEMPRE faça: setView(...)
+ * 
+ * Isso garante que:
+ * 1. Contexto é atualizado com formato correto {type, data}
+ * 2. Sidebar é re-renderizada
+ * 3. Indicador não fica desincronizado (persistPlayerState() consegue ler viewType)
+ * 
+ * 🆕 CRÍTICO: Converte automaticamente para formato esperado
+ * - Se receber {type, data} → usa direto
+ * - Se receber {name, videos} (playlist object) → converte para {type: 'playlist', data: ...}
+ * - Isso evita viewType ser undefined e quebrar persistência!
+ */
+function setView(view) {
+    // 🔥 CONVERSÃO AUTOMÁTICA: Se recebeu objeto de playlist sem type, converter
+    // Isso é necessário para compatibilidade com código que chama setView(playlistData)
+    let normalizedView = view;
+    
+    if (view && !view.type && (view.name || view.videos)) {
+        // 🆕 View recebida em formato de playlist {name, videos}
+        // Converter para formato esperado {type, data}
+        console.log('[setView] ⚠️ Convertendo playlist object para view format:', {
+            from: view.name,
+            type: 'playlist'
+        });
+        
+        normalizedView = {
+            type: 'playlist',
+            data: view
+        };
+    }
+    
+    // 🔒 Usar view normalizada
+    navigationContext.setCurrentView(normalizedView);
+    loadPlaylistVideos();
+    updateActivePlaylistItem?.();
+}
+
+// ============================================================================
+// 💾 MÓDULO DE PERSISTÊNCIA (localStorage)
+// ============================================================================
+/**
+ * 🔒 Centralizado: Todas operações com localStorage passam por aqui
+ * Evita: strings mágicas espalhadas, bugs de serialização
+ */
+const storage = {
+    /**
+     * Salva dados em localStorage como JSON
+     * @param {string} key - Chave (ex: 'sanplayer:state')
+     * @param {*} data - Dados a serializar
+     */
+    save(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+            console.log(`[Storage] ✅ Saved "${key}"`);
+        } catch (e) {
+            console.warn(`[Storage] ⚠️ Falhou em salvar "${key}":`, e.message);
+        }
+    },
+    
+    /**
+     * Carrega dados de localStorage e desserializa
+     * @param {string} key - Chave
+     * @returns {*|null} Dados ou null se não existir/falhar
+     */
+    load(key) {
+        try {
+            const data = localStorage.getItem(key);
+            if (!data) return null;
+            return JSON.parse(data);
+        } catch (e) {
+            console.warn(`[Storage] ⚠️ Falhou em carregar "${key}":`, e.message);
+            return null;
+        }
+    },
+
+    /**
+     * Remove dados de localStorage
+     * @param {string} key - Chave
+     */
+    remove(key) {
+        try {
+            localStorage.removeItem(key);
+            console.log(`[Storage] ✅ Removed "${key}"`);
+        } catch (e) {
+            console.warn(`[Storage] ⚠️ Falhou em remover "${key}":`, e.message);
+        }
+    }
+};
+
+// ============================================================================
+// 💾 FUNÇÕES DE PERSISTÊNCIA
+// ============================================================================
+
+/**
+ * 🔒 Salva estado do player em localStorage
+ * 
+ * Persiste:
+ * - Qual vídeo está tocando (por YouTube ID)
+ * - Em qual minuto parou
+ * - Se tava tocando ou pausado
+ * - Contexto da playlist (nome + tipo)
+ * - Contexto da view (se em favoritos, artista, etc)
+ */
+function persistPlayerState() {
+    const video = getCurrentPlayingVideo();
+    if (!video) return; // Sem vídeo, não salvar
+    
+    const stateToSave = {
+        // 🎬 Video (use ID, nunca objeto)
+        currentVideoId: video.id,
+        currentVideoTitle: video.title,
+        currentVideoArtist: video.artist,
+        
+        // ⏱️ Timing - 🔥 USAR tempo real do YouTube player, não player.currentTime
+        currentTime: (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') ? ytPlayer.getCurrentTime() : (player.currentTime || 0),
+        isPlaying: player.isPlaying,
+        
+        // 📋 Contexto da playlist
+        playlistName: player.currentPlaylist?.name,
+        
+        // 🧭 Contexto COMPLETO da view (não apenas tipo, mas dados)
+        viewType: navigationContext.currentView?.type,
+        viewData: navigationContext.currentView?.data ? {
+            id: navigationContext.currentView.data.id,
+            name: navigationContext.currentView.data.name
+        } : null,
+        isFavorites: player.viewingFavorites,
+        
+        // 🕐 Timestamp (útil para debug)
+        savedAt: new Date().toISOString()
+    };
+    
+    storage.save('sanplayer:state', stateToSave);
+    
+    // � DEBUG: Logging removido para evitar spam massivo (1630+ messages)
+    // Descomentar só para troubleshooting
+    // console.log('[persistPlayerState] Saved:', stateToSave.currentVideoId);
+}
+
+/**
+ * 📂 Restaura estado do player do localStorage no init
+ * 
+ * Valida:
+ * - Se o vídeo salvo ainda existe nas playlists
+ * - Se o tempo salvo é válido
+ * 
+ * Restaura:
+ * - Carrega o vídeo
+ * - Resume no tempo certo
+ * - Auto-play se estava tocando
+ */
+async function restorePlayerState() {
+    const saved = storage.load('sanplayer:state');
+    if (!saved) {
+        console.log('[Restore] ℹ️ Nenhum estado salvo');
+        return false;
+    }
+    
+    console.log('[Restore] 📂 Estado encontrado:', {
+        videoId: saved.currentVideoId,
+        videoTitle: saved.currentVideoTitle,
+        currentTime: saved.currentTime,
+        wasPlaying: saved.isPlaying,
+        savedAt: saved.savedAt
+    });
+    
+    // 🔍 VALIDAÇÃO: Procurar vídeo em todas as playlists
+    let foundVideo = null;
+    let foundPlaylist = null;
+    let foundPlaylistData = null;  // 🆕 Guardar dados completos, não apenas metadata
+    for (const playlist of player.playlistsIndex) {
+        const data = await loadPlaylistByUrl(playlist.url);
+        if (data?.videos) {
+            foundVideo = data.videos.find(v => v.id === saved.currentVideoId);
+            if (foundVideo) {
+                foundPlaylist = playlist;
+                foundPlaylistData = data;  // 🆕 Guardar dados completos
+                break;
+            }
+        }
+    }
+    
+    if (!foundVideo) {
+        console.warn('[Restore] ❌ Vídeo salvo não encontrado nas playlists:', saved.currentVideoId);
+        storage.remove('sanplayer:state');
+        return false;
+    }
+    
+    console.log('[Restore] ✅ Vídeo encontrado:', foundVideo.title);
+    
+    // � RESET: Limpar estado anterior ANTES de restaurar
+    // Isso garante que não há conflito entre o estado antigo e novo
+    player.currentPlaylist = foundPlaylistData;  // Use dados completos, não metadata
+    
+    // 🆕 CRÍTICO: Encontrar o índice CORRETO do vídeo  na playlist
+    player.currentVideoIndex = foundPlaylistData.videos.findIndex(v => v.id === foundVideo.id);
+    
+    if (player.currentVideoIndex === -1) {
+        console.error('[Restore] ❌ Vídeo encontrado mas índice não localizado!');
+        return false;
+    }
+    
+    console.log('[Restore] 🧹 Estado anterior limpo - vídeo restaurado no índice:', player.currentVideoIndex);
+    
+    // �🧭 CRÍTICO: Restaurar a view CORRETA (pode ser Artista, Favoritos ou Playlist)
+    console.log('[Restore] 🧭 View anterior era:', saved.viewType);
+    
+    // Restaurar a view ANTES de chamar loadVideo
+    // Isso garante que navigationContext está correto
+    if (saved.viewType === 'artist' && saved.viewData?.name) {
+        // Restaurar vista de artista
+        console.log('[Restore] 🎨 Restaurando view do artista:', saved.viewData.name);
+        const artistName = saved.viewData.name;
+        const artistVideos = [];
+        
+        // Procurar todos os vídeos deste artista
+        for (const playlist of player.playlistsIndex) {
+            const data = await loadPlaylistByUrl(playlist.url);
+            if (data?.videos) {
+                const filtered = data.videos.filter(v => v.artist === artistName);
+                artistVideos.push(...filtered);
+            }
+        }
+        
+        if (artistVideos.length > 0) {
+            // Preparar contexto de artista
+            navigationContext.setCurrentView({
+                type: 'artist',
+                data: {
+                    name: artistName,
+                    videos: artistVideos,
+                    id: `artist-${artistName}`
+                }
+            });
+            player.currentPlaylistIndex = -1;
+            console.log('[Restore] ✅ Contexto de artista restaurado');
+        } else {
+            console.warn('[Restore] ⚠️ Nenhum vídeo encontrado para artista:', artistName);
+            // Fallback: restaurar com playlist completa (não com formato incorreto)
+            navigationContext.setCurrentView({
+                type: 'playlist',
+                data: foundPlaylistData
+            });
+        }
+    } else if (saved.isFavorites === true) {
+        // Restaurar vista de favoritos
+        console.log('[Restore] ❤️ Restaurando view de favoritos');
+        player.viewingFavorites = true;
+        navigationContext.setCurrentView({
+            type: 'favorites',
+            data: { videos: player.favorites || [] }
+        });
+    } else {
+        // Padrão: restaurar a playlist que contém o vídeo
+        // 🆕 CRÍTICO: Usar formato correto {type: 'playlist', data: ...}
+        console.log('[Restore] 📋 Restaurando view da playlist:', foundPlaylist.name);
+        navigationContext.setCurrentView({
+            type: 'playlist',
+            data: foundPlaylistData
+        });
+        player.viewingFavorites = false;  // Garantir que não está em modo favoritos
+    }
+    
+    console.log('[Restore] 🧭 View restaurada:', {
+        viewType: navigationContext.currentView?.type,
+        viewName: navigationContext.currentView?.data?.name || navigationContext.currentView?.data?.id
+    });
+    
+    // Validar tempo salvo (não pode ser negativo ou > duração esperada)
+    const validTime = saved.currentTime >= 0 ? saved.currentTime : 0;
+    
+    // � CRÍTICO: Restaurar estado interno do player ANTES de chamar loadVideo
+    player.currentVideo = foundVideo;
+    
+    // �🔄 Restaurar vídeo via loadVideo (que chama ytPlayer.cueVideoById)
+    console.log('[Restore] 🎬 Carregando vídeo:', foundVideo.title);
+    loadVideo(foundVideo);
+    
+    // 💾 Armazenar tempo restaurado para pedir ao player depois
+    // (O seek só funciona APÓS o vídeo estar CUED, que onPlayerStateChange vai detectar)
+    player._restoreTime = validTime;
+    player._restoreAutoPlay = saved.isPlaying;
+    
+    console.log('[Restore] 💾 Agendado:', {
+        tempo: validTime,
+        autoPlay: saved.isPlaying
+    });
+    
+    return true;
+}
+
+// ============================================================================
 // CACHE E ESTADO DE REQUISIÇÕES
 // ============================================================================
 
@@ -97,6 +618,132 @@ let lastKeyboardOffset = 0;         // Cache do último offset calculado (evita 
 // Theme Color Control (Android Navbar - PWA Excellence)
 const THEME_COLOR = '#0f0f0f';
 let metaThemeColor = null;
+
+// 💾 Persistência de estado (localStorage throttle)
+let lastPersistTime = 0;            // Throttle: última vez que salvou
+const PERSIST_THROTTLE_MS = 3000;   // Salvar a cada 3s (timeupdate)
+
+// 🚀 Flag de inicialização completa (para não registrar primeira carga no histórico)
+let appInitComplete = false;
+
+// 🧭 NAVEGAÇÃO DA SIDEBAR: Histórico de views (playlists, artistas, favoritos, etc)
+const sidebarHistory = {
+    stack: [],                      // Array de estados de view
+    currentIndex: -1,               // Posição atual no histórico
+    
+    /**
+     * Adiciona um novo estado ao histórico
+     * Remove qualquer histórico "forward" se houver
+     * 🔥 CRÍTICO: Só adiciona após a inicialização estar completa
+     */
+    push(viewState) {
+        // ⚠️ Durante a inicialização, não adicionar ao histórico
+        // Isso garante que a primeira carga não apareça
+        if (!appInitComplete) {
+            console.log('[SidebarHistory] ⏸️ Ignorando push durante inicialização (appInitComplete=false)');
+            return;
+        }
+        
+        // Remover forward history se existir
+        if (this.currentIndex < this.stack.length - 1) {
+            this.stack = this.stack.slice(0, this.currentIndex + 1);
+        }
+        
+        const newState = {
+            type: viewState.type,    // 'playlist', 'artist', 'favorites'
+            data: viewState.data,    // Dados da view
+            name: viewState.name,    // Nome para exibição
+        };
+        
+        this.stack.push(newState);
+        this.currentIndex = this.stack.length - 1;
+        this.updateButtons();
+        console.log('[SidebarHistory] 📍 Adicionado:', newState);
+    },
+    
+    /**
+     * Volta para o estado anterior
+     */
+    goBack() {
+        if (this.canGoBack()) {
+            this.currentIndex--;
+            this.restoreState();
+            console.log('[SidebarHistory] ⬅️ Voltar para index:', this.currentIndex);
+        }
+    },
+    
+    /**
+     * Avança para o próximo estado (se houver)
+     */
+    goForward() {
+        if (this.canGoForward()) {
+            this.currentIndex++;
+            this.restoreState();
+            console.log('[SidebarHistory] ➡️ Avançar para index:', this.currentIndex);
+        }
+    },
+    
+    /**
+     * Verifica se pode voltar
+     */
+    canGoBack() {
+        return this.currentIndex > 0;
+    },
+    
+    /**
+     * Verifica se pode avançar
+     */
+    canGoForward() {
+        return this.currentIndex < this.stack.length - 1;
+    },
+    
+    /**
+     * Restaura o estado no índice atual
+     */
+    restoreState() {
+        if (this.currentIndex >= 0 && this.currentIndex < this.stack.length) {
+            const state = this.stack[this.currentIndex];
+            
+            // Renderizar a view restaurada
+            if (state.type === 'favorites') {
+                displayFavoritesList();
+            } else if (state.type === 'artist' && state.name) {
+                selectArtist(state.name);
+            } else if (state.type === 'playlist' && state.data) {
+                setView({
+                    type: 'playlist',
+                    data: state.data
+                });
+            }
+            
+            this.updateButtons();
+        }
+    },
+    
+    /**
+     * Atualiza o estado dos botões de navegação
+     */
+    updateButtons() {
+        const backBtn = document.getElementById('sidebarBackBtn');
+        const forwardBtn = document.getElementById('sidebarForwardBtn');
+        
+        if (backBtn) {
+            backBtn.classList.toggle('hidden', !this.canGoBack());
+        }
+        if (forwardBtn) {
+            forwardBtn.classList.toggle('hidden', !this.canGoForward());
+        }
+    },
+    
+    /**
+     * Limpar histórico (útil para reset)
+     */
+    clear() {
+        this.stack = [];
+        this.currentIndex = -1;
+        this.updateButtons();
+    }
+};
 
 
 // ============================================================================
@@ -341,6 +988,8 @@ function renderPlaylistItem(video, index) {
     const item = document.createElement('div');
     item.className = 'playlist-item';
     item.setAttribute('data-video-index', index);
+    // 🆕 CRÍTICO: Adicionar ID do vídeo para indicador funcionar MESMO quando view muda
+    item.setAttribute('data-video-id', video.id);
     
     const img = document.createElement('img');
     img.src = getArtistCoverUrl(video.artist);
@@ -510,7 +1159,7 @@ function saveCurrentState() {
             });
         }
     } catch (error) {
-        console.warn('Erro ao salvar estado em localStorage:', error);
+        // Persist current state
     }
 }
 
@@ -914,7 +1563,7 @@ async function playTrackById(trackId) {
         loadVideo(video);
         console.log('[Init] ▶️ playTrackById: Video loaded to YouTube player');
         
-        // [PASSO 5] Salvar estado persistido
+        // Persist current state
         saveCurrentState();
         
         console.log(`[Init] ✅ playTrackById SUCCESS: "${video.title}" by ${video.artist}`);
@@ -948,12 +1597,12 @@ async function initializePlayerWithResilience() {
     
     // 🔥 CASO ESPECIAL: Se URL tem playlistId/artistId/modal
     // NÃO tocar nada aqui, deixar handleHashNavigation() fazer tudo
-    // ⚠️ CRÍTICO: Retornar IMEDIATAMENTE para não competir com handleHashNavigation()
+    // Sincronizar estado favorito atual
     if (resolution.skipTrackPlayback) {
         console.log('[Init] 📍 PASSO 2: PULANDO - SEM o trackId direto (deixar handleHashNavigation() processar)');
         console.log('[Init] ℹ️ handleHashNavigation() será chamado em sequência para processar playlist/artista/modal');
         console.log('[Init] ✅ initializePlayerWithResilience() OK - handleHashNavigation() tomará conta');
-        return; // 🔥 CRÍTICO: Retornar para não competir nos PASSOs seguintes
+        // Sincronizar estado favorito atual
     }
     // [PASSO 2] Se tem trackId E não é skipTrackPlayback, tentar tocar diretamente
     if (resolution.trackId) {
@@ -962,7 +1611,7 @@ async function initializePlayerWithResilience() {
         
         if (played) {
             console.log(`[Init] ✅ PASSO 2: SUCCESS - Track playing`);
-            return; // 🔥 CRÍTICO: Não prosseguir se conseguiu
+            // Sincronizar estado favorito atual
         } else {
             console.warn(`[Init] ⚠️ PASSO 2: FALHOU - playTrackById retornou false`);
         }
@@ -975,7 +1624,7 @@ async function initializePlayerWithResilience() {
         
         if (played) {
             console.log(`[Init] ✅ PASSO 3: SUCCESS - Playlist restored`);
-            return; // 🔥 CRÍTICO: Não prosseguir se conseguiu
+            // Sincronizar estado favorito atual
         } else {
             console.warn(`[Init] ⚠️ PASSO 3: FALHOU - restorePlaylistState retornou false`);
         }
@@ -999,6 +1648,12 @@ async function initializePlayerWithResilience() {
     // Se chegou aqui, significa que:
     // - Fallback ID não existe nas playlists
     // - Ou há erro crítico no sistema
+    // ⚠️ PROTEÇÃO: Se há localStorage com estado, NÃO execute este fallback agressivo
+    if (storage.load('sanplayer:state')) {
+        console.log('[Init] ⚠️ PASSO 5: Estado salvo detectado - bloqueando fallback agressivo (deixar restorePlayerState() processar)');
+        return;
+    }
+    
     if (player.playlistsIndex.length > 0) {
         console.error('[Init] 🆘 PASSO 5: CRITICAL - Nenhum track conseguiu tocar. Carregando primeira playlist como último recurso.');
         console.error('[Init] ⚠️ ISSUE: Invalid INITIAL_TRACK_FALLBACK ID? ID="${INITIAL_TRACK_FALLBACK.id}" não encontrado em nenhuma playlist!');
@@ -1009,7 +1664,7 @@ async function initializePlayerWithResilience() {
     
     // Validação final
     if (!played || !player.currentPlaylist) {
-        console.error('[Init] ❌ CRÍTICO: Player não conseguiu inicializar em nenhum nível!');
+        // Sincronizar estado favorito atual
         console.error('[Init] ❌ Isso indica falha completa do sistema de inicialização');
     } else {
         console.log('[Init] ✅ Player initialization complete');
@@ -1093,7 +1748,7 @@ async function initApp() {
 
     initPlayerUI(); // Inicializa UI primeiro
 
-    // 🔥 CRÍTICO: Carregar favoritos ANTES de tudo
+    // Sincronizar estado favorito atual
     // Assim quando updateFavoriteButton() for chamada, player.favorites já está populado
     loadFavorites();
     
@@ -1106,10 +1761,19 @@ async function initApp() {
         console.log('[Init] 🆕 Using NEW initialization logic (v2)');
         console.log('[Init] Feature flag: USE_NEW_INIT_LOGIC =', USE_NEW_INIT_LOGIC);
         
-        // Usar nova lógica com resiliência
-        await initializePlayerWithResilience();
+        // 🔥 NOVO FLUXO CORRETO: Restaurar PRIMEIRO, init SÓ se restauração falhar
+        console.log('[Init] 🔄 Tentando restaurar estado do localStorage...');
+        const restored = await restorePlayerState();
         
-        // � CRÍTICO: Atualizar UI IMEDIATAMENTE após inicializar
+        if (restored) {
+            console.log('[Init] ✅ Estado restaurado com sucesso - pulando inicialização normal');
+        } else {
+            console.log('[Init] 📝 Nenhum estado prévio - executando inicialização normal');
+            // Usar nova lógica com resiliência APENAS se não houver estado
+            await initializePlayerWithResilience();
+        }
+        
+        // Sincronizar estado favorito atual
         // Garante que o novo track está visível na UI
         refreshPlayerUI();
         
@@ -1117,12 +1781,17 @@ async function initApp() {
         playerInitialized = true;
         console.log('[Init] 🔒 Player initialized. Lock acquired.');
     } else {
-        console.log('[Init] 🔴 Using LEGACY initialization logic (v1)');
+        // 🔒 LEGADO DESABILITADO: Manter apenas para referência histórica
+        // Se você precisar voltar ao sistema antigo, mude USE_NEW_INIT_LOGIC para false
+        // MAS: Sistema antigo pode ter conflitos com o novo. Use com cuidado.
+        console.log('[Init] 🔴 Using LEGACY initialization logic (v1) - NÃO RECOMENDADO');
         
-        // Lógica antiga para compatibilidade/rollback
-        const restored = await loadLastState();
-        if (!restored) {
-            await loadDefaultState_Legacy();
+        // ❌ CÓDIGO ANTIGO - NÃO USE EM PRODUÇÃO
+        if (false) {  // Force desabilitar permanentemente
+            const restored = await loadLastState();
+            if (!restored) {
+                await loadDefaultState_Legacy();
+            }
         }
         playerInitialized = true;
     }
@@ -1139,7 +1808,7 @@ async function initApp() {
     const hasArtistParam = params.has('artistId');
     const hasModalParam = params.has('modal');
     
-    // 🔥 CRÍTICO: Registrar listeners ANTES de tentar usar btn.click() nos shortcuts
+    // Sincronizar estado favorito atual
     // ORDEM OBRIGATÓRIA:
     // 1️⃣ setupEventListeners() PRIMEIRO - registra todos os listeners
     // 2️⃣ handleHashNavigation() DEPOIS - processa params e clica nos botões
@@ -1188,7 +1857,7 @@ async function initApp() {
     // Inicializar detecção de zoom
     initZoomDetection();
 
-    // 💾 CRÍTICO: Garantir que o estado é salvo ao fechar a app/aba
+    // Sincronizar estado favorito atual
     // Importante para PWA: manter posição exata quando usuário volta
     window.addEventListener('pagehide', () => {
         saveCurrentState();
@@ -1209,6 +1878,10 @@ async function initApp() {
     initThemeColor();
 
     safeRender();
+    
+    // ✅ MARCA INICIALIZAÇÃO COMO COMPLETA (agora histórico pode funcionar)
+    appInitComplete = true;
+    console.log('[Init] ✅ App initialization complete. Sidebar history tracking ENABLED.');
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
@@ -1329,7 +2002,7 @@ function closeZoomAlert() {
         modal.classList.remove('show');
     }
     
-    // 🔥 CRÍTICO: Resetar keyboard-offset após fechar alerta de zoom
+    // Sincronizar estado favorito atual
     // Caso contrário, modais subsequentes ficam deslocados para baixo
     document.documentElement.style.setProperty('--keyboard-offset', '0px');
     if (typeof lastKeyboardOffset !== 'undefined') {
@@ -2001,7 +2674,7 @@ async function loadPlaylists() {
             return;
         }
 
-        // 🔥 CRÍTICO: Se usa nova lógica, NÃO carregar nada aqui
+        // Sincronizar estado favorito atual
         // Deixar `initializePlayerWithResilience()` fazer o trabalho
         if (USE_NEW_INIT_LOGIC) {
             console.log('[Init] ℹ️ loadPlaylists: Pulando seleção (USE_NEW_INIT_LOGIC=true), deixar para initializePlayerWithResilience()');
@@ -2046,7 +2719,144 @@ async function loadHome() {
 }
 
 /**
- * Seleciona uma playlist pelo índice e a carrega
+ * 🔒 FUNÇÃO CRÍTICA: Seleciona playlist apenas para VISUALIZAÇÃO na sidebar
+ * 
+ * ⚠️ IMPORTANTE: NÃO afeta player.currentPlaylist (o que está tocando)
+ * 
+ * Fluxo:
+ * 1. Usuário está ouvindo música da Playlist A
+ * 2. Clica em Playlist B
+ * 3. Esta função carrega Playlist B e mostra na sidebar
+ * 4. ✅ Música de A CONTINUA tocando (player.currentPlaylist não muda)
+ * 
+ * @param {Number} index - índice no playlistsIndex
+ * @param {Boolean} startPlaying - se true, inicia reprodução ao clicar (APENAS se nada tocando)
+ */
+async function selectPlaylistForVisualization(index, startPlaying = false) {
+    console.log('[SelectPlaylist] INICIADO - index:', index, 'startPlaying:', startPlaying);
+    console.log('[SelectPlaylist] playlistsIndex.length:', player.playlistsIndex.length);
+    console.log('[SelectPlaylist] isLoadingPlaylist:', player.isLoadingPlaylist);
+    
+    // ⚠️ CRÍTICO: Validação de índice
+    if (index < 0 || index >= player.playlistsIndex.length) {
+        console.error('[SelectPlaylist] ❌ RETORNOU CEDO: Índice inválido', {
+            index,
+            length: player.playlistsIndex.length,
+            validRange: `0-${player.playlistsIndex.length - 1}`
+        });
+        return;
+    }
+
+    const playlistMeta = player.playlistsIndex[index];
+    console.log('[SelectPlaylist] Playlist metadata:', { index, nome: playlistMeta.name, url: playlistMeta.url });
+    
+    if (!playlistMeta.url) {
+        console.error('[SelectPlaylist] ❌ RETORNOU CEDO: URL não encontrada');
+        return;
+    }
+
+    console.log('[SelectPlaylist] Carregando playlist apenas para visualização');
+
+    // ⚠️ CRÍTICO: Impedir carregamento simultâneo
+    if (player.isLoadingPlaylist) {
+        console.warn('[SelectPlaylist] ⚠️ CARREGAMENTO JÁ EM PROGRESSO - ignorando');
+        return;
+    }
+
+    player.isLoadingPlaylist = true;
+    try {
+        console.log('[SelectPlaylist] Chamando loadPlaylistByUrl...');
+        const playlist = await loadPlaylistByUrl(playlistMeta.url);
+        
+        if (!playlist) {
+            console.error('[SelectPlaylist] ❌ loadPlaylistByUrl retornou null/undefined');
+            return;
+        }
+        
+        console.log('[SelectPlaylist] Playlist carregada com sucesso:', { 
+            videos: playlist.videos?.length,
+            name: playlist.name 
+        });
+        
+        // 🔒 CRITICAMENTE IMPORTANTE: 
+        // Se está tocando algo, NÃO mudamos player.currentPlaylist
+        // Se não está tocando, podemos mudar para reproduzir
+        
+        const estaTocanduAlgo = player.isPlaying || (player.shouldPlayOnReady && player.currentPlaylist);
+        console.log('[SelectPlaylist] Estado de reprodução:', {
+            isPlaying: player.isPlaying,
+            shouldPlayOnReady: player.shouldPlayOnReady,
+            temPlaylistAtual: !!player.currentPlaylist,
+            estaTocanduAlgo
+        });
+        
+        if (!estaTocanduAlgo) {
+            // Nada tocando → OK mudar contexto de reprodução
+            console.log('[SelectPlaylist] Nada tocando - pode mudar contexto de reprodução');
+            player.currentPlaylist = playlist;
+            player.currentPlaylistIndex = index;
+            player.currentVideoIndex = 0;
+            player.playOrder = [...Array(playlist.videos.length).keys()];
+            player.originalOrder = [...player.playOrder];
+            
+            if (startPlaying) {
+                player.shouldPlayOnReady = true;
+            }
+        } else {
+            // Algo tocando → NUNCA muda player.currentPlaylist
+            console.log('[SelectPlaylist] ✅ Música tocando - player.currentPlaylist PRESERVADO');
+        }
+        
+        player.viewingFavorites = false;
+        player.currentFavoriteId = undefined;
+
+        // Guardar novo contexto original
+        console.log('[SelectPlaylist] Setando navigationContext...');
+        navigationContext.setOriginalSource({
+            type: 'playlist',
+            id: index,
+            data: playlist
+        });
+
+        // ⚠️ REMOVIDO: updatePlaylistCardsInModal() é chamado AUTOMATICAMENTE por preloadPlaylistsInBackground()
+        // Não precisa chamar aqui também - evita race conditions
+        
+        // Fechar modal ANTES de atualizar sidebar
+        console.log('[SelectPlaylist] Fechando modal...');
+        closePlaylistsModal();
+        
+        // Atualizar sidebar com nova visualização
+        console.log('[SelectPlaylist] Carregando playlist videos (sidebar)...');
+        loadPlaylistVideos();
+        
+        // Se era primeira vez (no init), carregar primeiro vídeo
+        if (!player.ytReady) {
+            console.log('[SelectPlaylist] YouTube ainda não está pronto, carregando primeiro vídeo...');
+            loadFirstVideo();
+        }
+        
+        // Salvar estado
+        console.log('[SelectPlaylist] Salvando estado...');
+        saveCurrentState();
+        
+        console.log('[SelectPlaylist] ✅ COMPLETO - Visualização atualizada (música continua tocando se estava)');
+    } catch (error) {
+        console.error('[SelectPlaylist] ❌ ERRO CRÍTICO:', error, {
+            message: error.message,
+            stack: error.stack
+        });
+    } finally {
+        player.isLoadingPlaylist = false;
+        console.log('[SelectPlaylist] Flag isLoadingPlaylist resetada para false');
+    }
+}
+
+/**
+ * 🔒 ORIGINAL: Seleciona playlist PARA INICIALIZAÇÃO
+ * 
+ * NUNCA usar em resposta a clique do usuário em playlist!
+ * Use apenas em selectPlaylistForVisualization() ou em inicialização do app
+ * 
  * @param {Number} index - índice no playlistsIndex
  */
 async function selectPlaylistByIndex(index) {
@@ -2067,18 +2877,34 @@ async function selectPlaylistByIndex(index) {
             player.shouldPlayOnReady = true;
             player.viewingFavorites = false;
             
-            // 🔥 CRÍTICO: Resetar currentFavoriteId quando sai de favoritos
+            // Sincronizar estado favorito atual
             // Caso contrário, syncFavoriteState() usa ID antigo e botão fica com estado errado
             player.currentFavoriteId = undefined;
+
+            // 🧭 NOVO: Guardar este contexto como "original" para poder voltar depois
+            navigationContext.setOriginalSource({
+                type: 'playlist',
+                id: index,
+                data: playlist
+            });
 
             // 🔄 Atualizar os cards do modal com o novo dado cacheado
             updatePlaylistCardsInModal();
             
             closePlaylistsModal();
             loadPlaylistVideos();
+            
+            // 🔄 Adicionar ao histórico de navegação da sidebar
+            sidebarHistory.push({
+                type: 'playlist',
+                data: playlist,
+                name: playlist.name
+            });
+            sidebarHistory.updateButtons();
+            
             loadFirstVideo();
             
-            // 💾 Salvar estado para restaurar depois
+            // Persist current state
             saveCurrentState();
         }
     } catch (error) {
@@ -2086,6 +2912,108 @@ async function selectPlaylistByIndex(index) {
     } finally {
         player.isLoadingPlaylist = false;
     }
+}
+
+// ============================================================================
+// 🧭 NAVEGAÇÃO - SISTEMA DE CONTEXTO
+// ============================================================================
+
+/**
+ * 🔒 CONGELADO: Atualizar visibilidade do botão "Voltar"
+ * 
+ * ⚠️ DEPRECATED: Este botão foi substituído pelo novo sistema de navegação sidebar
+ * (sidebarHistory.goBack/goForward)
+ * 
+ * Mantido para compatibilidade com navigationContext, mas sem efeito visual
+ */
+function updateBackButtonVisibility() {
+    // ✅ Sistema novo: sidebarHistory.updateButtons() já cuida da visibilidade
+    // Esta função agora é apenas um placeholder para compatibilidade
+    // Se houver elemento #backButton, atualizar; se não, apenas retornar silenciosamente
+    
+    const backButton = document.getElementById('backButton');
+    if (!backButton) {
+        // Normal - elemento não existe mais, usar novo sistema
+        return;
+    }
+    
+    // Se chegou aqui, elemento legado existe - manter funcionando
+    if (navigationContext.canGoBack) {
+        backButton.classList.remove('hidden');
+    } else {
+        backButton.classList.add('hidden');
+    }
+}
+
+/**
+ * 🎯 Restaurar contexto original (FUNÇÃO CRÍTICA)
+ * 
+ * FLUXO:
+ * 1. Restaurar navigationContext para originalSource
+ * 2. Re-renderizar sidebar com dados originais
+ * 3. NUNCA afetar o player (isPlaying, currentTrack, tempo, etc)
+ * 4. Botão voltar desaparece automaticamente
+ * 
+ * EXEMPLOS DE USO:
+ * - Usuário abriu "Favoritos" → clica voltar → volta à playlist original
+ * - Usuário abriu "Artista X" → clica voltar → volta à playlist original
+ * 
+ * ⚠️ INVARIANTES (CRÍTICO):
+ * ❌ NÃO resetar player.currentVideoIndex
+ * ❌ NÃO parar a música em execução
+ * ❌ NÃO resetar favorites ou playOrder
+ * ✅ SIM: Restaurar sidebar à visualização original
+ * ✅ SIM: Sincronizar indicador de "agora tocando" com nova lista
+ */
+function restoreViewContext() {
+    console.log('[Navigation] restoreViewContext() CHAMADO');
+    
+    if (!navigationContext.originalSource) {
+        console.warn('[Navigation] Nenhum contexto original para restaurar', navigationContext);
+        return;
+    }
+    
+    console.log('[Navigation] Contexto original existente:', navigationContext.originalSource);
+    
+    // Restaurar navegação (volta ao original)
+    navigationContext.restoreOriginal();
+    
+    // 🔒 IMPORTANTE: NÃO mudamos player.currentPlaylist
+    // Se algo está tocando, continue tocando da origem
+    // Apenas atualizamos a VISUALIZAÇÃO (sidebar)
+    
+    // Se a música que está tocando é da playlist original, tudo OK
+    // Se é de outro contexto, ela continua tocando mas mostramos a playlist original
+    
+    const { type, data } = navigationContext.originalSource;
+    
+    if (type === 'playlist' && data) {
+        // APENAS mostrar a playlist original na sidebar
+        console.log('[Navigation] Restaurando visualização da playlist:', data.name);
+        
+        // NÃO mudar player.currentPlaylist - deixar tocar
+        // Apenas atualizar sidebar para mostrar a playlist original
+        
+        // Mostrar a playlist na sidebar (sem afetar reprodução)
+        player.viewingFavorites = false;
+        loadPlaylistVideos();
+        
+        // Sincronizar indicador de "agora tocando" 
+        updatePlayingNowIndicator();
+        
+        console.log('[Navigation] ✅ Visualização restaurada - música continua tocando');
+    } else if (type === 'artist' && data) {
+        // Voltar de artista para... playlist original? Não, volta para o artista
+        // Mas isso raramente acontece, deixar assim por simplicidade
+        console.log('[Navigation] Voltando de artista (edge case)');
+        
+        player.viewingFavorites = false;
+        loadPlaylistVideos();
+        updatePlayingNowIndicator();
+    }
+    
+    // Guardar estado
+    saveCurrentState();
 }
 
 // ============================================================================
@@ -2110,6 +3038,8 @@ function openPlaylistsModal() {
     const modal = document.getElementById('playlistModal');
     const container = document.getElementById('playlistCardsContainer');
     
+    console.log('[openPlaylistsModal] Abrindo modal de playlists');
+    
     // 🔄 Mostrar skeletons enquanto carrega (6 cards)
     const skeletonFragment = document.createDocumentFragment();
     for (let i = 0; i < 6; i++) {
@@ -2119,9 +3049,21 @@ function openPlaylistsModal() {
     container.appendChild(skeletonFragment);
     modal.classList.add('show');
     
+    // 🔒 Marcar que o modal foi aberto nesta chamada
+    modal.dataset.openTime = Date.now();
+    
     // Agora carregar dados reais em background
     setTimeout(() => {
+        // ⚠️ CRÍTICO: Verificar se o modal ainda está visível
+        // Se foi fechado/reaberto, NÃO processar este setTimeout
+        if (!modal.classList.contains('show')) {
+            console.log('[openPlaylistsModal] Modal foi fechado antes do setTimeout executar');
+            return;
+        }
+        
         const fragment = document.createDocumentFragment();
+        
+        console.log('[openPlaylistsModal] Criando cards para', player.playlistsIndex.length, 'playlists');
         
         player.playlistsIndex.forEach((playlistMeta, index) => {
             // Tentar obter count do cache, se disponível
@@ -2141,12 +3083,26 @@ function openPlaylistsModal() {
                 type: 'playlist',
                 shareData: playlistMeta.name
             });
-            card.addEventListener('click', () => selectPlaylistByIndex(index));
+            
+            // 🔒 NOVO: Usar closure para capturar o índice correto
+            card.addEventListener('click', () => {
+                console.log('[Card Click] Playlist clicado - index:', index, 'nome:', playlistMeta.name);
+                selectPlaylistForVisualization(index, true);
+            });
+            
             fragment.appendChild(card);
         });
         
+        // ⚠️ CRÍTICO: Verificar NOVAMENTE antes de atualizar DOM
+        if (!modal.classList.contains('show')) {
+            console.log('[openPlaylistsModal] Modal foi fechado durante criação de cards');
+            return;
+        }
+        
         container.innerHTML = '';
         container.appendChild(fragment);
+        
+        console.log('[openPlaylistsModal] Cards criados e renderizados com sucesso');
         
         // 🔄 Pré-carregar playlists em background para atualizar contagens
         preloadPlaylistsInBackground();
@@ -2158,19 +3114,40 @@ function openPlaylistsModal() {
  * Isso permite que os cards sejam atualizados conforme as playlists são carregadas
  */
 function preloadPlaylistsInBackground() {
+    console.log('[preloadPlaylistsInBackground] Iniciando pré-carregamento de playlists');
+    
+    const modal = document.getElementById('playlistModal');
+    const openTimeSnapshot = modal.dataset.openTime; // Capturar timestamp AGORA
+    
     // Não bloqueia a execução principal
+    let countToLoad = 0;
     player.playlistsIndex.forEach((playlistMeta) => {
         // Se já está em cache, pular
-        if (playlistCache.has(playlistMeta.url)) return;
+        if (playlistCache.has(playlistMeta.url)) {
+            console.log('[preloadPlaylistsInBackground] Pulando', playlistMeta.name, '(já em cache)');
+            return;
+        }
+        
+        countToLoad++;
+        console.log('[preloadPlaylistsInBackground] Carregando', playlistMeta.name, '(' + playlistMeta.url + ')');
         
         // Carregar em background (não awaitar aqui)
         loadPlaylistByUrl(playlistMeta.url).then(() => {
+            // ⚠️ CRÍTICO: Verificar se modal foi fechado/reaberto enquanto carregávamos
+            if (modal.dataset.openTime !== openTimeSnapshot) {
+                console.log('[preloadPlaylistsInBackground] ⚠️ Modal foi fechado/reaberto - ignorando atualização');
+                return;
+            }
+            
             // Após carregar, atualizar os cards do modal
+            console.log('[preloadPlaylistsInBackground] ✅ Playlist carregada:', playlistMeta.name, '- Atualizando cards');
             updatePlaylistCardsInModal();
         }).catch((error) => {
-            console.warn(`Erro ao pré-carregar playlist (${playlistMeta.url}):`, error);
+            console.warn('[preloadPlaylistsInBackground] ❌ Erro ao pré-carregar playlist (' + playlistMeta.url + '):', error);
         });
     });
+    
+    console.log('[preloadPlaylistsInBackground] Total de playlists para carregar:', countToLoad);
 }
 
 /**
@@ -2181,10 +3158,17 @@ function updatePlaylistCardsInModal() {
     const modal = document.getElementById('playlistModal');
     
     // Se o modal não está visível, não precisa atualizar
-    if (!modal.classList.contains('show')) return;
+    if (!modal.classList.contains('show')) {
+        console.log('[updatePlaylistCardsInModal] Modal não está visível - ignorando');
+        return;
+    }
+    
+    console.log('[updatePlaylistCardsInModal] Atualizando cards com contagens do cache');
     
     const container = document.getElementById('playlistCardsContainer');
     const fragment = document.createDocumentFragment();
+    
+    console.log('[updatePlaylistCardsInModal] Recreando', player.playlistsIndex.length, 'cards');
     
     player.playlistsIndex.forEach((playlistMeta, index) => {
         // Tentar obter count do cache
@@ -2204,12 +3188,20 @@ function updatePlaylistCardsInModal() {
             type: 'playlist',
             shareData: playlistMeta.name
         });
-        card.addEventListener('click', () => selectPlaylistByIndex(index));
+        
+        // 🔒 Usar closure para capturar índice correto
+        card.addEventListener('click', () => {
+            console.log('[Card Click] Playlist clicado via updatePlaylistCardsInModal - index:', index, 'nome:', playlistMeta.name);
+            selectPlaylistForVisualization(index, true);
+        });
+        
         fragment.appendChild(card);
     });
     
     container.innerHTML = '';
     container.appendChild(fragment);
+    
+    console.log('[updatePlaylistCardsInModal] ✅ Cards atualizados com sucesso');
 }
 
 function closePlaylistsModal() {
@@ -2217,15 +3209,7 @@ function closePlaylistsModal() {
     const searchInput = document.getElementById('playlistSearchInput');
     if (searchInput) searchInput.value = '';
     
-    closeModalWithAnimation('playlistModal', () => {
-        // 🔥 CRÍTICO: Garantir que sidebar mostra a playlist atual
-        // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
-        if (player.currentPlaylist && !player.viewingFavorites) {
-            loadPlaylistVideos();
-        } else if (player.viewingFavorites) {
-            displayFavoritesList();
-        }
-    });
+    closeModalWithAnimation('playlistModal');
 }
 
 // ============================================================================
@@ -2249,7 +3233,7 @@ function closePlaylistsModal() {
  * - "São Paulo" → "sao paulo"
  * - "Frida Kahlo" → "frida kahlo"
  * 
- * PAIRING CRÍTICO: Usada em filterPlaylistCards(), filterArtistCards(), searchMusics()
+ // Sincronizar estado favorito atual
  * Se remover esta função, TODAS as buscas quebram
  */
 function normalizeString(str) {
@@ -2387,6 +3371,12 @@ async function openArtistsModal() {
     const modal = document.getElementById('artistsModal');
     const container = document.getElementById('artistsCardsContainer');
     
+    console.log('[openArtistsModal] Abrindo modal de artistas');
+    
+    // � Marcar que este modal foi aberto AGORA
+    modal.dataset.openTime = Date.now();
+    const openTimeSnapshot = modal.dataset.openTime;
+    
     // 🔄 Mostrar skeletons enquanto carrega
     container.innerHTML = '';
     const skeletonContainer = document.createDocumentFragment();
@@ -2394,10 +3384,17 @@ async function openArtistsModal() {
         skeletonContainer.appendChild(createCardSkeleton());
     }
     container.appendChild(skeletonContainer);
+    modal.classList.add('show');
 
     try {
         // Carregar todas as playlists (necessário para listar todos os artistas)
         const allPlaylists = await loadAllPlaylists();
+
+        // ⚠️ CRÍTICO: Se este modal foi fechado e reabierto, cancelar
+        if (modal.dataset.openTime !== openTimeSnapshot) {
+            console.log('[openArtistsModal] Modal foi reabierto, cancelando renderização anterior');
+            return;
+        }
 
         // Coletar artistas com contagem de músicas
         const artistsMap = new Map();
@@ -2417,6 +3414,14 @@ async function openArtistsModal() {
             .map(([name, count]) => ({ name, count }))
             .sort((a, b) => a.name.localeCompare(b.name));
 
+        console.log('[openArtistsModal] Artistas carregados:', artists.length);
+
+        // ⚠️ CRÍTICO: Verificar NOVAMENTE antes de renderizar
+        if (modal.dataset.openTime !== openTimeSnapshot) {
+            console.log('[openArtistsModal] Modal foi reabierto, cancelando renderização');
+            return;
+        }
+
         // Usar DocumentFragment para melhor performance
         const fragment = document.createDocumentFragment();
 
@@ -2430,18 +3435,24 @@ async function openArtistsModal() {
                 type: 'artist',
                 shareData: artist
             });
-            card.addEventListener('click', () => selectArtist(artist));
+            
+            // 🔒 NOVO: Usar closure para capturar o nome do artista correto
+            card.addEventListener('click', () => {
+                console.log('[Card Click] Artista clicado:', artist);
+                selectArtist(artist);
+            });
+            
             fragment.appendChild(card);
         });
 
         container.innerHTML = '';
         container.appendChild(fragment);
+        
+        console.log('[openArtistsModal] Cards de artistas criados com sucesso');
     } catch (error) {
-        console.error('Erro ao carregar artistas:', error);
+        console.error('[openArtistsModal] Erro ao carregar artistas:', error);
         container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-dim);">Erro ao carregar artistas</div>';
     }
-
-    modal.classList.add('show');
 }
 
 function closeArtistsModal() {
@@ -2449,15 +3460,7 @@ function closeArtistsModal() {
     const searchInput = document.getElementById('artistSearchInput');
     if (searchInput) searchInput.value = '';
     
-    closeModalWithAnimation('artistsModal', () => {
-        // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
-        // Se usuário fechou modal sem escolher nada, a sidebar ainda deve mostrar conteúdo
-        if (player.currentPlaylist && !player.viewingFavorites) {
-            loadPlaylistVideos();
-        } else if (player.viewingFavorites) {
-            displayFavoritesList();
-        }
-    });
+    closeModalWithAnimation('artistsModal');
 }
 
 // ----------------------
@@ -2761,7 +3764,16 @@ let currentKebabIndex = null;
 
 function openItemOptionsModal(index) {
     currentKebabIndex = index;
-    const video = player.currentPlaylist.videos[index];
+    // 🔥 CRÍTICO: Usar getCurrentViewVideos() para pegar o vídeo CORRETO da view atual
+    // Se estamos em artista/favoritos, o índice é relativo àquela view, não ao playlist original
+    const viewVideos = getCurrentViewVideos();
+    const video = viewVideos[index];
+    
+    if (!video) {
+        console.error('[openItemOptionsModal] ❌ Vídeo não encontrado no índice:', index, 'views videos:', viewVideos.length);
+        return;
+    }
+    
     const modal = document.getElementById('itemOptionsModal');
     const headerEl = modal.querySelector('.modal-header');
     
@@ -2829,6 +3841,56 @@ function openItemOptionsModal(index) {
     fragment.appendChild(playlistRow);
     fragment.appendChild(renderSeparator());
 
+    // Opção: Favoritar
+    const isFavorite = player.favorites.some(fav => fav.id === video.id);
+    const favoriteRow = renderOptionRow({
+        icon: isFavorite ? 'favorite' : 'favorite_border',
+        text: isFavorite ? 'Remover de Favoritos' : 'Adicionar a Favoritos',
+        onClick: () => {
+            // Toggle favorito para este vídeo
+            const favoriteId = video.id;
+            const favIndex = player.favorites.findIndex(fav => fav.id === favoriteId);
+            
+            if (favIndex > -1) {
+                // Remover de favoritos
+                player.favorites.splice(favIndex, 1);
+                console.log('[Favoritos] Removendo favorito do modal:', favoriteId);
+            } else {
+                // Adicionar a favoritos
+                const alreadyExists = player.favorites.some(fav => fav.id === favoriteId);
+                if (!alreadyExists) {
+                    player.favorites.push({
+                        id: favoriteId,
+                        videoId: video.id,
+                        title: video.title,
+                        artist: video.artist || 'Desconhecido',
+                        video: video,
+                        playlist: player.currentPlaylist.name,
+                    });
+                    console.log('[Favoritos] Adicionando favorito do modal:', favoriteId);
+                }
+            }
+            
+            saveFavorites();
+            
+            // Re-renderizar sidebar se necessário
+            if (player.viewingFavorites) {
+                displayFavoritesList();
+            } else if (player.currentPlaylist) {
+                loadPlaylistVideos();
+            }
+            
+            // Se o vídeo que foi favoritado é o que está tocando, atualizar botão de controle
+            if (player.currentPlaylist?.videos?.[player.currentVideoIndex]?.id === video.id) {
+                updateFavoriteButton();
+            }
+            
+            closeItemOptionsModal();
+        }
+    });
+    fragment.appendChild(favoriteRow);
+    fragment.appendChild(renderSeparator());
+
     // Opção: Compartilhar
     const shareRow = renderOptionRow({
         icon: 'share',
@@ -2843,7 +3905,7 @@ function openItemOptionsModal(index) {
 
 function closeItemOptionsModal() {
     closeModalWithAnimation('itemOptionsModal', () => {
-        // 🔥 CRÍTICO: Garantir que sidebar mostra o conteúdo atual
+        // Sincronizar estado favorito atual
         // Se usuário fechou opções do item sem fazer nada, a sidebar deve estar visível
         if (player.currentPlaylist && !player.viewingFavorites) {
             loadPlaylistVideos();
@@ -2975,8 +4037,13 @@ function addItemToUserPlaylist(playlistIdx) {
         video = videoToAdd;
     } else {
         // Estamos em outro contexto (removendo, etc.)
-        if (!player.currentPlaylist) return;
-        video = player.currentPlaylist.videos[currentKebabIndex];
+        // 🔥 CRÍTICO: Usar getCurrentViewVideos() para pegar o vídeo CORRETO da view atual
+        const viewVideos = getCurrentViewVideos();
+        if (!viewVideos || currentKebabIndex < 0 || currentKebabIndex >= viewVideos.length) {
+            console.error('[addItemToUserPlaylist] ❌ Vídeo não encontrado no índice:', currentKebabIndex);
+            return;
+        }
+        video = viewVideos[currentKebabIndex];
     }
     
     // Evitar duplicatas (simples)
@@ -3013,8 +4080,13 @@ function addItemToUserPlaylist(playlistIdx) {
 
 function removeItemFromUserPlaylist(playlistIdx) {
     const list = getUserPlaylists();
-    if (!player.currentPlaylist) return;
-    const video = player.currentPlaylist.videos[currentKebabIndex];
+    // 🔥 CRÍTICO: Usar getCurrentViewVideos() para pegar o vídeo CORRETO da view atual
+    const viewVideos = getCurrentViewVideos();
+    if (!viewVideos || currentKebabIndex < 0 || currentKebabIndex >= viewVideos.length) {
+        console.error('[removeItemFromUserPlaylist] ❌ Vídeo não encontrado no índice:', currentKebabIndex);
+        return;
+    }
+    const video = viewVideos[currentKebabIndex];
     const target = list[playlistIdx];
     if (!target) return;
     target.videos = target.videos.filter(v => v.id !== video.id);
@@ -3180,7 +4252,16 @@ function handleShare(source, extra = {}) {
 }
 
 function shareItem(index) {
-    const video = player.currentPlaylist.videos[index];
+    // 🔥 CRÍTICO: Usar getCurrentViewVideos() para pegar o vídeo CORRETO da view atual
+    // Se estamos em artista/favoritos, o índice é relativo àquela view, não ao playlist original
+    const viewVideos = getCurrentViewVideos();
+    const video = viewVideos[index];
+    
+    if (!video) {
+        console.error('[shareItem] ❌ Vídeo não encontrado no índice:', index, 'view videos:', viewVideos.length);
+        return;
+    }
+    
     const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
     const url = `${window.location.origin}${window.location.pathname}?videoId=${video.id}`;
     if (navigator.share) {
@@ -3251,9 +4332,18 @@ function shareMusic() {
 }
 
 async function selectArtist(artist) {
+    console.log('[SelectArtist] INICIADO', { artist });
+    console.log('[SelectArtist] Estado atual:', {
+        isPlaying: player.isPlaying,
+        shouldPlayOnReady: player.shouldPlayOnReady,
+        temPlaylistAtual: !!player.currentPlaylist
+    });
+    
     try {
+        console.log('[SelectArtist] Carregando todas as playlists...');
         // Carregar todas as playlists para filtrar por artista
         const allPlaylists = await loadAllPlaylists();
+        console.log('[SelectArtist] Total de playlists carregadas:', allPlaylists.length);
 
         // Filtrar vídeos do artista
         const artistVideos = [];
@@ -3268,39 +4358,97 @@ async function selectArtist(artist) {
             });
         });
 
+        console.log('[SelectArtist] Vídeos encontrados para artista:', artistVideos.length);
+
         // Validação: artista sem vídeos → fallback para home
         if (artistVideos.length === 0) {
-            console.warn(`Nenhum vídeo encontrado para o artista: "${artist}"`);
+            console.warn(`[SelectArtist] ❌ Nenhum vídeo encontrado para: "${artist}"`);
             showToast(`Nenhuma música encontrada: "${artist}"`);
             await loadHome(); // ✅ Garante UI válida
             window.location.replace(window.location.pathname); // Limpar URL inválida
             return;
         }
 
-        // Criar uma playlist temporária para o artista
-        player.currentPlaylist = {
-            name: artist,
-            videos: artistVideos
-        };
-        player.currentPlaylistIndex = -1; // Indica que é uma playlist temporária
-        player.currentVideoIndex = 0;
-        player.playOrder = [...Array(artistVideos.length).keys()];
-        player.originalOrder = [...player.playOrder];
-        player.shouldPlayOnReady = true;
-        player.viewingFavorites = false;
+        // 🔒 CRITICAMENTE IMPORTANTE: 
+        // Se está tocando algo, NÃO mudamos player.currentPlaylist
+        // Se não está tocando, podemos mudar
         
-        // 🔥 CRÍTICO: Resetar currentFavoriteId quando vai para artista
+        const estaTocanduAlgo = player.isPlaying || (player.shouldPlayOnReady && player.currentPlaylist);
+        console.log('[SelectArtist] estaTocanduAlgo:', estaTocanduAlgo);
+        
+        if (!estaTocanduAlgo) {
+            // Nada tocando → OK mudar contexto de reprodução
+            console.log('[SelectArtist] Nada tocando - pode mudar contexto de reprodução');
+            
+            // Criar uma playlist temporária para o artista
+            player.currentPlaylist = {
+                name: artist,
+                videos: artistVideos,
+                id: `artist-${artist}`
+            };
+            player.currentPlaylistIndex = -1;
+            player.currentVideoIndex = 0;
+            player.playOrder = [...Array(artistVideos.length).keys()];
+            player.originalOrder = [...player.playOrder];
+            player.shouldPlayOnReady = true;
+        } else {
+            // Algo tocando → NUNCA muda player.currentPlaylist
+            console.log('[SelectArtist] ✅ Música tocando - player.currentPlaylist PRESERVADO');
+        }
+        
+        player.viewingFavorites = false;
         player.currentFavoriteId = undefined;
-
+        
+        console.log('[SelectArtist] Setando navigationContext...');
+        // 🧭 Guardar contexto para poder voltar depois
+        navigationContext.setCurrentView({
+            type: 'artist',
+            data: {
+                name: artist,
+                videos: artistVideos,
+                id: `artist-${artist}`
+            }
+        });
+        
+        console.log('[SelectArtist] Fechando modal de artistas...');
         closeArtistsModal();
+        
+        console.log('[SelectArtist] Carregando playlist videos (sidebar)...');
+        // Atualizar visualização na sidebar
         loadPlaylistVideos();
-        loadFirstVideo();
+        
+        // 🔄 Adicionar ao histórico de navegação da sidebar
+        sidebarHistory.push({
+            type: 'artist',
+            data: {
+                name: artist,
+                videos: artistVideos,
+                id: `artist-${artist}`
+            },
+            name: artist
+        });
+        sidebarHistory.updateButtons();
+        
+        console.log('[SelectArtist] Verificando se YouTube está pronto...');
+        // Se era primeira vez (no init), carregar primeiro vídeo
+        if (!player.ytReady) {
+            console.log('[SelectArtist] YouTube não pronto - carregando primeiro vídeo...');
+            loadFirstVideo();
+        }
+        
+        console.log('[SelectArtist] Refreshing player UI...');
         refreshPlayerUI();
         
-        // 💾 Salvar estado (nome do artista para restaurar depois)
+        console.log('[SelectArtist] Salvando estado...');
+        // Persist current state
         saveCurrentState();
+        
+        console.log('[SelectArtist] ✅ COMPLETO - Visualização atualizada (música continua tocando se estava)');
     } catch (error) {
-        console.error('Erro ao selecionar artista:', error);
+        console.error('[SelectArtist] ❌ ERRO CRÍTICO:', error, {
+            message: error.message,
+            stack: error.stack
+        });
         showToast('Erro ao carregar artista');
         await loadHome(); // ✅ Garante UI válida no erro
     }
@@ -3319,13 +4467,25 @@ function loadPlaylistVideos() {
     const container = document.querySelector('.playlist-aside');
     const itemsContainer = document.querySelector('.playlist-items');
     
+    // ✨ CRÍTICO: Usar navigationContext.currentView se disponível (funciona com artista/favoritos)
+    // Fallback para player.currentPlaylist para compatibilidade
+    const displayData = navigationContext.currentView?.data || player.currentPlaylist;
+    
+    if (!displayData) {
+        console.error('[loadPlaylistVideos] ❌ Nenhuma playlist ou view disponível');
+        return;
+    }
+    
+    const videos = displayData.videos || [];
+    const playlistName = displayData.name || 'Lista';
+    
     // Atualizar título
     const titlePl = container.querySelector('.title-pl');
-    titlePl.textContent = `> ${player.currentPlaylist.name}`;
+    titlePl.textContent = `${playlistName}`;
     
     // Mostrar skeleton loading
     itemsContainer.innerHTML = '';
-    for (let i = 0; i < player.currentPlaylist.videos.length; i++) {
+    for (let i = 0; i < videos.length; i++) {
         const skeleton = document.createElement('div');
         skeleton.className = 'playlist-item skeleton-loading';
         
@@ -3361,14 +4521,15 @@ function loadPlaylistVideos() {
         // Usar DocumentFragment para melhor performance com listas grandes
         const fragment = document.createDocumentFragment();
         
-        player.currentPlaylist.videos.forEach((video, index) => {
+        videos.forEach((video, index) => {
             const item = renderPlaylistItem(video, index);
             
-            // tocar ao clicar no item (exceto no botão kebab)
+            // ✨ CRÍTICO: Passar objeto VIDEO direto (não índice)
+            // Funcionará mesmo quando a view for artista/favoritos
             item.addEventListener('click', (e) => {
                 const target = e.target;
                 if (target.closest('.kebab-btn')) return;
-                playVideoByIndex(index);
+                playVideo(video);  // 👈 Usar video direto
             });
             
             fragment.appendChild(item);
@@ -3385,7 +4546,7 @@ function loadPlaylistVideos() {
             });
         });
         
-        // 🔥 CRÍTICO: Re-renderizar o indicador após reconstruir a lista
+        // Sincronizar estado favorito atual
         // Isso garante que o equalizer-icon apareça após modais serem fechados
         updatePlayingNowIndicator();
     });
@@ -3412,11 +4573,14 @@ function loadVideo(video) {
     }
 
     updateCurrentVideoDisplay();
-    // 🔥 CRÍTICO: Sincronizar favoritos antes de atualizar botão
+    // Sincronizar estado favorito atual
     syncFavoriteState(video);
     
-    // 💾 Salvar estado sempre que um vídeo é carregado
+    // Persist current state
     saveCurrentState();
+    
+    // 💾 NEW: Salvar vídeo/contexto no localStorage quando muda de música
+    persistPlayerState();
 }
 
 function onYouTubeIframeAPIReady() {
@@ -3480,6 +4644,13 @@ function onPlayerReady(event) {
 
         updateProgressBar();
         updatePlaylistDurations();
+        
+        // 💾 NEW: Persistência throttled - salvar estado a cada 3s
+        const now = Date.now();
+        if (now - lastPersistTime > PERSIST_THROTTLE_MS) {
+            persistPlayerState();
+            lastPersistTime = now;
+        }
     }, 250);
 
     safeRender();
@@ -3532,6 +4703,8 @@ function onPlayerStateChange(event) {
         updateProgressBar();
         updateActivePlaylistItem();
         updatePlayingIndicatorAnimationState();
+        // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
+        // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.PAUSED) {
         player.isPlaying = false;
         player.currentTime = ytPlayer.getCurrentTime();
@@ -3539,7 +4712,24 @@ function onPlayerStateChange(event) {
         updateProgressBar();
         updateActivePlaylistItem();
         updatePlayingIndicatorAnimationState();
+        // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
+        // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.CUED) {
+        // Player entrou em CUED após cueVideoById()
+        // 💾 NEW: Se restaurando do localStorage, aplicar seek + auto-play
+        if (player._restoreTime !== undefined && player._restoreTime > 0) {
+            ytPlayer.seekTo(player._restoreTime);
+            console.log('[Restore] ⏱️ Tempo restaurado:', player._restoreTime);
+            player._restoreTime = undefined; // Limpar para não repetir
+        }
+        
+        // Se for restauração com auto-play, fazer play agora
+        if (player._restoreAutoPlay === true) {
+            player.shouldPlayOnReady = true;
+            console.log('[Restore] ▶️ Auto-play ativado');
+            player._restoreAutoPlay = undefined; // Limpar
+        }
+        
         // Player entrou em CUED após cueVideoById()
         // Se shouldPlayOnReady for true, é o momento correto para chamar playVideo()
         if (player.shouldPlayOnReady && ytPlayer && player.ytReady) {
@@ -3568,7 +4758,7 @@ function onPlayerStateChange(event) {
 
 function playerPlay() {
     // 🔒 CONGELADO: Comando para YouTube player iniciar playback
-    // ⚠️ CRÍTICO: NÃO altere player.isPlaying aqui!
+    // Sincronizar estado favorito atual
     // 
     // O estado DEVE ser alterado APENAS por onPlayerStateChange(PLAYING)
     // quando YouTube CONFIRMA que o vídeo está tocando.
@@ -3590,7 +4780,7 @@ function playerPlay() {
 
 function playerPause() {
     // 🔒 CONGELADO: Comando para pausar o YouTube player
-    // ⚠️ CRÍTICO: Mantém sincronização imediata (offline)
+    // Sincronizar estado favorito atual
     // 
     // Diferença de playerPlay():
     // - playerPlay() espera confirmação do YouTube (online)
@@ -3641,12 +4831,105 @@ function updateCurrentVideoDisplay() {
 // ============================================================================
 
 function playVideoByIndex(index) {
+    console.log('[PlayVideoByIndex] INICIADO', {
+        index,
+        playlistName: player.currentPlaylist?.name,
+        playlistLength: player.currentPlaylist?.videos.length
+    });
+    
+    // ⚠️ CRÍTICO: Validar que o índice é válido para a PLAYLIST ATUAL
+    if (!player.currentPlaylist) {
+        console.error('[PlayVideoByIndex] ❌ currentPlaylist é null/undefined');
+        return;
+    }
+    
+    if (index < 0 || index >= player.currentPlaylist.videos.length) {
+        console.error('[PlayVideoByIndex] ❌ Índice fora da lista', {
+            index,
+            playlistLength: player.currentPlaylist.videos.length,
+            validRange: `0-${player.currentPlaylist.videos.length - 1}`
+        });
+        return;
+    }
+    
     player.currentVideoIndex = index;
     const video = player.currentPlaylist.videos[player.currentVideoIndex];
-    // Sinalizar que DEVE tocar
-    player.shouldPlayOnReady = true;
+    
+    // 🔒 GARANTIR: Música não toca automáticamente ao clicar em item
+    // Usuário decide quando clica em play/pause
+    player.shouldPlayOnReady = false;
+    
+    console.log('[PlayVideoByIndex] Carregando vídeo', {
+        videoIndex: index,
+        videoTitle: video.title,
+        videoArtist: video.artist
+    });
+    
     loadVideo(video);
     updateActivePlaylistItem();
+    
+    console.log('[PlayVideoByIndex] ✅ Completo');
+}
+
+/**
+ * ✨ NOVO: Toca um vídeo passando o OBJETO direto (não índice)
+ * 
+ * Funciona MESMO quando a sidebar está exibindo artista/favoritos
+ * porque não depende de índice na playlist atual
+ * 
+ * @param {Object} video - {id, title, artist, ...}
+ */
+function playVideo(video) {
+    if (!video || !video.id) {
+        console.warn('[PlayVideo] ❌ Vídeo inválido ou sem ID');
+        return;
+    }
+    
+    console.log('[PlayVideo] INICIADO', {
+        videoId: video.id,
+        videoTitle: video.title,
+        videoArtist: video.artist
+    });
+    
+    // 🔒 REFATORADO: Usar getCurrentViewVideos() como fonte única
+    // Encapsula toda a lógica de "qual view o usuário está vendo"
+    const videos = getCurrentViewVideos();
+    
+    if (videos.length === 0) {
+        console.error('[PlayVideo] ❌ Nenhum vídeo disponível na view atual');
+        return;
+    }
+    
+    // Garantir que player.currentPlaylist aponta para a lista correta
+    const viewName = navigationContext.currentView?.data?.name || player.currentPlaylist?.name || 'Custom';
+    player.currentPlaylist = {
+        name: viewName,
+        videos: videos
+    };
+    
+    // 🔒 GUARDRAIL: Modificando estado crítico (currentVideoIndex)
+    // ⚠️ REGRA: Após alterar currentVideoIndex, SEMPRE chamar updateActivePlaylistItem()
+    player.currentVideoIndex = videos.findIndex(v => v.id === video.id);
+    
+    if (player.currentVideoIndex === -1) {
+        console.warn('[PlayVideo] ⚠️ Vídeo não encontrado na visualização atual', {
+            videoId: video.id,
+            playlistLength: player.currentPlaylist.videos.length
+        });
+        // Fallback: usar o video que foi passado mesmo assim
+        player.currentVideoIndex = 0;
+    }
+    
+    console.log('[PlayVideo] Índice encontrado:', player.currentVideoIndex);
+    
+    // 🔒 GARANTIR: NÃO toca automáticamente ao clicar
+    // Usuário vai clicar em play/pause para controlar
+    player.shouldPlayOnReady = false;
+    
+    loadVideo(video);
+    updateActivePlaylistItem();
+    
+    console.log('[PlayVideo] ✅ Completo');
 }
 
 function updateActivePlaylistItem() {
@@ -3661,8 +4944,14 @@ function updateActivePlaylistItem() {
 }
 
 /**
- * Atualiza o indicador visual de "tocando agora"
- * Remove indicador antigo e adiciona ao item ativo
+ * 🔒 REFATORADO: Agora usa getCurrentPlayingVideo() como fonte única de verdade
+ * 
+ * Atualiza o indicador visual de "tocando agora" no item conrreto
+ * - Encontra sempre pelo YouTube ID (único e imutável)
+ * - Funciona em qualquer view (playlist, favoritos, artista, etc)
+ * 
+ * ⚠️ PROTEGIDO: A lógica "qual vídeo está tocando" está centralizada em getCurrentPlayingVideo()
+ * Não duplicar lógica aqui!
  */
 function updatePlayingNowIndicator() {
     // Remover indicador de todas as faixas
@@ -3672,94 +4961,93 @@ function updatePlayingNowIndicator() {
         container.classList.remove('playing');
     });
     
-    let videoIndex = player.currentVideoIndex;
-    
-    // 🔥 CRÍTICO: Se está vendo favoritos, encontrar o índice correto na lista de favoritos
-    // Caso contrário, currentVideoIndex aponta para posição na playlist original!
-    if (player.viewingFavorites && player.favorites.length > 0) {
-        // 🔥 IMPORTANTE: Se currentFavoriteId foi explicitamente setado como null,
-        // significa que o vídeo tocando NÃO está nos favoritos
-        // Nesse caso, NÃO procurar, apenas não mostrar indicador
-        if (player.currentFavoriteId === null) {
-            videoIndex = -1; // Flag para não encontrar nenhum item
-        } else {
-            // Encontrar qual favorito está sendo tocado pela ID
-            const favoriteIndex = player.favorites.findIndex(fav => {
-                if (player.currentFavoriteId) {
-                    return fav.id === player.currentFavoriteId;
-                }
-                // Fallback: comparar pelo vídeo atual (apenas se currentFavoriteId é undefined)
-                const current = player.currentPlaylist?.videos?.[player.currentVideoIndex];
-                return current && fav.video.id === current.id;
-            });
-            
-            if (favoriteIndex !== -1) {
-                videoIndex = favoriteIndex;
-            } else {
-                videoIndex = -1; // Não encontrou, não mostrar
-            }
-        }
+    // 🔒 FONTE ÚNICA DE VERDADE: Obter vídeo que está tocando
+    const currentVideo = getCurrentPlayingVideo();
+    if (!currentVideo || !currentVideo.id) {
+        console.warn('[updatePlayingNowIndicator] ⚠️ Nenhum vídeo tocando');
+        return;
     }
     
-    // Adicionar indicador ao item ativo APENAS se encontrou um item válido
-    if (videoIndex >= 0) {
-        const activeItem = document.querySelector(
-            `.playlist-item[data-video-index="${videoIndex}"]`
-        );
-        if (activeItem) {
-            const indicatorContainer = activeItem.querySelector('.indicator-container');
-            if (indicatorContainer) {
-                indicatorContainer.appendChild(createPlayingIndicator());
-                // Usar classe 'playing' para controlar animation-play-state
-                if (player.isPlaying) {
-                    indicatorContainer.classList.add('playing');
-                }
+    // 🔍 PROCURAR PELO YOUTUBE ID (único e imutável)
+    const activeItem = document.querySelector(
+        `.playlist-item[data-video-id="${currentVideo.id}"]`
+    );
+    
+    // Adicionar indicador ao item ativo APENAS se encontrado
+    if (activeItem) {
+        const indicatorContainer = activeItem.querySelector('.indicator-container');
+        if (indicatorContainer) {
+            indicatorContainer.appendChild(createPlayingIndicator());
+            // Usar classe 'playing' para controlar animation-play-state
+            if (player.isPlaying) {
+                indicatorContainer.classList.add('playing');
             }
         }
+        
+        console.log('[updatePlayingNowIndicator] ✅ Indicador atualizado', {
+            videoId: currentVideo.id,
+            videoTitle: currentVideo.title,
+            viewMode: player.viewingFavorites ? 'favoritos' : (navigationContext.currentView?.type || 'playlist')
+        });
+    } else {
+        // 🔥 DIAGNÓSTICO MELHORADO: Mostrar todos os data-video-id disponíveis
+        const availableIds = Array.from(document.querySelectorAll('.playlist-item[data-video-id]'))
+            .map(item => item.getAttribute('data-video-id'))
+            .slice(0, 5); // Mostrar primeiros 5 para não sobrecarregar console
+            
+        console.warn('[updatePlayingNowIndicator] ⚠️ Item não encontrado na sidebar', {
+            videoId: currentVideo.id,
+            videoTitle: currentVideo.title,
+            totalItems: document.querySelectorAll('.playlist-item').length,
+            firstFiveAvailableIds: availableIds,
+            possivel_causa: currentVideo.id === 'b16NlaSmdkk' 
+                ? '📌 AVISO: Este é o vídeo "Momentos". Se ele não está na sidebar, significa que a view está diferente!'
+                : 'Vídeo não está visível na view atual (ex: tocando música de outra playlist)',
+            currentView: navigationContext.currentView?.type || 'undefined',
+            currentPlaylistName: player.currentPlaylist?.name || 'undefined'
+        });
     }
 }
 
 /**
- * Atualiza estado de pausa/reprodução do indicador
- * Chamado quando player muda de estado
+ * 🔒 REFATORADO: Agora usa getCurrentPlayingVideo() como fonte única de verdade
+ * 
+ * Atualiza estado de pausa/reprodução (animação) do indicador
+ * Chamado quando player muda entre PLAYING e PAUSED
+ * 
+ * ⚠️ PROTEGIDO: A lógica "qual vídeo está tocando" está centralizada.
+ * Não duplicar a lógica de descoberta aqui!
  */
 function updatePlayingIndicatorAnimationState() {
-    let videoIndex = player.currentVideoIndex;
-    
-    // 🔥 CRÍTICO: Se está vendo favoritos, encontrar o índice correto
-    if (player.viewingFavorites && player.favorites.length > 0) {
-        // Se currentFavoriteId foi explicitamente setado como null, não mostrar
-        if (player.currentFavoriteId === null) {
-            videoIndex = -1;
-        } else {
-            const favoriteIndex = player.favorites.findIndex(fav => {
-                if (player.currentFavoriteId) {
-                    return fav.id === player.currentFavoriteId;
-                }
-                const current = player.currentPlaylist?.videos?.[player.currentVideoIndex];
-                return current && fav.video.id === current.id;
-            });
-            
-            if (favoriteIndex !== -1) {
-                videoIndex = favoriteIndex;
-            } else {
-                videoIndex = -1;
-            }
-        }
+    // 🔒 FONTE ÚNICA DE VERDADE: Obter vídeo que está tocando
+    const currentVideo = getCurrentPlayingVideo();
+    if (!currentVideo || !currentVideo.id) {
+        console.warn('[updatePlayingIndicatorAnimationState] ⚠️ Nenhum vídeo tocando');
+        return;
     }
     
-    // Apenas atualizar se encontrou um item válido
-    if (videoIndex >= 0) {
-        const indicatorContainer = document.querySelector(
-            `.playlist-item[data-video-index="${videoIndex}"] .indicator-container`
-        );
-        if (indicatorContainer) {
-            if (player.isPlaying) {
-                indicatorContainer.classList.add('playing');
-            } else {
-                indicatorContainer.classList.remove('playing');
-            }
+    // Apenas atualizar animação se encontrou o indicador (baseado em video ID)
+    const indicatorContainer = document.querySelector(
+        `.playlist-item[data-video-id="${currentVideo.id}"] .indicator-container`
+    );
+    
+    if (indicatorContainer) {
+        if (player.isPlaying) {
+            indicatorContainer.classList.add('playing');
+        } else {
+            indicatorContainer.classList.remove('playing');
         }
+        
+        console.log('[updatePlayingIndicatorAnimationState] ✅ Animação sincronizada', {
+            videoId: currentVideo.id,
+            videoTitle: currentVideo.title,
+            isPlaying: player.isPlaying
+        });
+    } else {
+        console.warn('[updatePlayingIndicatorAnimationState] ⚠️ Indicador não encontrado', {
+            videoId: currentVideo.id,
+            videoTitle: currentVideo.title
+        });
     }
 }
 
@@ -3920,7 +5208,7 @@ function toggleRepeat() {
     // 🔒 CONGELADO: Ciclo de modos repeat (off → one → all → off)
     // ⚠️ NÃO MODIFIQUE A ORDEM dos modos ou a lógica
     //
-    // Ciclo CRÍTICO:
+    // Sincronizar estado favorito atual
     // 0 = sem repeat (toca até o fim da playlist)
     // 2 = repeat one (repete música atual)
     // 1 = repeat all (volta ao início da playlist)
@@ -4138,6 +5426,14 @@ function createParticleExplosion(button) {
     }
 }
 
+/**
+ * 🔥 ORIGINAL: Botão de favoritar dos controles (header)
+ * 
+ * Sincroniza:
+ * - Estado visual do botão na UI
+ * - Lista de favoritos
+ * - Todos os items da sidebar (se exibida)
+ */
 function toggleFavorite(event) {
     if (!player.currentPlaylist) return;
     
@@ -4156,19 +5452,36 @@ function toggleFavorite(event) {
     const index = player.favorites.findIndex(fav => fav.id === favoriteId);
     
     if (index > -1) {
-        // Remover de favoritos
+        // ❌ Remover de favoritos
         console.log('[Favoritos] Removendo favorito:', favoriteId);
         player.favorites.splice(index, 1);
+        
         if (button) {
             button.classList.remove('active');
             button.setAttribute('aria-pressed', 'false');
+            const icon = button.querySelector('i');
+            if (icon) icon.textContent = 'favorite_border';
         }
+        
+        // ✨ NOVO: Atualizar ícone em TODOS os items da sidebar que mostram esta música
+        const sidebarItems = document.querySelectorAll(`.playlist-item[data-video-id="${favoriteId}"]`);
+        sidebarItems.forEach(item => {
+            const itemFavBtn = item.querySelector('.item-favorite-btn');
+            const itemFavIcon = itemFavBtn?.querySelector('i');
+            if (itemFavIcon) {
+                itemFavIcon.textContent = 'favorite_border';
+            }
+            if (itemFavBtn) {
+                itemFavBtn.classList.remove('active');
+            }
+        });
+        
         // Re-renderizar lista de favoritos (sempre, se estiver visualizando)
         if (player.viewingFavorites) {
             displayFavoritesList();
         }
     } else {
-        // Adicionar aos favoritos
+        // ✅ Adicionar aos favoritos
         // Validar duplicação (profissional: nunca confiar em cliques múltiplos)
         const alreadyExists = player.favorites.some(fav => fav.id === favoriteId);
         if (alreadyExists) {
@@ -4186,12 +5499,28 @@ function toggleFavorite(event) {
             video: video,
             playlist: player.currentPlaylist.name,
         });
+        
         if (button) {
             button.classList.add('active');
             button.setAttribute('aria-pressed', 'true');
+            const icon = button.querySelector('i');
+            if (icon) icon.textContent = 'favorite';
             // Dispara explosão de partículas APENAS ao ADICIONAR
             createParticleExplosion(button);
         }
+        
+        // ✨ NOVO: Atualizar ícone em TODOS os items da sidebar que mostram esta música
+        const sidebarItems = document.querySelectorAll(`.playlist-item[data-video-id="${favoriteId}"]`);
+        sidebarItems.forEach(item => {
+            const itemFavBtn = item.querySelector('.item-favorite-btn');
+            const itemFavIcon = itemFavBtn?.querySelector('i');
+            if (itemFavIcon) {
+                itemFavIcon.textContent = 'favorite';
+            }
+            if (itemFavBtn) {
+                itemFavBtn.classList.add('active');
+            }
+        });
         
         // Re-renderizar lista de favoritos (sempre, se estiver visualizando)
         if (player.viewingFavorites) {
@@ -4221,7 +5550,7 @@ function syncFavoriteState(track) {
         return;
     }
     
-    // 🔥 CRÍTICO: Usar video.id (YouTube ID) como identificador único
+    // Sincronizar estado favorito atual
     // Isso garante sincronização correta independente de onde a track foi tocada
     // (playlist, busca, favoritos, artista, etc.)
     const favoriteId = track.id;
@@ -4269,10 +5598,29 @@ function displayFavoritesList() {
     const container = document.querySelector('.playlist-aside');
     const itemsContainer = document.querySelector('.playlist-items');
     
-    // Marcar que estamos visualizando favoritos
+    console.log('[Favorites] displayFavoritesList() CHAMADO');
+    
+    // 🔒 GUARDRAIL: Modificando estado crítico (viewingFavorites + currentFavoriteId)
+    // ⚠️ REGRA: Após alterar viewingFavorites ou currentFavoriteId, SEMPRE chamar updatePlayingNowIndicator()
+    // ⚠️ NÃO use lógica local aqui - use getCurrentPlayingVideo() para teste
     player.viewingFavorites = true;
     
-    // � CRÍTICO: Se o vídeo atual está nos favoritos, settar currentFavoriteId
+    // Atualizar contexto: guardamos que visualizando favoritos mas preservamos contexto original
+    navigationContext.setCurrentView({
+        type: 'favorites',
+        data: player.favorites
+    });
+    
+    // 🔄 Adicionar ao histórico de navegação da sidebar
+    sidebarHistory.push({
+        type: 'favorites',
+        data: player.favorites,
+        name: 'Favoritos'
+    });
+    sidebarHistory.updateButtons();
+    
+    console.log('[Favorites] Contexto de navegação atualizado', navigationContext);
+    // Sincronizar estado favorito atual
     // Isso garante que o equalizer apareça no item correto
     if (player.currentPlaylist?.videos?.[player.currentVideoIndex]) {
         const currentVideo = player.currentPlaylist.videos[player.currentVideoIndex];
@@ -4285,14 +5633,14 @@ function displayFavoritesList() {
         }
     }
     
-    // �💾 Salvar estado (favoritos)
+    // Persist current state
     saveCurrentState();
     
-    // Atualizar título
+    // Atualizar título da seleção de favoritos
     const titlePl = container.querySelector('.title-pl');
-    titlePl.textContent = `Favoritos > ${player.favorites.length} músicas`;
+    titlePl.textContent = `Favoritos (${player.favorites.length})`;
     
-    // Limpar itens
+    // Limpar itens antigos
     itemsContainer.innerHTML = '';
     
     if (player.favorites.length === 0) {
@@ -4360,7 +5708,7 @@ function displayFavoritesList() {
             });
         });
         
-        // 🔥 CRÍTICO: Re-renderizar o indicador após reconstruir a lista
+        // Sincronizar estado favorito atual
         updatePlayingNowIndicator();
     });
 }
@@ -4496,7 +5844,7 @@ function displaySearchResults(results, query) {
             card.appendChild(img);
             card.appendChild(cardBody);
             card.addEventListener('click', async () => {
-                // 🔥 CRÍTICO: Carregar playlist e seta O ÍNDICE CORRETO ANTES de renderizar
+                // Sincronizar estado favorito atual
                 // Isso garante que o equalizer aparece no vídeo selecionado, não no primeiro
                 try {
                     const playlistMeta = player.playlistsIndex[result.playlistIndex];
@@ -4514,7 +5862,7 @@ function displaySearchResults(results, query) {
                     player.playOrder = [...Array(playlist.videos.length).keys()];
                     player.originalOrder = [...player.playOrder];
                     
-                    // 🔥 CRÍTICO: Resetar currentFavoriteId quando sai de favoritos
+                    // Sincronizar estado favorito atual
                     player.currentFavoriteId = undefined;
                     
                     // Renderizar lista com índice correto já setado
@@ -4527,7 +5875,7 @@ function displaySearchResults(results, query) {
                     loadVideo(video);
                     updateActivePlaylistItem();
                     
-                    // 💾 Salvar estado
+                    // Persist current state
                     saveCurrentState();
                     
                     // Fechar modal de busca
@@ -4662,6 +6010,25 @@ function setupEventListeners() {
         });
     }
     
+    // 🧭 NOVO: Botões de navegação da sidebar (Back/Forward)
+    const sidebarBackBtn = document.getElementById('sidebarBackBtn');
+    if (sidebarBackBtn) {
+        sidebarBackBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            sidebarHistory.goBack();
+        });
+    }
+    
+    const sidebarForwardBtn = document.getElementById('sidebarForwardBtn');
+    if (sidebarForwardBtn) {
+        sidebarForwardBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            sidebarHistory.goForward();
+        });
+    }
+    
     // Modal de busca
     document.getElementById('closeSearchModal').addEventListener('click', () => {
         closeModalWithAnimation('searchModal');
@@ -4711,7 +6078,7 @@ function setupEventListeners() {
     // ============================================================================
     // 🔒 CONTROLES DO PLAYER - CONGELADO CONTRA MODIFICAÇÕES
     // ============================================================================
-    // ⚠️ CRÍTICO: O comportamento desses botões está ESTABILIZADO.
+    // Sincronizar estado favorito atual
     // NÃO MODIFIQUE sob nenhuma circunstância:
     // - btnPlayPause: deve refletir EXATAMENTE o estado de player.isPlaying
     // - btnPrevious/btnNext: comportamento de navegação não deve mudar
@@ -4742,7 +6109,7 @@ function setupEventListeners() {
     
     // 🔒 BARRA DE PROGRESSO - HITBOX EXPANDIDA PARA MOBILE (40px)
     // ============================================================================
-    // ⚠️ CRÍTICO: A hitbox foi expandida via CSS (padding + margin + pseudo-elementos)
+    // Sincronizar estado favorito atual
     // mas os eventos seguem o padrão normal. A zona de toque agora é ~40px,
     // facilitando cliques/toques no mobile sem alterar a aparência (barra continua 3px).
     // 

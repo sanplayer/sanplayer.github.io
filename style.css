@@ -1175,7 +1175,7 @@ img {
 }
 
 .sidebar-nav li a:hover {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.9);
 }
 
 .sidebar-nav li a:active {
@@ -2403,6 +2403,106 @@ img {
     color: var(--text-dim);
 }
 
+/* Header da Sidebar com Título e Botões de Navegação */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgb(28, 28, 28);
+    padding: 0 0.5rem;
+}
+
+.sidebar-header .title-pl {
+    flex: 1 1 auto;
+    margin: 0;
+}
+
+/* Container dos botões de navegação */
+.sidebar-nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+/* Botões de navegação da sidebar */
+.sidebar-nav-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+}
+
+.sidebar-nav-btn.hidden {
+    display: none;
+    pointer-events: none;
+}
+
+.sidebar-nav-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.sidebar-nav-btn:active {
+    transform: scale(0.95);
+}
+
+.sidebar-nav-btn .material-icons {
+    font-size: 1.25rem;
+}
+
+/* Compatibilidade com back-button antigo (deprecated) */
+.back-button {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    opacity: 1;
+    pointer-events: auto;
+    width: 40px;
+    height: 40px;
+}
+
+.back-button.hidden {
+    display: none;
+    pointer-events: none;
+}
+
+.back-button:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.back-button:active {
+    transform: scale(0.95);
+}
+
+.back-button .material-icons {
+    font-size: 1.25rem;
+}
+
 /* ==========================================================================
    7. MODAL E CARDS
    ========================================================================== */
@@ -2826,10 +2926,9 @@ img {
     width: 100%;
     height: 15%;
     z-index: 10;
-    padding-right: 2rem;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     background: linear-gradient(0deg, rgba(19, 19, 19, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
     backdrop-filter: blur(3px);
     color: rgba(255, 255, 255, 0.8);
