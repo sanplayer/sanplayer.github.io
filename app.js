@@ -1370,37 +1370,25 @@ async function resolveInitialTrack() {
     // 🔥 PRIORIDADE 2: Saved State (localStorage) - APENAS se SEM URL params
     console.log('[Init] ℹ️ Nenhum parâmetro URL. Tentando localStorage...');
     try {
-        const saved = localStorage.getItem('sanplayer-state');
+        const saved = storage.load('sanplayer:state');
         if (!saved) throw new Error('No saved state');
         
-        const state = JSON.parse(saved);
-        
         // Validar age (descartar se > 30 dias)
-        const age = Date.now() - state.timestamp;
+        const age = Date.now() - saved.timestamp;
         const MAX_STATE_AGE = 30 * 24 * 60 * 60 * 1000; // 30 dias
         if (age > MAX_STATE_AGE) {
             console.log('[Init] ⏰ Saved state too old (>30 days), discarding');
-            localStorage.removeItem('sanplayer-state');
+            storage.remove('sanplayer:state');
             throw new Error('State expired');
         }
         
-        // ✅ Se tem lastTrackId (novo formato), usar isso (MAIS ROBUSTO)
-        if (state.lastTrackId) {
-            console.log(`[Init] 💾 Resuming from saved state: ${state.lastTrackId}`);
+        // ✅ Se tem currentVideoId, usar isso
+        if (saved.currentVideoId) {
+            console.log(`[Init] 💾 Resuming from saved state: ${saved.currentVideoId}`);
             return {
-                trackId: state.lastTrackId,
+                trackId: saved.currentVideoId,
                 source: 'localStorage',
-                context: state,
-            };
-        }
-        
-        // ⚠️ Fallback para playlistIndex (formato antigo, retrocompatibilidade)
-        if (state.playlistIndex >= 0 && state.videoIndex >= 0) {
-            console.log('[Init] 💾 Resuming from saved playlist (legacy format)');
-            return {
-                trackId: null,
-                source: 'localStorage',
-                context: state,
+                context: saved,
             };
         }
         
@@ -1746,6 +1734,18 @@ async function initApp() {
         return;
     }
 
+    // 🎯 BANNER: Fluxo de inicialização
+    console.log('');
+    console.log('╔════════════════════════════════════════════════════════════════╗');
+    console.log('║ 🎵 SAN PLAYER - FLUXO DE INICIALIZAÇÃO                        ║');
+    console.log('║                                                                ║');
+    console.log('║ 1️⃣  Primeira vez → INITIAL_TRACK_FALLBACK (Helios Deep)       ║');
+    console.log('║ 2️⃣  Próximas → localStorage (resumir do ponto anterior)       ║');
+    console.log('║                                                                ║');
+    console.log('║ 📚 Leia: INITIALIZATION_FLOW.md                               ║');
+    console.log('╚════════════════════════════════════════════════════════════════╝');
+    console.log('');
+
     initPlayerUI(); // Inicializa UI primeiro
 
     // Sincronizar estado favorito atual
@@ -1762,13 +1762,14 @@ async function initApp() {
         console.log('[Init] Feature flag: USE_NEW_INIT_LOGIC =', USE_NEW_INIT_LOGIC);
         
         // 🔥 NOVO FLUXO CORRETO: Restaurar PRIMEIRO, init SÓ se restauração falhar
-        console.log('[Init] 🔄 Tentando restaurar estado do localStorage...');
+        console.log('[Init] 🔄 [PASSO 1] Tentando restaurar estado do localStorage...');
         const restored = await restorePlayerState();
         
         if (restored) {
-            console.log('[Init] ✅ Estado restaurado com sucesso - pulando inicialização normal');
+            console.log('[Init] ✅ [PASSO 1] Estado restaurado com sucesso - pulando inicialização normal');
         } else {
-            console.log('[Init] 📝 Nenhum estado prévio - executando inicialização normal');
+            console.log('[Init] 📝 [PASSO 1] Nenhum estado prévio - continuando fluxo normal');
+            console.log('[Init] 🎯 [PASSO 2] Executando inicialização com resiliência...');
             // Usar nova lógica com resiliência APENAS se não houver estado
             await initializePlayerWithResilience();
         }
@@ -1780,6 +1781,12 @@ async function initApp() {
         // �🔒 MARCA COMO INICIALIZADO (bloqueia overlays)
         playerInitialized = true;
         console.log('[Init] 🔒 Player initialized. Lock acquired.');
+        
+        if (restored) {
+            console.log('[Init] 📝 [RESUMO] 2ª+ execução → localStorage restaurado');
+        } else {
+            console.log('[Init] 📝 [RESUMO] 1ª execução → INITIAL_TRACK_FALLBACK ativado');
+        }
     } else {
         // 🔒 LEGADO DESABILITADO: Manter apenas para referência histórica
         // Se você precisar voltar ao sistema antigo, mude USE_NEW_INIT_LOGIC para false
@@ -1882,6 +1889,15 @@ async function initApp() {
     // ✅ MARCA INICIALIZAÇÃO COMO COMPLETA (agora histórico pode funcionar)
     appInitComplete = true;
     console.log('[Init] ✅ App initialization complete. Sidebar history tracking ENABLED.');
+    console.log('');
+    console.log('╔════════════════════════════════════════════════════════════════╗');
+    console.log('║ ✨ SAN PLAYER PRONTO                                          ║');
+    console.log('║                                                                ║');
+    console.log('║ 📚 Documentação: INITIALIZATION_FLOW.md                        ║');
+    console.log('║ 🐛 Debug: Verifique console para logs [Init]                  ║');
+    console.log('║                                                                ║');
+    console.log('╚════════════════════════════════════════════════════════════════╝');
+    console.log('');
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
@@ -4324,12 +4340,23 @@ function shareItem(index) {
 }
 
 /**
+ * 🔒 Encode seguro para compartilhamento de URLs
+ * Força encode de caracteres que podem causar problemas em query strings
+ * Especialmente ponto final (.) que é comum em nomes como "Fábio Jr."
+ * @param {String} str - String a codificar
+ * @returns {String} String codificada com %2E para pontos
+ */
+function safeEncode(str) {
+    return encodeURIComponent(str).replace(/\.\./g, '%2E%2E').replace(/\./g, '%2E');
+}
+
+/**
  * Compartilha uma playlist
  * @param {String} playlistName - Nome da playlist
  */
 function sharePlaylist(playlistName) {
     const text = `Acompanhe a playlist: ${playlistName} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}?playlistId=${encodeURIComponent(playlistName)}`;
+    const url = `${window.location.origin}${window.location.pathname}?playlistId=${safeEncode(playlistName)}`;
     if (navigator.share) {
         navigator.share({
             title: 'SanPlayer',
@@ -4350,7 +4377,7 @@ function sharePlaylist(playlistName) {
  */
 function shareArtist(artistName) {
     const text = `Ouça todas as músicas de: ${artistName} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}?artistId=${encodeURIComponent(artistName)}`;
+    const url = `${window.location.origin}${window.location.pathname}?artistId=${safeEncode(artistName)}`;
     if (navigator.share) {
         navigator.share({
             title: 'SanPlayer',
