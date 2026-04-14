@@ -24,21 +24,82 @@
 // ============================================================================
 
 /**
- * ⭐ TRACK INICIAL FALLBACK
- * Este é o ÚNICO lugar para alterar o track que é tocado na primeira execução
- * ou quando nenhuma outra resolução é possível.
+ * 🛡️ TRACK INICIAL FALLBACK - INFRAESTRUTURA CRÍTICA
  * 
- * Para mudar, altere 'id' para um valor existente em suas playlists.
+ * ⚠️ NÃO é uma "feature visual", é última linha de defesa contra:
+ * - Estado corrompido
+ * - IDs inválidos
+ * - Falhas de API
+ * - Modo anônimo
+ * - Multi-device sem sincronização
  * 
- * IMPORTANTE: Valide manualmente que o ID existe em suas playlists JSON!
+ * ✅ TRÊS RESPONSABILIDADES DISTINTAS:
+ * 1. Primeira visita (UX controlada) - via localStorage.hasVisited
+ * 2. Estado persistido (prioridade máxima) - sempre ganha se válido
+ * 3. Fallback técnico (erro/edge case) - último recurso
+ * 
+ * 🔧 Para mudar, altere 'id' para valor existente em playlists.
+ * 💾 VALIDE MANUALMENTE que o ID existe nos arquivos JSON!
  */
 const INITIAL_TRACK_FALLBACK = {
     id: "m21zfosnqls",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
     title: "Chill Out Mix 2023🍓 Chillout Lounge 117",
     artist: "Helios Deep",
-    // Descrição para debugging
-    _description: "Track de fallback padrão - primeira execução ou erro de resolução"
+    _description: "Infraestrutura: fallback de integridade do player"
 };
+
+/**
+ * 🔒 VALIDAÇÃO: Garante que track tem estrutura mínima válida
+ * 
+ * Edge cases protegidos:
+ * - localStorage corrompido
+ * - ID inválido
+ * - Objeto vazio ou null
+ * - Estrutura alterada
+ * 
+ * @param {Object} track - Track a validar
+ * @returns {Boolean} true se track é confiável
+ */
+function isValidTrack(track) {
+    if (!track || typeof track !== 'object') return false;
+    if (typeof track.id !== 'string' || track.id.trim() === '') return false;
+    if (typeof track.title !== 'string' || track.title.trim() === '') return false;
+    if (typeof track.artist !== 'string' || track.artist.trim() === '') return false;
+    return true;
+}
+
+/**
+ * 🚪 FALLBACK SEGURO: Retorna track válido ou INITIAL_TRACK_FALLBACK
+ * 
+ * Uso obrigatório ANTES de:
+ * - Renderizar track
+ * - Tocar vídeo
+ * - Salvar em localStorage
+ * 
+ * Garante player NUNCA fica em estado inválido.
+ * 
+ * @param {Object} possibleTrack - Track que pode estar inválido
+ * @returns {Object} Track válido garantido
+ */
+function getSafeTrack(possibleTrack) {
+    if (isValidTrack(possibleTrack)) {
+        return possibleTrack;
+    }
+    console.warn('[getSafeTrack] ⚠️ Track inválido, usando FALLBACK:', possibleTrack);
+    return INITIAL_TRACK_FALLBACK;
+}
+
+/**
+ * 🎯 FLAG DE PRIMEIRA VISITA
+ * 
+ * Separa claramente:
+ * - Primeira vez: UX controlada (INITIAL_TRACK_FALLBACK)
+ * - Retorno: estado persistido (localStorage)
+ * - Erro: fallback técnico (INITIAL_TRACK_FALLBACK)
+ * 
+ * Inicialmente undefined, definido em resolveInitialTrack()
+ */
+let hasVisitedBefore = undefined;
 
 /**
  * Feature flag para nova lógica de inicialização
@@ -294,6 +355,32 @@ const navigationContext = {
 };
 
 /**
+ * 🔒 ENCODE SEGURO PARA COMPARTILHAMENTO
+ * 
+ * ⚠️ CRÍTICO: Esta função FORÇA encode de pontos finais
+ * Sem isso: "Fábio Jr." vira "?artistId=Fábio%20Jr." (ponto não encodado)
+ * Com isso: "Fábio Jr." vira "?artistId=Fábio%20Jr%2E" (ponto SEMPRE %2E)
+ * 
+ * Por quê:
+ * - Navegadores interpretam "." como fim de extensão
+ * - Query string pode truncar se não encodado corretamente
+ * - normalize() também funciona, mas URL fica limpa
+ * 
+ * ⚠️ REGRAS OBRIGATÓRIAS:
+ * ❌ NUNCA use: encodeURIComponent(str)
+ * ✅ SEMPRE use: safeEncode(str)
+ * 
+ * @param {String} str - Nome de artista/playlist com possíveis pontos
+ * @returns {String} String encoded com %2E para pontos
+ */
+function safeEncode(str) {
+    return encodeURIComponent(str)
+        .replace(/\.\.\./g, '%2E%2E%2E')  // Três pontos primeiro
+        .replace(/\.\.\./g, '%2E%2E')     // Dois pontos
+        .replace(/\./g, '%2E');            // Um ponto
+}
+
+/**
  * 🔒 WRAPPER CRÍTICO: Centraliza renderização após mudança de visualização
  * 
  * ⚠️ REGRA OBRIGATÓRIA:
@@ -404,7 +491,13 @@ const storage = {
  */
 function persistPlayerState() {
     const video = getCurrentPlayingVideo();
-    if (!video) return; // Sem vídeo, não salvar
+    
+    // 🧨 VALIDAÇÃO CRÍTICA: Se vídeo inválido, não salvar
+    // Evita corromper localStorage com dados inválidos
+    if (!isValidTrack(video)) {
+        console.warn('[persistPlayerState] ⚠️ Video inválido, não salvando:', video);
+        return;
+    }
     
     const stateToSave = {
         // 🎬 Video (use ID, nunca objeto)
@@ -427,7 +520,8 @@ function persistPlayerState() {
         } : null,
         isFavorites: player.viewingFavorites,
         
-        // 🕐 Timestamp (útil para debug)
+        // 🕐 Timestamp (para validação de age e debug)
+        timestamp: Date.now(),
         savedAt: new Date().toISOString()
     };
     
@@ -1242,6 +1336,14 @@ async function loadDefaultState() {
 // ============================================================================
 
 /**
+ * 🧭 DETERMINA QUAL TRACK DEVE SER CARREGADO - ARQUITETURA DE 3 CAMADAS
+ * 
+ * Layer 1: Estado Persistido (máxima prioridade)
+ * Layer 2: Primeira Visita (UX controlada)
+ * Layer 3: Fallback Técnico (erro/edge case)
+ * 
+ * ⚠️ NUNCA misture essas camadas. Cada uma tem responsabilidade clara.
+ * 
  * 🔒 CONGELADO: Resolução de Track Inicial - LÓGICA CRÍTICA
  * 
  * ⚠️ ATENÇÃO DESENVOLVEDORES: Esta função é fundamental para impedir desastres de UX.
@@ -1352,6 +1454,13 @@ async function resolveInitialTrack() {
         // Se tem playlistId ou artistId, deixar handleHashNavigation processar
         // Retornar sinal especial para NÃO tentar tocar diretamente
         console.log('[Init] 📋 playlist/artista detectado - deixar handleHashNavigation processar');
+        
+        // 🔒 GUARDRAIL: artistId vem JÁ DECODIFICADO do params.get()
+        // NUNCA tente decodificar novamente, vai quebrar
+        if (params.get('artistId')) {
+            console.log(`[Init] 👤 artistId detectado: "${params.get('artistId')}" (já decodificado)`);
+        }
+        
         return {
             trackId: null,
             source: 'url',
@@ -1367,8 +1476,8 @@ async function resolveInitialTrack() {
         // NÃO retorna aqui, continua fluxo normal de resolução (localStorage/fallback)
     }
     
-    // 🔥 PRIORIDADE 2: Saved State (localStorage) - APENAS se SEM URL params
-    console.log('[Init] ℹ️ Nenhum parâmetro URL. Tentando localStorage...');
+    // 🔥 LAYER 1: ESTADO PERSISTIDO (máxima prioridade)
+    console.log('[Init] 🧭 Layer 1: Tentando restaurar estado persistido...');
     try {
         const saved = storage.load('sanplayer:state');
         if (!saved) throw new Error('No saved state');
@@ -1382,9 +1491,9 @@ async function resolveInitialTrack() {
             throw new Error('State expired');
         }
         
-        // ✅ Se tem currentVideoId, usar isso
-        if (saved.currentVideoId) {
-            console.log(`[Init] 💾 Resuming from saved state: ${saved.currentVideoId}`);
+        // ✅ VALIDAÇÃO: Se tem currentVideoId E é válido, usar isso
+        if (saved.currentVideoId && typeof saved.currentVideoId === 'string') {
+            console.log(`[Init] ✅ Layer 1 SUCCESS: Resumindo de ${saved.currentVideoId}`);
             return {
                 trackId: saved.currentVideoId,
                 source: 'localStorage',
@@ -1392,16 +1501,32 @@ async function resolveInitialTrack() {
             };
         }
         
-        throw new Error('Invalid saved state format');
+        throw new Error('Saved state invalid or corrupted');
     } catch (error) {
-        console.warn(`[Init] ℹ️ localStorage unavailable or invalid:`, error.message);
+        console.warn(`[Init] ⚠️ Layer 1 FAILED: ${error.message}`);
     }
     
-    // 🔥 PRIORIDADE 3: Fallback Seguro (primeira execução ou erro)
-    console.log(`[Init] 🎯 Using INITIAL_TRACK_FALLBACK: ${INITIAL_TRACK_FALLBACK.id}`);
+    // 🔥 LAYER 2: PRIMEIRA VISITA (UX controlada)
+    console.log('[Init] 🧭 Layer 2: Verificando se primeira visita...');
+    const hasVisited = localStorage.getItem('_san_player_visited');
+    if (!hasVisited) {
+        console.log('[Init] 🎬 Layer 2: PRIMEIRA VISITA detectada → usando INITIAL_TRACK_FALLBACK (UX controlada)');
+        localStorage.setItem('_san_player_visited', Date.now().toString());
+        hasVisitedBefore = false;
+        return {
+            trackId: INITIAL_TRACK_FALLBACK.id,
+            source: 'first-visit',
+        };
+    }
+    
+    hasVisitedBefore = true;
+    console.log('[Init] 📍 Layer 2: Usuário já visitou antes');
+    
+    // 🔥 LAYER 3: FALLBACK TÉCNICO (último recurso)
+    console.log(`[Init] 🧭 Layer 3: Fallback técnico final → ${INITIAL_TRACK_FALLBACK.id}`);
     return {
         trackId: INITIAL_TRACK_FALLBACK.id,
-        source: 'fallback',
+        source: 'technical-fallback',
     };
 }
 
@@ -1524,7 +1649,17 @@ async function playTrackById(trackId) {
             videoIndex = 0;
         }
         
-        // [PASSO 2] Configurar estado do player
+        // [PASSO 2] VALIDAÇÃO FINAL: Garantir que video é válido
+        // ⚠️ Edge case: playlist data corrupted, video object invalid
+        if (!isValidTrack(video)) {
+            console.error('[Init] ❌ Video inválido após resolveTrack:', video);
+            const safeVideo = getSafeTrack(video);
+            console.log('[Init] 🛡️ Usando fallback safe track:', safeVideo.id);
+            // Recursivamente tentar com o fallback
+            return await playTrackById(safeVideo.id);
+        }
+        
+        // [PASSO 3] Configurar estado do player
         player.currentPlaylist = playlist;
         player.currentPlaylistIndex = playlistIndex;
         player.currentVideoIndex = videoIndex;
@@ -1541,13 +1676,13 @@ async function playTrackById(trackId) {
             videosCount: playlist.videos.length
         });
         
-        // [PASSO 3] Renderizar UI
+        // [PASSO 4] Renderizar UI
         updateCurrentVideoDisplay();
         loadPlaylistVideos();
         
         console.log('[Init] 🎨 playTrackById: UI rendered');
         
-        // [PASSO 4] Carregar vídeo no player YouTube
+        // [PASSO 5] Carregar vídeo no player YouTube
         loadVideo(video);
         console.log('[Init] ▶️ playTrackById: Video loaded to YouTube player');
         
@@ -2416,6 +2551,16 @@ function initPlayerUI() {
     artistEl.className = 'c-artist';
     artistEl.textContent = '';
     
+    // 🎯 CLICÁVEL: Tornar nome do artista navegável
+    // quando clica no artista, abre a view do artista
+    artistEl.style.cursor = 'pointer';
+    artistEl.addEventListener('click', (e) => {
+        const artistName = e.target.textContent?.trim();
+        if (artistName) {
+            selectArtist(artistName);
+        }
+    });
+    
     currentDetails.appendChild(titleEl);
     currentDetails.appendChild(artistEl);
     
@@ -2621,7 +2766,15 @@ async function handleHashNavigation() {
     } else if (artistId) {
         
         try {
-            // Carregar artista
+            // 🔒 GUARDRAIL: artistId já está DECODIFICADO
+            // ❌ NUNCA faça: selectArtist(decodeURIComponent(artistId))
+            // ✅ SEMPRE: selectArtist(artistId) direto
+            console.log('[handleHashNavigation] 👤 Carregando artista:', {
+                artistId: artistId,
+                length: artistId.length,
+                hasPoints: artistId.includes('.')
+            });
+            
             await selectArtist(artistId);
         } catch (error) {
             console.error('Erro ao navegar para artista:', error);
@@ -4340,19 +4493,22 @@ function shareItem(index) {
 }
 
 /**
- * 🔒 Encode seguro para compartilhamento de URLs
- * Força encode de caracteres que podem causar problemas em query strings
- * Especialmente ponto final (.) que é comum em nomes como "Fábio Jr."
- * @param {String} str - String a codificar
- * @returns {String} String codificada com %2E para pontos
- */
-function safeEncode(str) {
-    return encodeURIComponent(str).replace(/\.\./g, '%2E%2E').replace(/\./g, '%2E');
-}
-
-/**
- * Compartilha uma playlist
- * @param {String} playlistName - Nome da playlist
+ * 🔒 Compartilha uma playlist com ENCODE SEGURO
+ * 
+ * ⚠️ CRÍTICO: Usa safeEncode() para garantir pontos em playlistId
+ * 
+ * Exemplo:
+ * - Input: "A.B.C. Música"
+ * - URL gerada: "?playlistId=A%2EB%2EC%20M%C3%BAsica"
+ * - Recepção automática decodifica para: "A.B.C. Música"
+ * 
+ * REGRAS:
+ * ❌ NUNCA: encodeURIComponent(playlistName)
+ * ✅ SEMPRE: safeEncode(playlistName)
+ * ❌ NUNCA: mudar window.location.origin + pathname
+ * ✅ SEMPRE: manter ambos (dinâmicos)
+ * 
+ * @param {String} playlistName - Nome da playlist (pode ter pontos)
  */
 function sharePlaylist(playlistName) {
     const text = `Acompanhe a playlist: ${playlistName} no SanPlayer`;
@@ -4372,8 +4528,32 @@ function sharePlaylist(playlistName) {
 }
 
 /**
- * Compartilha um artista
- * @param {String} artistName - Nome do artista
+ * 🔒 Compartilha um artista com ENCODE SEGURO
+ * 
+ * ⚠️ CRÍTICO: Usa safeEncode() para garantir pontos em artistId
+ * 
+ * Casos de teste OBRIGATÓRIOS:
+ * 1. "Fábio Jr." → "?artistId=F%C3%A1bio%20Jr%2E" ✅
+ * 2. "A.B.C. Band" → "?artistId=A%2EB%2EC%20Band" ✅
+ * 3. Nomes normais → funcionam (sem regressão) ✅
+ * 
+ * Fluxo:
+ * - shareArtist("Fábio Jr.")
+ *   ↓
+ * - safeEncode("Fábio Jr.") = "F%C3%A1bio%20Jr%2E"
+ *   ↓
+ * - ?artistId=F%C3%A1bio%20Jr%2E (URL gerada)
+ *   ↓
+ * - params.get('artistId') [auto decode]
+ * - = "Fábio Jr." (ponto RESTAURADO) ✅
+ * 
+ * REGRAS:
+ * ❌ NUNCA: encodeURIComponent(artistName)
+ * ✅ SEMPRE: safeEncode(artistName)
+ * ❌ NUNCA: URL hardcoded
+ * ✅ SEMPRE: window.location.origin + pathname
+ * 
+ * @param {String} artistName - Nome do artista (pode ter pontos finais)
  */
 function shareArtist(artistName) {
     const text = `Ouça todas as músicas de: ${artistName} no SanPlayer`;
@@ -4403,6 +4583,32 @@ function shareMusic() {
     handleShare('player');
 }
 
+/**
+ * 🔒 CONGELADO: Busca e carrega vídeos de um artista
+ * 
+ * ⚠️ CRÍTICO: Esta função é chamada em 2 contextos:
+ * 1. Via params: selectArtist(params.get('artistId')) - JÁ decodificado
+ * 2. Via histórico: selectArtist(historicoSalvo) - normal
+ * 
+ * REGRA OBRIGATÓRIA:
+ * ❌ NUNCA: const artist_decoded = decodeURIComponent(artist);
+ * ❌ NUNCA: normalize(decodeURIComponent(artist))
+ * ✅ SEMPRE: Usar artist diretamente (já vem decodificado)
+ * 
+ * Por quê:
+ * - params.get() JÁ decodifica automaticamente
+ * - Dupla decodificação quebra nomes com %
+ * - normalize() funciona direto com "Fábio Jr."
+ * 
+ * Exemplo de fluxo correto:
+ * URL: ?artistId=F%C3%A1bio%20Jr%2E
+ *   ↓ params.get('artistId')
+ * "Fábio Jr." ← JÁ decodificado!
+ *   ↓ selectArtist("Fábio Jr.")
+ * normalize("Fábio Jr.") === normalize(video.artist) ✅
+ * 
+ * Se você ver: decodeURIComponent em selectArtist() → REMOVA IMEDIATAMENTE
+ */
 async function selectArtist(artist) {
     console.log('[SelectArtist] 🎯 INICIADO', { 
         artist,
@@ -4427,10 +4633,12 @@ async function selectArtist(artist) {
         });
         console.log('[SelectArtist] 🎤 Artistas únicos no sistema:', Array.from(allArtists).slice(0, 10));
 
-        // Filtrar vídeos do artista
+        // 🔒 MATCHING ROBUSTO: Usa normalize() para comparar
+        // Isso garante que "Fábio Jr." === "fabio jr" após normalização
         const artistVideos = [];
         allPlaylists.forEach(playlist => {
             playlist.videos?.forEach(video => {
+                // ✅ FORMA CORRETA: normalize em ambos os lados
                 const videoArtistNormalized = normalize(video.artist);
                 const parameterNormalized = normalize(artist);
                 const matches = videoArtistNormalized === parameterNormalized;

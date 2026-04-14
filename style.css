@@ -643,6 +643,10 @@ body.is-routing {
 
 /* === MOBILE: GRID VÃƒÂDEO + PLAYLIST === */
 @media (max-width: 1023px) {
+    .sidebar-header {
+        background: var(--bg-surface) !important;
+        top: -5px !important;
+    }
 
     .sidebar-nav li {
         margin-bottom: var(--gap-sm);
@@ -1105,10 +1109,13 @@ img {
 }
 
 @keyframes pulse-badge {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
         transform: scale(1);
     }
+
     50% {
         opacity: 0.7;
         transform: scale(1.1);
@@ -2044,6 +2051,12 @@ img {
     color: var(--text-dim);
     font-weight: 600;
     white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.current-details .c-artist:hover {
+    text-decoration: underline;
 }
 
 .current-actions {
@@ -2405,6 +2418,7 @@ img {
 
 /* Header da Sidebar com Título e Botões de Navegação */
 .sidebar-header {
+    border-left: 2px solid red;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2928,7 +2942,7 @@ img {
     z-index: 10;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     background: linear-gradient(0deg, rgba(19, 19, 19, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
     backdrop-filter: blur(3px);
     color: rgba(255, 255, 255, 0.8);
@@ -2978,9 +2992,11 @@ img {
     flex-direction: column;
     gap: clamp(1rem, 2.5vw, 1.75rem);
 }
-.pwa-install-content .btn-primary:hover{
+
+.pwa-install-content .btn-primary:hover {
     background: var(--accent-red);
 }
+
 .pwa-install-header {
     display: flex;
     align-items: center;
