@@ -2053,6 +2053,7 @@ img {
     white-space: nowrap;
     cursor: pointer;
     transition: color 0.2s ease;
+    user-select: none;
 }
 
 .current-details .c-artist:hover {
@@ -2428,6 +2429,7 @@ img {
     z-index: 10;
     background: rgb(28, 28, 28);
     padding: 0 0.5rem;
+    user-select: none;
 }
 
 .sidebar-header .title-pl {
