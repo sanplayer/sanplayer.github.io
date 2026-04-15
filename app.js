@@ -417,11 +417,40 @@ function setView(view) {
         };
     }
     
-    // 🔒 Usar view normalizada
+    // � NORMALIZAR DADOS DE FAVORITOS para renderização correta
+    // Favoritos vêm como [{ id, video: {...} }]
+    // Mas loadPlaylistVideos() espera { videos: [...] }
+    if (normalizedView.type === 'favorites' && normalizedView.data && Array.isArray(normalizedView.data)) {
+        normalizedView.data = {
+            name: 'Favoritos',
+            videos: normalizedView.data.map(fav => fav.video || fav)
+        };
+        console.log('[setView] 📝 Dados de favoritos normalizados para renderização');
+    }
+    
+    // �🔒 Usar view normalizada
     navigationContext.setCurrentView(normalizedView);
     loadPlaylistVideos();
     updateActivePlaylistItem?.();
+    
+    // 🧭 CRÍTICO: Registrar no histórico de navegação
+    // Toda mudança de sidebar passa AQUI, garantindo histórico correto
+    // ⚠️ MAS: Não registrar quando restaurando do histórico (evita duplicação)
+    if (appInitComplete && !isRestoringFromHistory) {
+        sidebarHistory.push({
+            type: normalizedView.type,
+            data: normalizedView.data,
+            name: normalizedView.data?.name || normalizedView.name
+        });
+        console.log('[setView] 🧭 View registrada no histórico:', {
+            type: normalizedView.type,
+            name: normalizedView.data?.name || normalizedView.name
+        });
+    } else if (isRestoringFromHistory) {
+        console.log('[setView] ⏭️ Restaurando do histórico - NÃO registrando novamente');
+    }
 }
+
 
 // ============================================================================
 // 💾 MÓDULO DE PERSISTÊNCIA (localStorage)
@@ -681,6 +710,13 @@ async function restorePlayerState() {
         autoPlay: saved.isPlaying
     });
     
+    // 🎯 CRÍTICO: Renderizar a sidebar para mostrar os items
+    // sem isso o player restaura mas a sidebar fica vazia
+    console.log('[Restore] 📋 Renderizando sidebar...');
+    loadPlaylistVideos();
+    updateActivePlaylistItem();
+    console.log('[Restore] ✅ Sidebar renderizada');
+    
     return true;
 }
 
@@ -720,49 +756,200 @@ const PERSIST_THROTTLE_MS = 3000;   // Salvar a cada 3s (timeupdate)
 // 🚀 Flag de inicialização completa (para não registrar primeira carga no histórico)
 let appInitComplete = false;
 
+// 🧭 Flag para indicar que estamos restaurando estado do histórico
+// Quando TRUE, setView() NÃO registra novamente no histórico
+let isRestoringFromHistory = false;
+
 // 🧭 NAVEGAÇÃO DA SIDEBAR: Histórico de views (playlists, artistas, favoritos, etc)
 const sidebarHistory = {
-    stack: [],                      // Array de estados de view
+    stack: [],                      // Array de estados de view completos
     currentIndex: -1,               // Posição atual no histórico
+    
+    /**
+     * Captura um snapshot COMPLETO do estado atual
+     * Inclui: tipo, dados, scroll, item selecionado, etc
+     */
+    captureSnapshot(viewState) {
+        let dataDeepCopy = null;
+        
+        try {
+            // Tentar fazer deep copy
+            dataDeepCopy = JSON.parse(JSON.stringify(viewState.data));
+        } catch (e) {
+            // Se falhar (referência circular, etc), usar apenas referência
+            console.warn('[SidebarHistory.captureSnapshot] ⚠️ Deep copy falhou, usando referência:', {
+                error: e.message,
+                type: viewState.type,
+                name: viewState.name
+            });
+            dataDeepCopy = viewState.data;
+        }
+        
+        return {
+            type: viewState.type,                    // 'playlist', 'artist', 'favorites'
+            data: dataDeepCopy,                      // Deep copy (ou referência se falhar)
+            name: viewState.name,                    // Nome para exibição
+            timestamp: Date.now(),                   // Quando foi capturado
+            currentVideoIndex: player.currentVideoIndex,  // Qual vídeo estava tocando
+            currentPlaylistIndex: player.currentPlaylistIndex,
+            scrollPosition: this.captureScrollPosition(),  // Posição de scroll da sidebar
+            dataSnapshot: {
+                videoCount: viewState.data?.videos?.length || 0,
+                hasItems: !!(viewState.data?.videos?.length)
+            }
+        };
+    },
+    
+    /**
+     * Captura a posição de scroll atual da sidebar
+     */
+    captureScrollPosition() {
+        try {
+            const itemsContainer = document.querySelector('.playlist-items');
+            return itemsContainer ? itemsContainer.scrollTop : 0;
+        } catch (e) {
+            console.warn('[SidebarHistory.captureScrollPosition] ⚠️ Erro ao capturar scroll:', e.message);
+            return 0;
+        }
+    },
+    
+    /**
+     * Compara se dois estados são EXATAMENTE idênticos (evita duplicata imediata)
+     * ⚠️ CRÍTICO: Só rejeita se for 100% idêntico
+     * Permite: mesma playlist visitada 2x (são 2 momentos diferentes)
+     * Rejeita: chamar push() duas vezes no mesmo frame (race condition)
+     */
+    isDuplicate(state1, state2) {
+        if (!state1 || !state2) return false;
+        
+        // Só considera duplicata se:
+        // 1. Tipo idêntico
+        // 2. Name idêntico
+        // 3. Ambas criadas no mesmo segundo (race condition)
+        const sameSec = Math.floor(state1.timestamp / 1000) === Math.floor(state2.timestamp / 1000);
+        if (!sameSec) return false;  // Se não é no mesmo segundo, é diferente (contexto diferente)
+        
+        if (state1.type !== state2.type) return false;
+        if (state1.name !== state2.name) return false;
+        
+        // Se é playlist, comparar ID
+        if (state1.type === 'playlist' && state2.type === 'playlist') {
+            const id1 = state1.data?.id || state1.name;
+            const id2 = state2.data?.id || state2.name;
+            return id1 === id2;  // Mesmo ID = mesma playlist
+        }
+        
+        return true;  // Mesma view, mesmo segundo = duplicata
+    },
     
     /**
      * Adiciona um novo estado ao histórico
      * Remove qualquer histórico "forward" se houver
      * 🔥 CRÍTICO: Só adiciona após a inicialização estar completa
+     * 🆕 CRÍTICO: Monitora se o estado REALMENTE mudou
      */
     push(viewState) {
+        console.log('[SidebarHistory.push] 📌 CHAMADO com:', {
+            type: viewState?.type,
+            name: viewState?.name,
+            appInitComplete: appInitComplete,
+            stackSize: this.stack.length
+        });
+        
         // ⚠️ Durante a inicialização, não adicionar ao histórico
-        // Isso garante que a primeira carga não apareça
         if (!appInitComplete) {
-            console.log('[SidebarHistory] ⏸️ Ignorando push durante inicialização (appInitComplete=false)');
+            console.warn('[SidebarHistory.push] ⏸️ REJEITADO - Inicialização em progresso (appInitComplete=false)');
+            console.log('[SidebarHistory.push] Stack atual:', this.stack.length, 'items');
             return;
         }
         
-        // Remover forward history se existir
-        if (this.currentIndex < this.stack.length - 1) {
-            this.stack = this.stack.slice(0, this.currentIndex + 1);
+        console.log('[SidebarHistory.push] ✅ ACEITO - appInitComplete=true, prosseguindo...');
+        
+        try {
+            // Capturar snapshot completo
+            const newSnapshot = this.captureSnapshot(viewState);
+            console.log('[SidebarHistory.push] ✅ Snapshot capturado com sucesso');
+            
+            // Verificar se é duplicata (race condition) - MUITO RÍGIDO
+            const previousState = this.stack[this.currentIndex];
+            if (previousState && this.isDuplicate(previousState, newSnapshot)) {
+                console.log('[SidebarHistory] ⏭️ Duplicata detectada (mesmo estado no mesmo segundo)', {
+                    type: newSnapshot.type,
+                    name: newSnapshot.name
+                });
+                return;
+            }
+            
+            // Remover forward history se existir
+            if (this.currentIndex < this.stack.length - 1) {
+                this.stack = this.stack.slice(0, this.currentIndex + 1);
+            }
+            
+            this.stack.push(newSnapshot);
+            this.currentIndex = this.stack.length - 1;
+            
+            console.log('[SidebarHistory.push] 📌 Item adicionado ao stack:', {
+                type: newSnapshot.type,
+                name: newSnapshot.name,
+                newStackSize: this.stack.length,
+                newCurrentIndex: this.currentIndex
+            });
+            
+            console.log('[SidebarHistory.push] 🔄 Chamando updateButtons()...');
+            this.updateButtons();
+            console.log('[SidebarHistory.push] ✅ updateButtons() completado');
+            
+            console.log('[SidebarHistory] 📍 Adicionado:', {
+                type: newSnapshot.type,
+                name: newSnapshot.name,
+                videosCount: newSnapshot.dataSnapshot.videoCount,
+                stackSize: this.stack.length,
+                currentIndex: this.currentIndex,
+                canGoBack: this.canGoBack(),
+                canGoForward: this.canGoForward()
+            });
+            
+            // 🔍 DEBUG: Mostrar histórico completo após adicionar
+            console.log('[SidebarHistory.push] 📊 Chamando printHistory()...');
+            this.printHistory();
+            console.log('[SidebarHistory.push] ✅ Sequência completa de push() finalizada');
+            
+        } catch (e) {
+            console.error('[SidebarHistory.push] 🔴 ERRO durante push():', {
+                error: e.message,
+                stack: e.stack,
+                viewState: { type: viewState?.type, name: viewState?.name }
+            });
         }
-        
-        const newState = {
-            type: viewState.type,    // 'playlist', 'artist', 'favorites'
-            data: viewState.data,    // Dados da view
-            name: viewState.name,    // Nome para exibição
-        };
-        
-        this.stack.push(newState);
-        this.currentIndex = this.stack.length - 1;
-        this.updateButtons();
-        console.log('[SidebarHistory] 📍 Adicionado:', newState);
     },
     
     /**
      * Volta para o estado anterior
      */
     goBack() {
-        if (this.canGoBack()) {
-            this.currentIndex--;
-            this.restoreState();
-            console.log('[SidebarHistory] ⬅️ Voltar para index:', this.currentIndex);
+        console.log('[SidebarHistory.goBack] Tentando voltar...', {
+            canGoBack: this.canGoBack(),
+            currentIndex: this.currentIndex,
+            stackSize: this.stack.length
+        });
+        
+        try {
+            if (this.canGoBack()) {
+                this.currentIndex--;
+                const targetState = this.stack[this.currentIndex];
+                console.log('[SidebarHistory.goBack] ✅ Voltado para:', {
+                    newIndex: this.currentIndex,
+                    type: targetState?.type,
+                    name: targetState?.name
+                });
+                this.restoreState();
+                this.printHistory();
+            } else {
+                console.warn('[SidebarHistory.goBack] ❌ Não pode voltar (no início do histórico)');
+            }
+        } catch (e) {
+            console.error('[SidebarHistory.goBack] 🔴 ERRO:', e.message);
+            this.updateButtons();
         }
     },
     
@@ -770,10 +957,29 @@ const sidebarHistory = {
      * Avança para o próximo estado (se houver)
      */
     goForward() {
-        if (this.canGoForward()) {
-            this.currentIndex++;
-            this.restoreState();
-            console.log('[SidebarHistory] ➡️ Avançar para index:', this.currentIndex);
+        console.log('[SidebarHistory.goForward] Tentando avançar...', {
+            canGoForward: this.canGoForward(),
+            currentIndex: this.currentIndex,
+            stackSize: this.stack.length
+        });
+        
+        try {
+            if (this.canGoForward()) {
+                this.currentIndex++;
+                const targetState = this.stack[this.currentIndex];
+                console.log('[SidebarHistory.goForward] ✅ Avançado para:', {
+                    newIndex: this.currentIndex,
+                    type: targetState?.type,
+                    name: targetState?.name
+                });
+                this.restoreState();
+                this.printHistory();
+            } else {
+                console.warn('[SidebarHistory.goForward] ❌ Não pode avançar (no fim do histórico)');
+            }
+        } catch (e) {
+            console.error('[SidebarHistory.goForward] 🔴 ERRO:', e.message);
+            this.updateButtons();
         }
     },
     
@@ -792,40 +998,186 @@ const sidebarHistory = {
     },
     
     /**
-     * Restaura o estado no índice atual
+     * Restaura o estado COMPLETO no índice atual
+     * 🆕 Restaura não apenas a view, mas também scroll, item selecionado, etc
      */
     restoreState() {
-        if (this.currentIndex >= 0 && this.currentIndex < this.stack.length) {
-            const state = this.stack[this.currentIndex];
-            
-            // Renderizar a view restaurada
-            if (state.type === 'favorites') {
-                displayFavoritesList();
-            } else if (state.type === 'artist' && state.name) {
-                selectArtist(state.name);
-            } else if (state.type === 'playlist' && state.data) {
-                setView({
-                    type: 'playlist',
-                    data: state.data
+        try {
+            if (this.currentIndex >= 0 && this.currentIndex < this.stack.length) {
+                const state = this.stack[this.currentIndex];
+                
+                console.log('[SidebarHistory.restoreState] Restaurando:', {
+                    type: state.type,
+                    name: state.name,
+                    videoIndex: state.currentVideoIndex,
+                    scrollPos: state.scrollPosition
                 });
+                
+                // 🔥 CRÍTICO: Sinalizar que estamos restaurando para não registrar no histórico novamente
+                isRestoringFromHistory = true;
+                
+                try {
+                    // 🎯 Regra de ouro: APENAS usar setView() durante restore
+                    // Não chamar selectArtist() ou displayFavoritesList() diretamente
+                    // para evitar chamadas aninhadas de setView()
+                    
+                    setView({
+                        type: state.type,
+                        data: state.data
+                    });
+                    
+                    console.log('[SidebarHistory.restoreState] ✅ View restaurada via setView()');
+                } finally {
+                    // Resetar flag após restauração
+                    isRestoringFromHistory = false;
+                }
+                
+                // 🆕 Restaurar informações adicionais com DELAY
+                // Aguardar renderização completa antes de restaurar scroll/indicadores
+                setTimeout(() => {
+                    try {
+                        // Restaurar posição de scroll após renderização
+                        const itemsContainer = document.querySelector('.playlist-items');
+                        if (itemsContainer && state.scrollPosition !== undefined) {
+                            itemsContainer.scrollTop = state.scrollPosition;
+                            console.log('[SidebarHistory] ↩️ Scroll restaurado para:', state.scrollPosition);
+                        }
+                        
+                        // Sincronizar estado favorito atual após renderização
+                        updatePlayingNowIndicator();
+                    } catch (e) {
+                        console.warn('[SidebarHistory.restoreState] ⚠️ Erro ao restaurar efeitos:', e.message);
+                    }
+                }, 150);  // Aguardar 150ms para renderização completa
+                
+                this.updateButtons();
             }
-            
+        } catch (e) {
+            console.error('[SidebarHistory.restoreState] 🔴 ERRO ao restaurar estado:', {
+                error: e.message,
+                stack: e.stack
+            });
+            // Tentar pelo menos atualizar botões
             this.updateButtons();
         }
     },
     
     /**
      * Atualiza o estado dos botões de navegação
+     * 🆕 COM LOGGING DETALHADO para diagnóstico
      */
     updateButtons() {
-        const backBtn = document.getElementById('sidebarBackBtn');
-        const forwardBtn = document.getElementById('sidebarForwardBtn');
-        
-        if (backBtn) {
-            backBtn.classList.toggle('hidden', !this.canGoBack());
+        try {
+            const backBtn = document.getElementById('sidebarBackBtn');
+            const forwardBtn = document.getElementById('sidebarForwardBtn');
+            
+            const canBack = this.canGoBack();
+            const canForward = this.canGoForward();
+            
+            // 🔥 LOG CRÍTICO - Mostrar SEMPRE, mesmo que encontre os botões
+            console.log('[SidebarHistory.updateButtons] 🔍 DIAGNÓSTICO:', {
+                stackSize: this.stack.length,
+                currentIndex: this.currentIndex,
+                canGoBack: canBack,
+                canGoForward: canForward,
+                backBtnFound: !!backBtn,
+                forwardBtnFound: !!forwardBtn,
+                timestamp: new Date().toLocaleTimeString()
+            });
+            
+            if (!backBtn) {
+                console.error('[SidebarHistory.updateButtons] 🔴 ERRO CRÍTICO: sidebarBackBtn não encontrado no DOM!');
+                console.log('[SidebarHistory.updateButtons] Tentando buscar novamente...');
+                const retryBackBtn = document.getElementById('sidebarBackBtn');
+                console.log('[SidebarHistory.updateButtons] Resultado da retry:', !!retryBackBtn);
+            }
+            
+            if (!forwardBtn) {
+                console.error('[SidebarHistory.updateButtons] 🔴 ERRO CRÍTICO: sidebarForwardBtn não encontrado no DOM!');
+            }
+            
+            if (backBtn) {
+                // Botão sempre visível (independente de ter histórico)
+                backBtn.classList.remove('hidden');
+                // Apenas desabilita se não houver para voltar
+                backBtn.disabled = !canBack;
+                backBtn.classList.toggle('disabled', !canBack);
+                const isDisabled = backBtn.disabled;
+                console.log(`[SidebarHistory.updateButtons] Back btn: ${isDisabled ? 'disabled' : 'enabled'}`);
+            }
+            
+            if (forwardBtn) {
+                // Botão sempre visível (independente de ter histórico)
+                forwardBtn.classList.remove('hidden');
+                // Apenas desabilita se não houver para avançar
+                forwardBtn.disabled = !canForward;
+                forwardBtn.classList.toggle('disabled', !canForward);
+                const isDisabled = forwardBtn.disabled;
+                console.log(`[SidebarHistory.updateButtons] Forward btn: ${isDisabled ? 'disabled' : 'enabled'}`);
+            }
+        } catch (e) {
+            console.error('[SidebarHistory.updateButtons] 🔴 ERRO ao atualizar botões:', {
+                error: e.message,
+                stack: e.stack
+            });
         }
-        if (forwardBtn) {
-            forwardBtn.classList.toggle('hidden', !this.canGoForward());
+    },
+    
+    /**
+     * 🔍 DEBUG: Mostra estado COMPLETO do histórico de navegação
+     * Útil para validar fluxo de voltar/avançar
+     */
+    printHistory() {
+        console.log('\n╔════════════════════════════════════════════════════════════════╗');
+        console.log('║ 📍 SIDEBAR HISTORY - ESTADO COMPLETO                           ║');
+        console.log('╠════════════════════════════════════════════════════════════════╣');
+        console.log(`║ Stack Size: ${String(this.stack.length).padEnd(3)}                                             ║`);
+        console.log(`║ Current Index: ${String(this.currentIndex).padEnd(2)}                                         ║`);
+        console.log(`║ Can Go Back: ${String(this.canGoBack()).padEnd(5)}                                       ║`);
+        console.log(`║ Can Go Forward: ${String(this.canGoForward()).padEnd(5)}                                   ║`);
+        console.log('╠════════════════════════════════════════════════════════════════╣');
+        
+        if (this.stack.length === 0) {
+            console.log('║ [VAZIO - Nenhuma navegação registrada]                          ║');
+        } else {
+            this.stack.forEach((state, idx) => {
+                const isCurrent = idx === this.currentIndex;
+                const prefix = isCurrent ? '→ ' : '  ';
+                const type = String(state.type).padEnd(10);
+                const name = (state.name || 'Unnamed').substring(0, 35).padEnd(35);
+                const mark = isCurrent ? ' ◄ ATUAL' : '';
+                console.log(`║ ${prefix}[${idx}] ${type} | ${name}${mark} ║`);
+            });
+        }
+        
+        console.log('╚════════════════════════════════════════════════════════════════╝\n');
+    },
+    
+    /**
+     * ✅ VALIDAÇÃO: Verifica se o histórico está consistente
+     */
+    validate() {
+        const issues = [];
+        
+        if (this.currentIndex < -1 || this.currentIndex >= this.stack.length) {
+            issues.push(`❌ currentIndex inválido: ${this.currentIndex} (stack size: ${this.stack.length})`);
+        }
+        
+        if (this.canGoBack() && this.currentIndex <= 0) {
+            issues.push(`❌ Pode voltar mas está no início (index: ${this.currentIndex})`);
+        }
+        
+        if (this.canGoForward() && this.currentIndex >= this.stack.length - 1) {
+            issues.push(`❌ Pode avançar mas está no final (index: ${this.currentIndex})`);
+        }
+        
+        if (issues.length === 0) {
+            console.log('✅ [SidebarHistory] Validação confirmada!');
+            return true;
+        } else {
+            console.error('❌ [SidebarHistory] Problemas detectados:');
+            issues.forEach(issue => console.error(`   ${issue}`));
+            return false;
         }
     },
     
@@ -2023,6 +2375,18 @@ async function initApp() {
     
     // ✅ MARCA INICIALIZAÇÃO COMO COMPLETA (agora histórico pode funcionar)
     appInitComplete = true;
+    
+    // 🧭 REGISTRAR ESTADO INICIAL NO HISTÓRICO
+    // Após app estar completa, registra a primeira playlist como ponto de partida
+    if (player.currentPlaylist) {
+        sidebarHistory.push({
+            type: 'playlist',
+            data: player.currentPlaylist,
+            name: player.currentPlaylist?.name
+        });
+        console.log('[Init] 🧭 Estado inicial registrado no histórico:', player.currentPlaylist.name);
+    }
+    
     console.log('[Init] ✅ App initialization complete. Sidebar history tracking ENABLED.');
     console.log('');
     console.log('╔════════════════════════════════════════════════════════════════╗');
@@ -2030,9 +2394,27 @@ async function initApp() {
     console.log('║                                                                ║');
     console.log('║ 📚 Documentação: INITIALIZATION_FLOW.md                        ║');
     console.log('║ 🐛 Debug: Verifique console para logs [Init]                  ║');
+    console.log('║ 🧭 Histórico: Digite "navHistory()" no console               ║');
     console.log('║                                                                ║');
     console.log('╚════════════════════════════════════════════════════════════════╝');
     console.log('');
+    
+    // 🔍 DEBUG GLOBAL: Função para inspecionar histórico a qualquer momento
+    window.navHistory = function() {
+        console.log('[DEBUG] navHistory() chamado');
+        sidebarHistory.printHistory();
+        sidebarHistory.validate();
+    };
+    
+    // Alias para print apenas
+    window.navStack = function() {
+        console.log('[DEBUG] navStack() chamado');
+        sidebarHistory.printHistory();
+    };
+    
+    console.log('[Init] 🧭 Funções de debug globais configuradas:');
+    console.log('[Init]    - window.navHistory() : Mostra histórico completo + validação');
+    console.log('[Init]    - window.navStack() : Mostra apenas o histórico');
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
@@ -3014,12 +3396,14 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
         player.currentFavoriteId = undefined;
 
         // Guardar novo contexto original
-        console.log('[SelectPlaylist] Setando navigationContext...');
-        navigationContext.setOriginalSource({
+        console.log('[SelectPlaylist] Setando view para esta playlist...');
+        // 🧭 Centralizar mudança de sidebar com setView() para registrar automaticamente no histórico
+        setView({
             type: 'playlist',
-            id: index,
             data: playlist
         });
+        
+        console.log('[SelectPlaylist] View atualizada e histórico registrado automaticamente');
 
         // ⚠️ REMOVIDO: updatePlaylistCardsInModal() é chamado AUTOMATICAMENTE por preloadPlaylistsInBackground()
         // Não precisa chamar aqui também - evita race conditions
@@ -3027,10 +3411,6 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
         // Fechar modal ANTES de atualizar sidebar
         console.log('[SelectPlaylist] Fechando modal...');
         closePlaylistsModal();
-        
-        // Atualizar sidebar com nova visualização
-        console.log('[SelectPlaylist] Carregando playlist videos (sidebar)...');
-        loadPlaylistVideos();
         
         // Se era primeira vez (no init), carregar primeiro vídeo
         if (!player.ytReady) {
@@ -3084,25 +3464,19 @@ async function selectPlaylistByIndex(index) {
             // Caso contrário, syncFavoriteState() usa ID antigo e botão fica com estado errado
             player.currentFavoriteId = undefined;
 
-            // 🧭 NOVO: Guardar este contexto como "original" para poder voltar depois
-            navigationContext.setOriginalSource({
+            console.log('[SelectPlaylistByIndex] Setando view para esta playlist...');
+            // 🧭 Centralizar mudança de sidebar com setView() para registrar automaticamente no histórico
+            setView({
                 type: 'playlist',
-                id: index,
                 data: playlist
             });
+            
+            console.log('[SelectPlaylistByIndex] View atualizada e histórico registrado automaticamente');
 
             // 🔄 Atualizar os cards do modal com o novo dado cacheado
             updatePlaylistCardsInModal();
             
             closePlaylistsModal();
-            loadPlaylistVideos();
-            
-            // 🔄 Adicionar ao histórico de navegação da sidebar
-            sidebarHistory.push({
-                type: 'playlist',
-                data: playlist,
-                name: playlist.name
-            });
             sidebarHistory.updateButtons();
             
             loadFirstVideo();
@@ -3931,6 +4305,11 @@ function renderUserPlaylistRow(pl, idx, isAddingMode) {
             player.currentVideoIndex = 0;
             player.playOrder = [...Array(player.currentPlaylist.videos.length).keys()];
             player.originalOrder = [...player.playOrder];
+            
+            // 🔥 CRÍTICO: Resetar navigationContext para usar player.currentPlaylist
+            // Se não fazer isso, loadPlaylistVideos() vai usar navigationContext.currentView (dados antigos)
+            navigationContext.currentView = null;
+            
             closeUserPlaylistsModal();
             closeUserMenuModal();
             loadPlaylistVideos();
@@ -3938,6 +4317,15 @@ function renderUserPlaylistRow(pl, idx, isAddingMode) {
                 loadFirstVideo();
             }
             refreshPlayerUI();
+            
+            // 🔄 CRÍTICO: Adicionar ao histórico de navegação da sidebar
+            // (Faltava aqui - playlist do usuário não era rastreada!)
+            sidebarHistory.push({
+                type: 'playlist',
+                data: selectedPl,
+                name: selectedPl.name || 'Playlist'
+            });
+            sidebarHistory.updateButtons();
         }
     });
     
@@ -4117,10 +4505,131 @@ function openItemOptionsModal(index) {
     modal.classList.add('show');
 }
 
+/**
+ * 🔥 NOVO: Abre opções do item a partir do player (overlay kebab)
+ * 
+ * ✅ SIMPLES E CORRETO:
+ * - Recebe o vídeo diretamente (já foi setado em player.previewVideo)
+ * - Renderiza o modal com esse vídeo
+ * - Sem lógica complexa de videoToAdd ou busca na view
+ * - Funciona 100% independente da sidebar
+ * 
+ * @param {Object} video - Objeto vídeo { id, title, artist }
+ */
+function openItemOptionsModalFromPlayer(video) {
+    if (!video || !video.id) {
+        console.error('[openItemOptionsModalFromPlayer] ❌ Vídeo inválido');
+        return;
+    }
+    
+    const modal = document.getElementById('itemOptionsModal');
+    const headerEl = modal.querySelector('.modal-header');
+    
+    // Limpar header anterior
+    headerEl.innerHTML = '';
+    
+    // Renderizar novo header com o vídeo do player
+    const header = renderModalHeader(video, closeItemOptionsModal);
+    headerEl.appendChild(header);
+
+    const body = document.getElementById('itemOptionsBody');
+    body.innerHTML = '';
+
+    const userList = getUserPlaylists();
+    const isInAnyPlaylist = userList.some(pl => pl.videos.some(v => v.id === video.id));
+
+    // Usar DocumentFragment para melhor performance
+    const fragment = document.createDocumentFragment();
+
+    // Opção: Adicionar/Remover da playlist
+    const playlistRow = renderOptionRow({
+        icon: isInAnyPlaylist ? 'remove' : 'add',
+        text: isInAnyPlaylist ? 'Remover da Playlist' : 'Adicionar a playlist',
+        onClick: () => {
+            if (isInAnyPlaylist) {
+                // Já está em playlist: remover
+                const userList = getUserPlaylists();
+                userList.forEach(pl => {
+                    pl.videos = pl.videos.filter(v => v.id !== video.id);
+                });
+                saveUserPlaylists(userList);
+                showFeedbackModal('Removido da Playlist');
+                closeItemOptionsModal();
+            } else {
+                // Não está em playlist: abrir modal para adicionar
+                const userList = getUserPlaylists();
+                if (userList.length === 0) {
+                    // Sem playlists: abrir modal para criar
+                    addingItemToPlaylist = true;
+                    videoToAdd = video;
+                    openCreatePlaylistModal();
+                } else if (userList.length === 1) {
+                    // Uma playlist: adicionar direto
+                    userList[0].videos.push(video);
+                    saveUserPlaylists(userList);
+                    showFeedbackModal(`Adicionado a "${userList[0].name}"`);
+                    closeItemOptionsModal();
+                } else {
+                    // Múltiplas: abrir modal para escolher
+                    addingItemToPlaylist = true;
+                    videoToAdd = video;
+                    openUserPlaylistsModal();
+                }
+            }
+        }
+    });
+    fragment.appendChild(playlistRow);
+    fragment.appendChild(renderSeparator());
+
+    // Opção: Favoritar
+    const isFavorite = player.favorites.some(fav => fav.id === video.id);
+    const favoriteRow = renderOptionRow({
+        icon: isFavorite ? 'favorite' : 'favorite_border',
+        text: isFavorite ? 'Remover de Favoritos' : 'Adicionar a Favoritos',
+        onClick: () => {
+            // Toggle favorito para este vídeo
+            const favoriteId = video.id;
+            const favIndex = player.favorites.findIndex(fav => fav.id === favoriteId);
+            
+            if (favIndex > -1) {
+                player.favorites.splice(favIndex, 1);
+                showFeedbackModal('Removido de Favoritos');
+            } else {
+                player.favorites.push(video);
+                showFeedbackModal('Adicionado a Favoritos');
+                // Criar partículas de coração no botão
+                const favButtonOnOverlay = document.getElementById('favButton');
+                if (favButtonOnOverlay) {
+                    createParticleExplosion(favButtonOnOverlay);
+                }
+            }
+            saveFavorites();
+            updateFavoriteButton();
+            closeItemOptionsModal();
+        }
+    });
+    fragment.appendChild(favoriteRow);
+    fragment.appendChild(renderSeparator());
+
+    // Opção: Compartilhar
+    const shareRow = renderOptionRow({
+        icon: 'share',
+        text: 'Compartilhar',
+        onClick: () => shareItem(player.currentVideoIndex)
+    });
+    fragment.appendChild(shareRow);
+
+    body.appendChild(fragment);
+    modal.classList.add('show');
+}
+
 function closeItemOptionsModal() {
     closeModalWithAnimation('itemOptionsModal', () => {
-        // Sincronizar estado favorito atual
-        // Se usuário fechou opções do item sem fazer nada, a sidebar deve estar visível
+        // Limpar estado de "adicionando item"
+        addingItemToPlaylist = false;
+        videoToAdd = null;
+        
+        // Se não estamos em modo de adicionar item, sincronizar sidebar
         if (player.currentPlaylist && !player.viewingFavorites) {
             loadPlaylistVideos();
         } else if (player.viewingFavorites) {
@@ -4707,9 +5216,9 @@ async function selectArtist(artist) {
         player.viewingFavorites = false;
         player.currentFavoriteId = undefined;
         
-        console.log('[SelectArtist] Setando navigationContext...');
-        // 🧭 Guardar contexto para poder voltar depois
-        navigationContext.setCurrentView({
+        console.log('[SelectArtist] Setando view para artista...');
+        // 🧭 Centralizar toda mudança de sidebar em setView()
+        setView({
             type: 'artist',
             data: {
                 name: artist,
@@ -4721,20 +5230,7 @@ async function selectArtist(artist) {
         console.log('[SelectArtist] Fechando modal de artistas...');
         closeArtistsModal();
         
-        console.log('[SelectArtist] Carregando playlist videos (sidebar)...');
-        // Atualizar visualização na sidebar
-        loadPlaylistVideos();
-        
-        // 🔄 Adicionar ao histórico de navegação da sidebar
-        sidebarHistory.push({
-            type: 'artist',
-            data: {
-                name: artist,
-                videos: artistVideos,
-                id: `artist-${artist}`
-            },
-            name: artist
-        });
+        console.log('[SelectArtist] View de artista ativa. Histórico registrado automaticamente');
         sidebarHistory.updateButtons();
         
         console.log('[SelectArtist] Verificando se YouTube está pronto...');
@@ -5298,22 +5794,8 @@ function updatePlayingNowIndicator() {
             viewMode: player.viewingFavorites ? 'favoritos' : (navigationContext.currentView?.type || 'playlist')
         });
     } else {
-        // 🔥 DIAGNÓSTICO MELHORADO: Mostrar todos os data-video-id disponíveis
-        const availableIds = Array.from(document.querySelectorAll('.playlist-item[data-video-id]'))
-            .map(item => item.getAttribute('data-video-id'))
-            .slice(0, 5); // Mostrar primeiros 5 para não sobrecarregar console
-            
-        console.warn('[updatePlayingNowIndicator] ⚠️ Item não encontrado na sidebar', {
-            videoId: currentVideo.id,
-            videoTitle: currentVideo.title,
-            totalItems: document.querySelectorAll('.playlist-item').length,
-            firstFiveAvailableIds: availableIds,
-            possivel_causa: currentVideo.id === 'b16NlaSmdkk' 
-                ? '📌 AVISO: Este é o vídeo "Momentos". Se ele não está na sidebar, significa que a view está diferente!'
-                : 'Vídeo não está visível na view atual (ex: tocando música de outra playlist)',
-            currentView: navigationContext.currentView?.type || 'undefined',
-            currentPlaylistName: player.currentPlaylist?.name || 'undefined'
-        });
+        // � SILENCIOSO: Item não encontrado (normal quando vídeo está em view diferente)
+        // Não logar para evitar spam no console quando navegando entre views
     }
 }
 
@@ -5352,10 +5834,7 @@ function updatePlayingIndicatorAnimationState() {
             isPlaying: player.isPlaying
         });
     } else {
-        console.warn('[updatePlayingIndicatorAnimationState] ⚠️ Indicador não encontrado', {
-            videoId: currentVideo.id,
-            videoTitle: currentVideo.title
-        });
+        return;
     }
 }
 
@@ -5914,17 +6393,13 @@ function displayFavoritesList() {
     player.viewingFavorites = true;
     
     // Atualizar contexto: guardamos que visualizando favoritos mas preservamos contexto original
-    navigationContext.setCurrentView({
+    // 🧭 Usar setView() para centralizar a mudança e registrar no histórico automaticamente
+    setView({
         type: 'favorites',
         data: player.favorites
     });
     
-    // 🔄 Adicionar ao histórico de navegação da sidebar
-    sidebarHistory.push({
-        type: 'favorites',
-        data: player.favorites,
-        name: 'Favoritos'
-    });
+    console.log('[Favorites] Contexto de navegação atualizado e histórico registrado automaticamente');
     sidebarHistory.updateButtons();
     
     console.log('[Favorites] Contexto de navegação atualizado', navigationContext);
@@ -6603,16 +7078,53 @@ function setupEventListeners() {
             legendButtons[3].addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Definir vídeo em preview para contexto
-                if (player.currentPlaylist) {
-                    player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
-                    currentKebabIndex = player.currentVideoIndex;
-                }
-                openItemOptionsModal(player.currentVideoIndex);
+                
+                // ✅ CORRETO: Usar APENAS o estado global - o vídeo que está tocando
+                const video = getCurrentPlayingVideo();
+                if (!video) return;
+                
+                // Abrir modal com as opções do item que está tocando
+                openItemOptionsModalFromPlayer(video);
             });
         }
     }
+    
+    // 🎬 NOVO BOTÃO: FULLSCREEN
+    // ============================================================================
+    const btnFullscreen = document.getElementById('btnFullscreen');
+    
+    if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFullscreen();
+        });
+    }
 }
+
+/**
+ * 🎬 FULLSCREEN TOGGLE
+ * Controla entrada/saída de tela cheia via Fullscreen API
+ * ESC sai automaticamente (controle nativo do browser)
+ */
+function toggleFullscreen() {
+    const playerWrapper = document.querySelector('.player-embed');
+    if (!playerWrapper) return;
+    
+    // Se NÃO está em fullscreen, entrar
+    if (!document.fullscreenElement) {
+        playerWrapper.requestFullscreen();
+    } else {
+        // Se ESTÁ em fullscreen, sair
+        document.exitFullscreen();
+    }
+}
+
+// Monitorar mudanças de fullscreen (ESC, sistema, etc)
+document.addEventListener('fullscreenchange', () => {
+    const isFullscreen = !!document.fullscreenElement;
+    console.log('[Fullscreen] Estado:', isFullscreen ? 'ATIVO' : 'INATIVO');
+});
 
 function onProgressInput(event) {
     const progressBar = event.target;

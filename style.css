@@ -2433,6 +2433,9 @@ img {
 .sidebar-header .title-pl {
     flex: 1 1 auto;
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Container dos botões de navegação */
@@ -2453,7 +2456,6 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
     transition: all 0.2s ease;
     flex-shrink: 0;
     width: 40px;
@@ -2467,12 +2469,18 @@ img {
     pointer-events: none;
 }
 
-.sidebar-nav-btn:hover {
-    background: var(--bg-hover);
+.sidebar-nav-btn:disabled,
+.sidebar-nav-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.sidebar-nav-btn:not(:disabled):hover {
     color: var(--text-primary);
 }
 
-.sidebar-nav-btn:active {
+.sidebar-nav-btn:not(:disabled):active {
     transform: scale(0.95);
 }
 
@@ -2943,11 +2951,43 @@ img {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    gap: var(--gap-md);
+    padding: var(--gap-lg);
     background: linear-gradient(0deg, rgba(19, 19, 19, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
     backdrop-filter: blur(3px);
     color: rgba(255, 255, 255, 0.8);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
+
+.overlay-buttons-left {
+    display: flex;
+    gap: var(--gap-md);
+    align-items: center;
+}
+
+.overlay-buttons-right {
+    display: flex;
+    gap: var(--gap-md);
+    align-items: center;
+    margin-left: auto;
+}
+
+.overlay-layer-legendas button {
+
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay-layer-legendas button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 1);
+}
+
 
 /* ==========================================================================
    PWA INSTALL PROMPT MODAL (BOTTOM-SHEET)

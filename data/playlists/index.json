@@ -55,6 +55,13 @@
     "cover": "rezilienza.jpg",
     "url": "./data/playlists/rezilienza.json"
   },
+    {
+    "id": "deep-disco-records",
+    "title": "Deep Disco Records",
+    "name": "Deep Disco Records",
+    "cover": "deep-disco-records.jpg",
+    "url": "./data/playlists/deep-disco-records.json"
+  },
   {
     "id": "deep-heaven",
     "title": "Deep Heaven",

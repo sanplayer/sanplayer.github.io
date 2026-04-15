@@ -91,7 +91,7 @@
             <div class="sidebar-content">
                 <ul class="sidebar-nav">
 
-                    <li><a href="index.html?playlistId=Brega"><i class="material-icons">home</i> Início</a></li>
+                    <li><a href="index.html?playlistId=LoveSongs"><i class="material-icons">home</i> Início</a></li>
                     <li><a href="#" id="link-playlists"><i class="material-icons">queue_music</i>
                             Playlists</a></li>
                     <li><a href="#" id="link-artistas"><i class="material-symbols-outlined">artist</i>Artistas</a></li>        
@@ -110,11 +110,18 @@
                 <div id="player" class="player-embed"></div>
                 <div class="overlay-layer"></div>
             <!-- LEGENDAS -->
-            <div class="overlay-layer-legendas">         
-                <button><i class="material-icons">queue_music</i></button>
-                <button><i class="material-icons">add</i></button>
-                <button alt="compartilhar item da tela" title="compartilha item da tela"><i class="material-icons">share</i></button>
-                <button><i class="material-icons">more_vert</i></button>
+            <div class="overlay-layer-legendas">
+                <!-- Botões à esquerda -->
+                <div class="overlay-buttons-left">
+                    <button><i class="material-icons" title="Ver Playlists">queue_music</i></button>
+                    <button><i class="material-icons" title="Criar Playlist">add</i></button>
+                    <button alt="compartilhar item da tela" title="compartilha item da tela"><i class="material-icons">share</i></button>
+                    <button><i class="material-icons" title="Opções do item">more_vert</i></button>
+                </div>
+                <!-- Botões à direita -->
+                <div class="overlay-buttons-right">
+                    <button id="btnFullscreen" title="Tela cheia"><i class="material-icons">fullscreen</i></button>
+                </div>
             </div>
             </div>
 
@@ -124,10 +131,10 @@
             <div class="sidebar-header">
                 <h2 class="title-pl">Playlist</h2>
                 <div class="sidebar-nav-buttons">
-                    <button class="sidebar-nav-btn hidden" id="sidebarBackBtn" title="Voltar" aria-label="Voltar na navegação">
+                    <button class="sidebar-nav-btn" id="sidebarBackBtn" title="Voltar" aria-label="Voltar na navegação" disabled>
                         <span class="material-icons">arrow_back</span>
                     </button>
-                    <button class="sidebar-nav-btn hidden" id="sidebarForwardBtn" title="Avançar" aria-label="Avançar na navegação">
+                    <button class="sidebar-nav-btn" id="sidebarForwardBtn" title="Avançar" aria-label="Avançar na navegação" disabled>
                         <span class="material-icons">arrow_forward</span>
                     </button>
                 </div>
