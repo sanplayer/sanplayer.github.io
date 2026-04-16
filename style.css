@@ -68,7 +68,8 @@
     --bg-main: #000000;
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
-    --accent-red: #ff0000;
+    --accent-roxo: #4F257B;
+    --accent-roxo-light: #9D00FF;
     --text-main: #ffffff;
     --text-dim: #aaaaaa;
     --border-rgba: rgba(255, 255, 255, 0.1);
@@ -82,7 +83,7 @@
     --footer-block-2: #121217;
     --footer-block-3: #23232b;
     --footer-border: #23232b;
-    --footer-accent: #ff3b3b;
+    --footer-accent: #9d00dd;
 
     /* Tipografia Fluida com Clamp (Mobile-First) */
     --font-xs: clamp(0.75rem, 1.5vw, 0.9rem);
@@ -223,7 +224,7 @@ body.is-routing {
 }
 
 #createPlaylistModal input[type="text"]:focus {
-    border-color: var(--accent-red);
+    border-color: var(--accent-roxo);
 }
 
 #createPlaylistModal .create-playlist-actions {
@@ -277,7 +278,7 @@ body.is-routing {
 }
 
 #editPlaylistModal input[type="text"]:focus {
-    border-color: var(--accent-red);
+    border-color: var(--accent-roxo);
 }
 
 #editPlaylistModal .create-playlist-actions {
@@ -615,7 +616,7 @@ body.is-routing {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: var(--accent-red);
+    background: var(--accent-roxo);
     color: white;
     display: flex;
     align-items: center;
@@ -945,7 +946,7 @@ button:active {
 }
 
 .btn-primary {
-    background: var(--accent-red);
+    background: var(--accent-roxo);
     border: none;
     color: #ffffff;
     padding: var(--btn-padding);
@@ -965,7 +966,7 @@ button:active {
 }
 
 .btn-primary:hover {
-    background: var(--accent-red);
+    background: var(--accent-roxo);
 }
 
 .btn-primary:active {
@@ -1110,7 +1111,7 @@ img {
     right: 4px;
     width: 8px;
     height: 8px;
-    background-color: var(--accent-red);
+    background-color: var(--accent-roxo);
     border-radius: 50%;
     animation: pulse-badge 1.5s infinite;
 }
@@ -1624,7 +1625,7 @@ img {
 }
 
 .share-btn:focus-visible {
-    outline: 2px solid var(--accent-red);
+    outline: 2px solid var(--accent-roxo);
     outline-offset: 3px;
     border-radius: 4px;
 }
@@ -1647,7 +1648,7 @@ img {
  * Importante para navegaÃ§Ã£o via teclado
  */
 .favorite-btn:focus-visible {
-    outline: 2px solid var(--accent-red);
+    outline: 2px solid var(--accent-roxo);
     outline-offset: 1px;
     border-radius: 4px;
 }
@@ -1887,7 +1888,7 @@ img {
     border-radius: 999px;
     background: #23232b;
     /* Usar variável de progresso para controlar o preenchimento (restaura cor vermelha) */
-    background-image: linear-gradient(to right, var(--accent-red) 0%, var(--accent-red) 100%);
+    background-image: linear-gradient(to right, var(--accent-roxo) 0%, var(--accent-roxo-light) 100%);
     background-repeat: no-repeat;
     background-size: var(--progress-bar-fill, 0% 100%);
     outline: none;
@@ -2093,7 +2094,7 @@ img {
 /* Usava ::after pseudo-element, position relative, etc */
 
 .btn-play-pause {
-    background-color: var(--accent-red);
+    background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -2104,11 +2105,11 @@ img {
 }
 
 .btn-play-pause:hover {
-    background-color: var(--accent-red);
+    background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
 }
 
 .btn-play-pause:active {
-    background-color: var(--accent-red);
+    background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
 }
 
 .btn-play-pause i {
@@ -2160,12 +2161,12 @@ img {
     .btn-play-pause {
         width: clamp(52px, 12vw, 64px);
         height: clamp(52px, 12vw, 64px);
-        background-color: var(--accent-red);
+        background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
     }
 
     .btn-play-pause:hover,
     .btn-play-pause:active {
-        background-color: var(--accent-red);
+        background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
         opacity: 0.8;
     }
 
@@ -2224,7 +2225,7 @@ img {
     .header-search input:focus {
         background: transparent;
         outline: none;
-        border-bottom: 2px solid var(--accent-red);
+        border-bottom: 2px solid var(--accent-roxo);
     }
 
     .header-search .search-icon {
@@ -2370,7 +2371,7 @@ img {
 
 .zoom-alert-header i {
     font-size: clamp(1.5rem, 3vw, 2rem);
-    color: var(--accent-red);
+    color: var(--accent-roxo);
 }
 
 .zoom-alert-header span {
@@ -2427,7 +2428,7 @@ img {
 
 /* Header da Sidebar com Título e Botões de Navegação */
 .sidebar-header {
-    border-left: 2px solid red;
+    border-left: 2px solid var(--accent-roxo);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2702,7 +2703,7 @@ img {
 }
 
 .modal-close:hover {
-    color: var(--accent-red);
+    color: var(--accent-roxo);
 }
 
 .cards-grid {
@@ -2724,7 +2725,7 @@ img {
 
 .card:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(255, 0, 0, 0.3);
+    box-shadow: 0 8px 20px var(--accent-roxo-light);
 }
 
 .card-kebab {
@@ -2751,7 +2752,7 @@ img {
 }
 
 .card-kebab:focus-visible {
-    outline: 2px solid var(--accent-red);
+    outline: 2px solid var(--accent-roxo);
     outline-offset: 2px;
 }
 
@@ -2856,12 +2857,12 @@ img {
 }
 
 .btn-add {
-    background: var(--accent-red);
+    background: var(--accent-roxo);
     color: #fff;
 }
 
 .btn-add:hover {
-    background: #b71c1c;
+    background: var(--accent-roxo-light);
 }
 
 .btn-remove {
@@ -2916,7 +2917,7 @@ img {
     width: clamp(28px, 6vw, 36px);
     height: clamp(28px, 6vw, 36px);
     border-radius: 50%;
-    background: var(--accent-red);
+    background: var(--accent-roxo);
     color: #fff;
     font-weight: 600;
     font-size: clamp(0.85rem, 1.5vw, 1rem);
@@ -3044,7 +3045,7 @@ img {
 }
 
 .pwa-install-content .btn-primary:hover {
-    background: var(--accent-red);
+    background: var(--accent-roxo);
 }
 
 .pwa-install-header {

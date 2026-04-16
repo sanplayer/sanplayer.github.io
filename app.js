@@ -1410,7 +1410,7 @@ function createEqualizerSVG() {
         rect.setAttribute('height', '12');
         rect.setAttribute('rx', '2');
         rect.setAttribute('ry', '2');
-        rect.setAttribute('fill', '#ff2e2e');
+        rect.setAttribute('fill', '#9d00ff');  // Cor roxa vibrante
         
         g.appendChild(rect);
         svg.appendChild(g);
@@ -6153,7 +6153,7 @@ function createParticleExplosion(button) {
         // Criar partícula
         const particle = document.createElement('span');
         particle.className = 'heart-particle';
-        particle.textContent = '❤️';
+        particle.textContent = '💜';
         
         // ===== VARIAÇÃO INDEPENDENTE POR PARTÍCULA =====
         
