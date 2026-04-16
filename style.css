@@ -2748,7 +2748,7 @@ img {
 
 .card-kebab:hover,
 .card-kebab:focus-visible {
-    background: rgba(255, 0, 0, 0.8);
+    background: var(--accent-roxo);
 }
 
 .card-kebab:focus-visible {
