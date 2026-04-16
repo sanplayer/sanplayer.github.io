@@ -2807,6 +2807,176 @@ function initPWAInstall() {
     if (confirmBtn) {
         confirmBtn.addEventListener('click', triggerPWAInstall);
     }
+
+    // ============================================================================
+    // MODAIS: ABOUT, AUTHOR, PRIVACY, TERMS
+    // ============================================================================
+
+    // Modal Sobre
+    const linkSobre = document.getElementById('link-sobre');
+    if (linkSobre) {
+        linkSobre.addEventListener('click', (e) => {
+            e.preventDefault();
+            openAboutModal();
+        });
+    }
+
+    const closeAboutModal = document.getElementById('closeAboutModal');
+    if (closeAboutModal) {
+        closeAboutModal.addEventListener('click', () => {
+            closeModalWithAnimation('aboutModal');
+        });
+    }
+
+    const aboutModalElement = document.getElementById('aboutModal');
+    if (aboutModalElement) {
+        aboutModalElement.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeModalWithAnimation('aboutModal');
+            }
+        });
+    }
+
+    // Links do modal About
+    const privacyLink = document.getElementById('privacyLink');
+    if (privacyLink) {
+        privacyLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeModalWithAnimation('aboutModal');
+            setTimeout(() => openPrivacyModal(), 200);
+        });
+    }
+
+    const termsLink = document.getElementById('termsLink');
+    if (termsLink) {
+        termsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeModalWithAnimation('aboutModal');
+            setTimeout(() => openTermsModal(), 200);
+        });
+    }
+
+    const creditsLink = document.getElementById('creditsLink');
+    if (creditsLink) {
+        creditsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeModalWithAnimation('aboutModal');
+            setTimeout(() => openAuthorModal(), 200);
+        });
+    }
+
+    // Modal Autor (com navegação de volta para About)
+    const closeAuthorModal = document.getElementById('closeAuthorModal');
+    if (closeAuthorModal) {
+        closeAuthorModal.addEventListener('click', () => {
+            goBackToAboutModal('authorModal');
+        });
+    }
+
+    const authorModalElement = document.getElementById('authorModal');
+    if (authorModalElement) {
+        authorModalElement.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                goBackToAboutModal('authorModal');
+            }
+        });
+    }
+
+    // Modal Política de Privacidade (com navegação de volta para About)
+    const closePrivacyModal = document.getElementById('closePrivacyModal');
+    if (closePrivacyModal) {
+        closePrivacyModal.addEventListener('click', () => {
+            goBackToAboutModal('privacyModal');
+        });
+    }
+
+    const privacyModalElement = document.getElementById('privacyModal');
+    if (privacyModalElement) {
+        privacyModalElement.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                goBackToAboutModal('privacyModal');
+            }
+        });
+    }
+
+    // Modal Termos de Serviços (com navegação de volta para About)
+    const closeTermsModal = document.getElementById('closeTermsModal');
+    if (closeTermsModal) {
+        closeTermsModal.addEventListener('click', () => {
+            goBackToAboutModal('termsModal');
+        });
+    }
+
+    const termsModalElement = document.getElementById('termsModal');
+    if (termsModalElement) {
+        termsModalElement.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                goBackToAboutModal('termsModal');
+            }
+        });
+    }
+}
+
+function openAboutModal() {
+    const modal = document.getElementById('aboutModal');
+    if (modal) {
+        modal.classList.add('show');
+    }
+}
+
+function openAuthorModal() {
+    const modal = document.getElementById('authorModal');
+    if (modal) {
+        modal.classList.add('show');
+    }
+}
+
+function openPrivacyModal() {
+    const modal = document.getElementById('privacyModal');
+    if (modal) {
+        modal.classList.add('show');
+    }
+}
+
+function openTermsModal() {
+    const modal = document.getElementById('termsModal');
+    if (modal) {
+        modal.classList.add('show');
+    }
+}
+
+// ============================================================================
+// Navegação entre Modals do About
+// ============================================================================
+// Quando o usuário está em Privacy/Terms/Author e clica em Voltar,
+// deve voltar para o modal About em vez de fechar tudo
+function goBackToAboutModal(currentModalId) {
+    const currentModal = document.getElementById(currentModalId);
+    if (currentModal) {
+        currentModal.classList.remove('show');
+    }
+    
+    // Aguardar animação de fechamento antes de abrir o About
+    setTimeout(() => {
+        openAboutModal();
+    }, 300);
+}
+
+// ============================================================================
+// Navegação entre Modals do About
+// ============================================================================
+// Quando o usuário está em Privacy/Terms/Author e clica em Voltar,
+// deve voltar para o modal About em vez de fechar tudo
+function goBackToAboutModal(currentModalId) {
+    const currentModal = document.getElementById(currentModalId);
+    if (currentModal) {
+        currentModal.classList.remove('show');
+    }
+    
+    // Aguardar animação de fechamento antes de abrir o About
+    setTimeout(() => {
+        openAboutModal();
+    }, 300);
 }
 
 function showPWAInstallPrompt() {
