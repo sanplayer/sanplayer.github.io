@@ -60,7 +60,23 @@
     width: 1em;
     height: 1em;
 }
-
+/* FONT DO LOGOTIPO */
+/* exo-2-regular - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/exo-2-v26-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* exo-2-600 - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Exo 2';
+  font-style: normal;
+  font-weight: 600;
+  src: url('fonts/exo-2-v26-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
 /* end fonts */
 
 :root {
@@ -180,7 +196,12 @@ body {
     /*san*/
     transition: opacity 0.2s ease;
 }
-
+.title-player {
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 600;
+    font-size: var(--font-xl);
+    color: var(--text-main);
+}
 /* Transição durante roteamento */
 body.is-routing {
     opacity: 0.6;
