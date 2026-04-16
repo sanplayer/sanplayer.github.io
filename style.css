@@ -2149,6 +2149,7 @@ img {
     .block-controls {
         margin: var(--gap-sm);
         gap: clamp(0.75rem, 2vw, 1.5rem);
+        user-select: none;
     }
 
     .block-controls button {
