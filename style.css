@@ -1207,7 +1207,7 @@ img {
 
 .video-wrapper {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 3 / 4;
     /*aspect mobile*/
     background-color: #111;
     border-radius: 0.7rem;
