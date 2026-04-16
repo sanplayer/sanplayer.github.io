@@ -102,7 +102,7 @@
                             Criar Playlist</a></li>
                     <li><a href="#" id="link-favoritos"><i class="material-icons">favorite_border</i>Favoritos</a></li>
 
-                    <li><a href="#"><i class="material-symbols-outlined">local_cafe</i> Contribuir</a></li>
+                    <li><a href="#" id="link-sobre"><i class="material-symbols-outlined">info</i> Sobre</a></li>
 
                 </ul>
             </div>
@@ -389,6 +389,258 @@
     <button id="btn-update-later" class="btn-secondary">DEPOIS</button>
     <button id="btn-update-now" class="btn-primary">ATUALIZAR AGORA</button>
   </div>
+</div>
+
+<!-- MODAL SOBRE (About) -->
+<div id="aboutModal" class="modal">
+    <div class="modal-content about-modal-content">
+        <div class="modal-header native-header">
+            <button class="modal-close modal-back-btn" id="closeAboutModal" aria-label="Voltar">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <h2 class="native-header-title">Sobre SanPlayer</h2>
+            <div style="width: 40px;"></div>
+        </div>
+        <div class="modal-body">
+            <div class="about-hero">
+                <div class="about-logo"><img src="logo.png" alt="Logo do SanPlayer"></div>
+                <h3>SanPlayer</h3>
+                <p class="about-subtitle">Music & Video Player PWA</p>
+                <p class="about-version" id="aboutVersion">v3.2.0</p>
+            </div>
+
+            <div class="about-section">
+                <p class="about-description">Descubra uma experiência de mídia contínua e poderosa em todos os seus dispositivos. SanPlayer é um PWA moderno criado para velocidade, qualidade e liberdade do usuário.</p>
+            </div>
+
+            <div class="about-section">
+                <h4 class="section-title">Recursos Principais</h4>
+                <ul class="features-list">
+                    <li class="feature-item">
+                        <i class="material-icons">play_circle_filled</i>
+                        <div>
+                            <strong>Reprodução Fluida</strong>
+                            <span>Vídeos e músicas em alta qualidade</span>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <i class="material-icons">queue_music</i>
+                        <div>
+                            <strong>Gerenciamento de Playlists</strong>
+                            <span>Crie, edite e organize suas playlists</span>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <i class="material-icons">favorite</i>
+                        <div>
+                            <strong>Sistema de Favoritos</strong>
+                            <span>Salve suas músicas preferidas</span>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <i class="material-icons">equalizer</i>
+                        <div>
+                            <strong>Equalizador Avançado</strong>
+                            <span>Controle completo do áudio</span>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <i class="material-icons">cloud_off</i>
+                        <div>
+                            <strong>Suporte Offline</strong>
+                            <span>PWA moderno e responsivo</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="about-section">
+                <h4 class="section-title">Legal</h4>
+                <ul class="links-list">
+                    <li><a href="#" id="privacyLink">Política de Privacidade</a></li>
+                    <li><a href="#" id="termsLink">Termos de Serviços</a></li>
+                    <li><a href="#" id="creditsLink">Créditos e Atribuições</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <p class="copyright-text">&copy; 2026 Waltemar. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL AUTOR -->
+<div id="authorModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header native-header">
+            <button class="modal-close modal-back-btn" id="closeAuthorModal" aria-label="Voltar">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <h2 class="native-header-title">Sobre o Desenvolvedor</h2>
+            <div style="width: 40px;"></div>
+        </div>
+        <div class="modal-body">
+            <div class="author-section">
+                <div class="author-avatar"><img src="icons/admin.jpg" alt="Avatar do Autor"></div>
+                <h3 class="author-name">Waltemar Carneiro</h3>
+                <p class="author-title">Full-Stack Developer</p>
+                <p class="author-bio">
+                    Apaixonado por criar experiências web imersivas e performáticas. 
+                    Especialista em JavaScript puro, PWA e arquitetura frontend. 
+                    Desenvolvedor autodidata com foco em qualidade e inovação.
+                </p>
+            </div>
+
+            <div class="about-section">
+                <h4 class="section-title">Sobre este Projeto</h4>
+                <p class="author-description">
+                    SanPlayer foi criado como um projeto de excelência em desenvolvimento frontend, 
+                    demostrando expertise em:
+                </p>
+                <ul class="skills-list">
+                    <li>🎯 JavaScript Vanilla (sem frameworks)</li>
+                    <li>⚡ Performance e otimização</li>
+                    <li>📱 Design responsivo mobile-first</li>
+                    <li>🔧 PWA e Service Workers</li>
+                    <li>🎨 UI/UX moderno e intuitivo</li>
+                    <li>🛡️ Arquitetura limpa e escalável</li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <p class="copyright-text">Desenvolvido com ❤️ para a música</p>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL POLÍTICA DE PRIVACIDADE -->
+<div id="privacyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header native-header">
+            <button class="modal-close modal-back-btn" id="closePrivacyModal" aria-label="Voltar">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <h2 class="native-header-title">Política de Privacidade</h2>
+            <div style="width: 40px;"></div>
+        </div>
+        <div class="modal-body">
+            <div class="legal-content">
+                <h3>Privacidade do Usuário</h3>
+                <p>
+                    O SanPlayer respeita sua privacidade. Este aplicativo é um PWA local que funciona 
+                    principalmente no seu dispositivo, sem coletar dados pessoais sem seu consentimento.
+                </p>
+
+                <h4>Dados Armazenados</h4>
+                <p>
+                    Os dados armazenados localmente incluem:
+                </p>
+                <ul>
+                    <li>Playlists criadas por você</li>
+                    <li>Favoritos salvos</li>
+                    <li>Preferências de interface</li>
+                    <li>Histórico de reprodução</li>
+                </ul>
+
+                <h4>Armazenamento Local</h4>
+                <p>
+                    Todos os dados são armazenados exclusivamente no seu navegador usando localStorage 
+                    e IndexedDB. Nenhum dado é enviado para servidores externos sem sua autorização.
+                </p>
+
+                <h4>Integração com YouTube</h4>
+                <p>
+                    Este aplicativo usa a YouTube IFrame API para reproduzir conteúdo. 
+                    Leia a política de privacidade do YouTube em: youtube.com/privacy
+                </p>
+
+                <h4>Cookies</h4>
+                <p>
+                    O SanPlayer não usa cookies rastreadores. Apenas cookies técnicos necessários 
+                    para o funcionamento do PWA podem ser armazenados.
+                </p>
+
+                <h4>Contato</h4>
+                <p>
+                    Para dúvidas sobre privacidade, entre em contato através dos canais oficiais do projeto.
+                </p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <p class="copyright-text">Última atualização: Abril de 2026</p>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL TERMOS DE SERVIÇOS -->
+<div id="termsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header native-header">
+            <button class="modal-close modal-back-btn" id="closeTermsModal" aria-label="Voltar">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <h2 class="native-header-title">Termos de Serviços</h2>
+            <div style="width: 40px;"></div>
+        </div>
+        <div class="modal-body">
+            <div class="legal-content">
+                <h3>Termos de Uso do SanPlayer</h3>
+                <p>
+                    Ao usar o SanPlayer, você concorda com estes termos de serviço. 
+                    Leia-os com cuidado.
+                </p>
+
+                <h4>Uso Permitido</h4>
+                <p>
+                    O SanPlayer é fornecido para uso pessoal e não comercial. 
+                    Você pode:
+                </p>
+                <ul>
+                    <li>Usar o aplicativo em seus dispositivos pessoais</li>
+                    <li>Criar e gerenciar suas próprias playlists</li>
+                    <li>Compartilhar conteúdo conforme permitido pelas fontes</li>
+                </ul>
+
+                <h4>Restrições</h4>
+                <p>
+                    Você não pode:
+                </p>
+                <ul>
+                    <li>Modificar ou descompilar o aplicativo</li>
+                    <li>Usar para fins comerciais sem autorização</li>
+                    <li>Violar direitos autorais ou propriedade intelectual</li>
+                    <li>Realizar engenharia reversa do código</li>
+                </ul>
+
+                <h4>Conteúdo de Terceiros</h4>
+                <p>
+                    O SanPlayer integra-se com fontes de conteúdo como YouTube. 
+                    O uso dessas plataformas está sujeito aos seus respectivos termos de serviço.
+                </p>
+
+                <h4>Isenção de Responsabilidade</h4>
+                <p>
+                    O aplicativo é fornecido "no estado em que se encontra". 
+                    O desenvolvedor não se responsabiliza por perdas de dados ou danos diretos/indiretos.
+                </p>
+
+                <h4>Modificações</h4>
+                <p>
+                    Estes termos podem ser modificados a qualquer momento. 
+                    O uso continuado do aplicativo após alterações constitui aceitação.
+                </p>
+
+                <h4>Lei Aplicável</h4>
+                <p>
+                    Estes termos são regidos pelas leis aplicáveis ao desenvolvedor. 
+                    Qualquer disputa será resolvida através de meios legais apropriados.
+                </p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <p class="copyright-text">Última atualização: Abril de 2026</p>
+        </div>
+    </div>
 </div>
 
 <!-- OTHERS SCRIPTS -->
