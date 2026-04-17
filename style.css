@@ -171,6 +171,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -732,7 +733,6 @@ body.is-routing {
 
     .playlist-items {
         padding-bottom: 4rem;
-        -webkit-tap-highlight-color: transparent;
     }
 
     /* Kebab button (menu) para itens da playlist */
@@ -1642,7 +1642,7 @@ img {
 }
 
 .playlist-item:active {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.0);
 }
 
 .playlist-item .m-duration {
@@ -2254,7 +2254,6 @@ img {
 
     /* 🔒 REMOÇÃO DE FEEDBACK VISUAL DO NAVEGADOR - Aparência Nativa */
     /* Remove o efeito "azulado" e bordas de foco em mobile */
-    -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;
 }
@@ -2280,7 +2279,6 @@ img {
 
     /* 🔒 REMOÇÃO DE FEEDBACK VISUAL DO NAVEGADOR - Aparência Nativa */
     /* Remove tap highlight (azulado em mobile), outlines e bordas de foco */
-    -webkit-tap-highlight-color: transparent;
     -webkit-appearance: none;
     border: none;
 }
@@ -2459,7 +2457,6 @@ img {
 
 /* Bloco 2: Controles de Playback */
 .block-controls {
-    -webkit-tap-highlight-color: transparent;
     justify-content: center;
     gap: clamp(1.5rem, 2vw, 2rem);
 }
