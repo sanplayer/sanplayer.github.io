@@ -1487,9 +1487,9 @@ img {
     position: absolute;
     top: 4px;
     right: 4px;
-    width: 8px;
-    height: 8px;
-    background-color: var(--accent-roxo);
+    width: 10px;
+    height: 10px;
+    background-color: var(--accent-roxo-light);
     border-radius: 50%;
     animation: pulse-badge 1.5s infinite;
 }
