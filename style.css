@@ -1205,9 +1205,8 @@ body.is-routing {
 }
 
 .legal-content h3 {
-    
     font-weight: 700;
-    color: var(--text-main);
+    color: var(--accent-roxo-light);
     margin-top: 1.2rem;
     margin-bottom: 0.75rem;
 }
@@ -1219,7 +1218,7 @@ body.is-routing {
 .legal-content h4 {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--text-main);
+    color: var(--accent-roxo-light);
     margin-top: 1rem;
     margin-bottom: 0.5rem;
 }
@@ -3030,6 +3029,8 @@ img {
 .modal-header h2 {
     font-size: var(--font-lg);
     margin: 0;
+    text-align: left;
+    color: var(--text-dim);
 }
 
 .option-row {

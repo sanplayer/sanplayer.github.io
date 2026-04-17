@@ -2786,7 +2786,7 @@ function initPWAInstall() {
         // Mostrar o prompt customizado após 30 segundos
         pwaInstallTimeout = setTimeout(() => {
             showPWAInstallPrompt();
-        }, 60000); // 60 segundos
+        }, 180000); // 180 segundos
     });
 
     // Capturar quando o app for instalado
