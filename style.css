@@ -3023,7 +3023,6 @@ img {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--border-rgba);
-    padding: 1rem;
     width: 100%;
     box-sizing: border-box;
 }
