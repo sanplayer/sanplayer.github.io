@@ -2187,7 +2187,7 @@ button:active {
 }
 
 .sidebar-header {
-    border-left: 2px solid var(--accent-roxo);
+    border-left: 5px solid var(--accent-roxo-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2898,8 +2898,7 @@ button:active {
         overflow-y: auto;
         background: var(--bg-surface);
         border-left: none;
-        border-top: 1px solid var(--border-rgba);
-        padding: 1rem 0rem;
+        padding: 0;
         position: relative;
         z-index: 1;
     }
@@ -3202,5 +3201,19 @@ button:active {
         max-width: 450px;
         border-radius: clamp(12px, 3vw, 16px);
         margin-bottom: 2rem;
+    }
+}
+
+/* =============================================================================
+   12. RESPONSIVIDADE MOBILE (@media max-width: 411px) SAMSUNG J8
+   ============================================================================= */
+
+@media (min-width: 411px) {
+    .video-stage {
+        max-height: 50vh;
+    }
+    .video-wrapper {
+        aspect-ratio: 1 / 1;
+        max-height: 50vh;
     }
 }
