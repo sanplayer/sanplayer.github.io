@@ -3200,12 +3200,8 @@ button:active {
    12. RESPONSIVIDADE MOBILE (@media max-width: 384px) SAMSUNG A23
    ============================================================================= */
 
-@media (min-width: 360px) {
-    /*.video-stage {
-        max-height: 50vh;
-    }*/
+@media (max-width: 412px) {
     .video-wrapper {
-        aspect-ratio: 1 / 1;
-       
+        aspect-ratio: 4 / 3;       
     }
 }
