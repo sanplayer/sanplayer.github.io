@@ -462,7 +462,7 @@ button:active {
 
 .video-wrapper {
     width: 100%;
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 16 / 9;
     background-color: #111;
     border-radius: 0.7rem;
     position: relative;
@@ -2825,9 +2825,7 @@ button:active {
 
 .modal-body {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;    
     gap: 1rem;
     padding: 1.5rem;
     min-height: 150px;
@@ -2868,7 +2866,7 @@ button:active {
         z-index: var(--main-z-index);
         padding-bottom: var(--footer-height);
     }
-
+/*
     .video-stage {
         flex: 0 0 auto;
         width: 100vw;
@@ -2890,7 +2888,7 @@ button:active {
         min-height: 180px;
         border-radius: 0;
     }
-
+*/
     .playlist-aside {
         flex: 1 1 auto;
         width: 100vw;
@@ -3205,15 +3203,15 @@ button:active {
 }
 
 /* =============================================================================
-   12. RESPONSIVIDADE MOBILE (@media max-width: 411px) SAMSUNG J8
+   12. RESPONSIVIDADE MOBILE (@media max-width: 384px) SAMSUNG A23
    ============================================================================= */
 
-@media (min-width: 411px) {
-    .video-stage {
+@media (min-width: 360px) {
+    /*.video-stage {
         max-height: 50vh;
-    }
+    }*/
     .video-wrapper {
         aspect-ratio: 1 / 1;
-        max-height: 50vh;
+       
     }
 }
