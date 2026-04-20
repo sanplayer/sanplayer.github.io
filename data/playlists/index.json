@@ -28,6 +28,13 @@
     "url": "./data/playlists/boleros.json"
   },
   {
+    "id": "eduardo-costa",
+    "title": "Eduardo Costa",
+    "name": "Eduardo Costa",
+    "cover": "eduardo-costa.jpg",
+    "url": "./data/playlists/eduardo-costa.json"
+  },
+  {
     "id": "sertanejo",
     "title": "Sertanejo",
     "name": "Sertanejo",
