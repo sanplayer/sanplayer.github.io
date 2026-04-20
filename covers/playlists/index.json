@@ -1,0 +1,150 @@
+[
+  {
+    "id": "lovesongs",
+    "title": "LoveSongs",
+    "name": "LoveSongs",
+    "cover": "lovesongs.jpg",
+    "url": "./data/playlists/lovesongs.json"
+  },
+  {
+    "id": "nacionais-romanticas",
+    "title": "Nacionais Romanticas",
+    "name": "Nacionais Romanticas",
+    "cover": "nacionais-romanticas.jpg",
+    "url": "./data/playlists/nacionais-romanticas.json"
+  },
+  {
+    "id": "boleros",
+    "title": "DVD Priscila Senna 15 Anos",
+    "name": "DVD Priscila Senna 15 Anos",
+    "cover": "dvd-priscila-senna-15-anos-completo.jpg",
+    "url": "./data/playlists/dvd-priscila-senna-15-anos-completo.json"
+  },
+  {
+    "id": "boleros",
+    "title": "Boleros",
+    "name": "Boleros",
+    "cover": "boleros.jpg",
+    "url": "./data/playlists/boleros.json"
+  },
+  {
+    "id": "eduardo-costa",
+    "title": "Eduardo Costa",
+    "name": "Eduardo Costa",
+    "cover": "eduardo-costa.jpg",
+    "url": "./data/playlists/eduardo-costa.json"
+  },
+  {
+    "id": "sertanejo",
+    "title": "Sertanejo",
+    "name": "Sertanejo",
+    "cover": "sertanejo.jpg",
+    "url": "./data/playlists/sertanejo.json"
+  },
+  {
+    "id": "butterfly",
+    "title": "Butterfly",
+    "name": "Butterfly",
+    "cover": "butterfly.jpg",
+    "url": "./data/playlists/butterfly.json"
+  },
+  {
+    "id": "helios-deep",
+    "title": "Helios Deep",
+    "name": "Helios Deep",
+    "cover": "helios-deep.jpg",
+    "url": "./data/playlists/helios-deep.json"
+  },
+  {
+    "id": "rezilienza",
+    "title": "Rezilienza - Deep House",
+    "name": "Rezilienza - Deep House",
+    "cover": "rezilienza.jpg",
+    "url": "./data/playlists/rezilienza.json"
+  },
+    {
+    "id": "deep-disco-records",
+    "title": "Deep Disco Records",
+    "name": "Deep Disco Records",
+    "cover": "deep-disco-records.jpg",
+    "url": "./data/playlists/deep-disco-records.json"
+  },
+  {
+    "id": "deep-heaven",
+    "title": "Deep Heaven",
+    "name": "Deep Heaven",
+    "cover": "deep-heaven.jpg",
+    "url": "./data/playlists/deep-heaven.json"
+  },
+  {
+    "id": "deepchill-melody",
+    "title": "DeepChill Melody",
+    "name": "DeepChill Melody",
+    "cover": "deepchill-melody.jpg",
+    "url": "./data/playlists/deepchill-melody.json"
+  },
+  {
+    "id": "music-brokers",
+    "title": "Music Brokers",
+    "name": "Music Brokers",
+    "cover": "music-brokers.jpg",
+    "url": "./data/playlists/music-brokers.json"
+  },
+  {
+    "id": "costa-mee",
+    "title": "Costa Mee",
+    "name": "Costa Mee",
+    "cover": "costa-mee.jpg",
+    "url": "./data/playlists/costa-mee.json"
+  },
+  {
+    "id": "brega",
+    "title": "Brega",
+    "name": "Brega",
+    "cover": "brega.jpg",
+    "url": "./data/playlists/brega.json"
+  },
+  {
+    "id": "roberto-carlos",
+    "title": "Roberto Carlos",
+    "name": "Roberto Carlos",
+    "cover": "roberto-carlos.jpg",
+    "url": "./data/playlists/roberto-carlos.json"
+  },
+  {
+    "id": "reginaldo-rossi",
+    "title": "Reginaldo Rossi",
+    "name": "Reginaldo Rossi",
+    "cover": "reginaldo-rossi.jpg",
+    "url": "./data/playlists/reginaldo-rossi.json"
+  },
+  {
+    "id": "zezo-potiguar",
+    "title": "Zezo Potiguar",
+    "name": "Zezo Potiguar",
+    "cover": "zezo-potiguar.jpg",
+    "url": "./data/playlists/zezo-potiguar.json"
+  },
+  {
+    "id": "album-o-amor-e-brega",
+    "title": "O Amor é Brega",
+    "name": "O Amor é Brega",
+    "cover": "album-o-amor-e-brega.jpg",
+    "url": "./data/playlists/album-o-amor-e-brega.json"
+  },
+  {
+    "id": "refugio-de-adoracao",
+    "title": "Refúgio de Adoração",
+    "name": "Refúgio de Adoração",
+    "cover": "refugio-de-adoracao.jpg",
+    "url": "./data/playlists/refugio-de-adoracao.json"
+  },
+  {
+    "id": "acustico-mtv",
+    "title": "Acústico MTV 2004",
+    "name": "Acústico MTV 2004",
+    "cover": "acustico-mtv.jpg",
+    "url": "./data/playlists/acustico-mtv.json"
+  }
+
+]
