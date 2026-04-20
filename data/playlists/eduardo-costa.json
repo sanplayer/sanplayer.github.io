@@ -6,13 +6,18 @@
       "cover": "eduardo-costa.jpg",
       "videos": [
         {
+          "id": "YhXZAZZbrPM",
+          "title": "Ainda Tô Ai",
+          "artist": "Eduardo Costa"
+        },
+        {
           "id": "RiJFvECJMgo",
           "title": "Pronto Falei",
           "artist": "Eduardo Costa"
         },
         {
           "id": "ay8-uTOOjWw",
-          "title": "uando um grande amor se faz",
+          "title": "Quando um grande amor se faz",
           "artist": "Eduardo Costa"
         },
         {
@@ -86,11 +91,6 @@
           "artist": "Eduardo Costa"
         },
         {
-          "id": "ay8-uTOOjWw",
-          "title": "Quando mm Grande Amor se Faz",
-          "artist": "Eduardo Costa"
-        },
-        {
           "id": "4Vu6qz7AVWw",
           "title": "Tô Indo Embora",
           "artist": "Eduardo Costa"
@@ -116,7 +116,7 @@
           "artist": "Eduardo Costa"
         },
         {
-          "id": "EnK7qb2bkhI",
+          "id": "1M5cfMOg4m8",
           "title": "Me Apaixonei",
           "artist": "Eduardo Costa"
         },
@@ -141,6 +141,11 @@
           "artist": "Eduardo Costa"
         },
         {
+          "id": "eu49tJviNBE",
+          "title": "Vai Viver s Sua Vida (DVD #40Tena)",
+          "artist": "Eduardo Costa"
+        },
+        {
           "id": "rfx2r7S67qs",
           "title": "Linda Demais",
           "artist": "Eduardo Costa"
@@ -151,8 +156,8 @@
           "artist": "Eduardo Costa"
         },
         {
-          "id": "QRY_9rtR8zA",
-          "title": "Meeu Grito de Amor",
+          "id": "cGQ8sbbOP9I",
+          "title": "Meu Grito de Amor",
           "artist": "Eduardo Costa"
         },
         {
@@ -168,6 +173,16 @@
         {
           "id": "L2eEnsM46h4",
           "title": "Quem É",
+          "artist": "Eduardo Costa"
+        },
+        {
+          "id": "KqiHkwKVq84",
+          "title": "Que Sofrimento é Esse",
+          "artist": "Eduardo Costa"
+        },
+        {
+          "id": "_Wj8EycKbhI",
+          "title": "Enamorado (com Icíar Díaz)",
           "artist": "Eduardo Costa"
         }
       ]
