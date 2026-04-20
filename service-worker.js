@@ -2,17 +2,17 @@
 // SERVICE WORKER - SanPlayer PWA
 // ============================================================================
 
-const CACHE_NAME = 'sanplayer-v1.4.3';
+const CACHE_NAME = 'sanplayer-v1.4.5';
 const URLS_TO_CACHE = [
-    './',
-    'index.html',
-    'style.css',
-    'app.js',
-    'manifest.json',
-    'icons/favicon-96x96.png',
-    'icons/favicon.svg',
-    'icons/icon192.png',
-    'icons/icon512.png'
+    '/',
+    '/index.html',
+    '/style.css',
+    '/app.js',
+    '/manifest.json',
+    '/icons/favicon-96x96.png',
+    '/icons/favicon.svg',
+    '/icons/icon192.png',
+    '/icons/icon512.png'
 ];
 
 // ============================================================================

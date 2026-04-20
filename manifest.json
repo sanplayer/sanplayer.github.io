@@ -1,10 +1,10 @@
 {
   "name": "SanPlayer",
   "short_name": "SanPlayer",
-  "id": "sanplayer-v1.4.3",
+  "id": "/",
   "description": "Player de músicas personalizado com experiência estilo YouTube Music. Acesse suas playlists, artistas favoritos e músicas em qualquer lugar.",
-  "start_url": "index.html",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0f0f0f",
@@ -60,6 +60,18 @@
     {
       "src": "icons/icon192.png",
       "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
