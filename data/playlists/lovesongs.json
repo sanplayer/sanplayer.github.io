@@ -6,6 +6,11 @@
       "cover": "lovesongs.jpg",
       "videos": [
         {
+          "id": "Sz9Ad81xBuY",
+          "title": "Hurts To Be In Love",
+          "artist": "Gino Vannelli"
+        },
+        {
           "id": "m_9hfHvQSNo",
           "title": "Father Figure",
           "artist": "George Michael"
@@ -99,11 +104,6 @@
           "id": "5kp0dw4MuWs",
           "title": "Je Suis Malade",
           "artist": "Lara Fabian"
-        },
-        {
-          "id": "Sz9Ad81xBuY",
-          "title": "Hurts To Be In Love",
-          "artist": "Gino Vannelli"
         },
         {
           "id": "JkK8g6FMEXE",
@@ -690,10 +690,10 @@
           "title": "She's Gone",
           "artist": "Steelheart"
         },
-                {
+        {
           "id": "FqIACCH20JU",
           "title": "Ordinary World",
-          "artist": "Duran Duran"
+          "artist": "Duran-Duran"
         }
       ]
     }
