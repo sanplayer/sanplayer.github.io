@@ -4577,7 +4577,7 @@ function openItemOptionsModal(index) {
 
     // Opção: Adicionar/Remover da playlist
     const playlistRow = renderOptionRow({
-        icon: isInAnyPlaylist ? 'remove' : 'add',
+        icon: isInAnyPlaylist ? 'remove-case' : 'add-case',
         text: isInAnyPlaylist ? 'Remover da Playlist' : 'Adicionar a playlist',
         onClick: () => {
             if (isInAnyPlaylist) {
@@ -4626,7 +4626,7 @@ function openItemOptionsModal(index) {
     // Opção: Favoritar
     const isFavorite = player.favorites.some(fav => fav.id === video.id);
     const favoriteRow = renderOptionRow({
-        icon: isFavorite ? 'favorite' : 'favorite_border',
+        icon: isFavorite ? 'remove-case' : 'add-case',
         text: isFavorite ? 'Remover de Favoritos' : 'Adicionar a Favoritos',
         onClick: () => {
             // Toggle favorito para este vídeo
@@ -4723,7 +4723,7 @@ function openItemOptionsModalFromPlayer(video) {
 
     // Opção: Adicionar/Remover da playlist
     const playlistRow = renderOptionRow({
-        icon: isInAnyPlaylist ? 'remove' : 'add',
+        icon: isInAnyPlaylist ? 'remove-case' : 'add-case',
         text: isInAnyPlaylist ? 'Remover da Playlist' : 'Adicionar a playlist',
         onClick: () => {
             if (isInAnyPlaylist) {
@@ -4764,7 +4764,7 @@ function openItemOptionsModalFromPlayer(video) {
     // Opção: Favoritar
     const isFavorite = player.favorites.some(fav => fav.id === video.id);
     const favoriteRow = renderOptionRow({
-        icon: isFavorite ? 'favorite' : 'favorite_border',
+        icon: isFavorite ? 'remove-case' : 'add-case',
         text: isFavorite ? 'Remover de Favoritos' : 'Adicionar a Favoritos',
         onClick: () => {
             // Toggle favorito para este vídeo
@@ -6287,6 +6287,56 @@ function formatTime(seconds) {
 // ============================================================================
 
 /**
+ * 🔒 CENTRALIZADO: Atualiza ícone de favorito de forma profissional
+ * 
+ * ✅ CORRIGE:
+ * - Mismatch entre href moderno vs xlink:href legado
+ * - Sempre usa caminho absoluto consistente
+ * - Elimina duplicação de lógica
+ * 
+ * @param {SVGUseElement} useElement - Elemento <use> do SVG
+ * @param {Boolean} isFavorite - true = filled, false = outlined
+ */
+function setFavoriteIcon(useElement, isFavorite) {
+    if (!useElement) return;
+    
+    const ICON_PATH = '/icons/package.svg';
+    const iconId = isFavorite ? 'favorite-filled-case' : 'favorite-outlined-case';
+    const href = `${ICON_PATH}#${iconId}`;
+    
+    // ✅ SEMPRE usar setAttribute (moderno) em vez de setAttributeNS (legado)
+    useElement.setAttribute('href', href);
+    
+    // ✅ Remover xlink:href para evitar comportamento híbrido em browsers antigos
+    useElement.removeAttribute('xlink:href');
+}
+
+/**
+ * 🔒 CENTRALIZADO: Atualiza ícone de favorito de forma profissional
+ * 
+ * ✅ CORRIGE:
+ * - Mismatch entre href moderno vs xlink:href legado
+ * - Sempre usa caminho absoluto consistente
+ * - Elimina duplicação de lógica
+ * 
+ * @param {SVGUseElement} useElement - Elemento <use> do SVG
+ * @param {Boolean} isFavorite - true = filled, false = outlined
+ */
+function setFavoriteIcon(useElement, isFavorite) {
+    if (!useElement) return;
+    
+    const ICON_PATH = '/icons/package.svg';
+    const iconId = isFavorite ? 'favorite-filled-case' : 'favorite-outlined-case';
+    const href = `${ICON_PATH}#${iconId}`;
+    
+    // ✅ SEMPRE usar setAttribute (moderno) em vez de setAttributeNS (legado)
+    useElement.setAttribute('href', href);
+    
+    // ✅ Remover xlink:href para evitar comportamento híbrido em browsers antigos
+    useElement.removeAttribute('xlink:href');
+}
+
+/**
  * Sistema de Partículas Nativo - Explosão de Corações ao Favoritar
  * Microinteração de app nativo (Samsung/One UI)
  * 
@@ -6412,7 +6462,7 @@ function toggleFavorite(event) {
             button.classList.remove('active');
             button.setAttribute('aria-pressed', 'false');
             const use = button.querySelector('svg use');
-            if (use) use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/icons/package.svg#favorite-outlined-case');
+            setFavoriteIcon(use, false); // ✅ USAR FUNÇÃO CENTRALIZADA
         }
         
         // ✨ NOVO: Atualizar ícone em TODOS os items da sidebar que mostram esta música
@@ -6420,9 +6470,7 @@ function toggleFavorite(event) {
         sidebarItems.forEach(item => {
             const itemFavBtn = item.querySelector('.item-favorite-btn');
             const itemFavUse = itemFavBtn?.querySelector('svg use');
-            if (itemFavUse) {
-                itemFavUse.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/icons/package.svg#favorite-outlined-case');
-            }
+            setFavoriteIcon(itemFavUse, false); // ✅ USAR FUNÇÃO CENTRALIZADA
             if (itemFavBtn) {
                 itemFavBtn.classList.remove('active');
             }
@@ -6456,7 +6504,7 @@ function toggleFavorite(event) {
             button.classList.add('active');
             button.setAttribute('aria-pressed', 'true');
             const use = button.querySelector('svg use');
-            if (use) use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/icons/package.svg#favorite-filled-case');
+            setFavoriteIcon(use, true); // ✅ USAR FUNÇÃO CENTRALIZADA
             // Dispara explosão de partículas APENAS ao ADICIONAR
             createParticleExplosion(button);
         }
@@ -6466,9 +6514,7 @@ function toggleFavorite(event) {
         sidebarItems.forEach(item => {
             const itemFavBtn = item.querySelector('.item-favorite-btn');
             const itemFavUse = itemFavBtn?.querySelector('svg use');
-            if (itemFavUse) {
-                itemFavUse.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/icons/package.svg#favorite-filled-case');
-            }
+            setFavoriteIcon(itemFavUse, true); // ✅ USAR FUNÇÃO CENTRALIZADA
             if (itemFavBtn) {
                 itemFavBtn.classList.add('active');
             }
@@ -6489,7 +6535,8 @@ function toggleFavorite(event) {
     }
     
     saveFavorites();
-    updateFavoriteButton();
+    // ✅ REMOVER: updateFavoriteButton() causava SOBRESCRITA imediata
+    // Não chamar syncFavoriteState() após atualizar estado - já foi feito acima!
 }
 
 /**
@@ -6517,10 +6564,8 @@ function syncFavoriteState(track) {
     const button = document.getElementById('favButton');
     const use = button?.querySelector('svg use');
     
-    if (use) {
-        const iconId = isFavorite ? 'favorite-filled-case' : 'favorite-outlined-case';
-        use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', `/icons/package.svg#${iconId}`);
-    }
+    // ✅ USAR FUNÇÃO CENTRALIZADA para evitar mismatch de atributos
+    setFavoriteIcon(use, isFavorite);
     
     if (button) {
         button.classList.toggle('active', isFavorite);
