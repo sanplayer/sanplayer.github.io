@@ -1,3 +1,4 @@
+
 /* =============================================================================
    1. VARIÁVEIS CSS E TIPOGRAFIA
    ============================================================================= */
@@ -44,7 +45,7 @@
     font-family: 'Exo 2';
     font-style: normal;
     font-weight: 400;
-    src: url('/fonts/exo-2-v26-latin-regular.woff2') format('woff2');
+    src: url('fonts/exo-2-v26-latin-regular.woff2') format('woff2');
 }
 
 /* exo-2-600 - latin */
@@ -56,21 +57,14 @@
     src: url('/fonts/exo-2-v26-latin-600.woff2') format('woff2');
 }
 
-.material-symbols-outlined {
-    display: inline-block;
-    white-space: nowrap;
-    word-wrap: normal;
-    direction: ltr;
-    font-display: block;
-    width: 1em;
-    height: 1em;
-}
+
 
 :root {
     --bg-main: #000000;
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
-    --accent-roxo: #4F257B;
+    --accent-roxo: #A238FF;
+    --accent-roxo-dark: #5C119E;
     --accent-roxo-light: #9D00FF;
     --text-main: #ffffff;
     --text-dim: #aaaaaa;
@@ -174,6 +168,14 @@ img {
     object-fit: cover;
 }
 
+svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    display: block;
+    fill: currentColor;
+    flex-shrink: 0;
+}
+
 /* =============================================================================
    3. ESTILOS BASE (TÍTULOS, BOTÕES)
    ============================================================================= */
@@ -200,7 +202,7 @@ button {
     color: inherit;
     transition: background 0.2s ease;
     aspect-ratio: 1 / 1;
-    line-height: 0;
+    
     padding: 0;
     min-width: var(--touch-target);
     min-height: var(--touch-target);
@@ -244,6 +246,11 @@ button:active {
     border-color: var(--text-main);
 }
 
+.btn-secondary svg.icon {
+    width: 1.2em;
+    height: 1.2em;
+}
+
 .btn-primary {
     background: var(--accent-roxo);
     border: none;
@@ -270,6 +277,11 @@ button:active {
 
 .btn-primary:active {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary svg.icon {
+    width: 1.2em;
+    height: 1.2em;
 }
 
 /* =============================================================================
@@ -358,6 +370,8 @@ button:active {
     flex-shrink: 0;
     padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.5rem, 1.5vw, 0.75rem);
     border-radius: 0 40px 40px 0;
+    width: var(--icon-size);
+    height: var(--icon-size);
 }
 
 .header-actions {
@@ -389,6 +403,11 @@ button:active {
 
 .notification-btn:hover {
     opacity: 0.8;
+}
+
+.notification-btn svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
 }
 
 .notification-btn.unread::after {
@@ -650,7 +669,7 @@ button:active {
 
 .progress-bar::-webkit-slider-runnable-track {
     width: 100%;
-    height: 40px;
+    height: 20px;
     background: transparent;
     border: none;
     outline: none;
@@ -764,8 +783,13 @@ button:active {
     color: #aaa;
 }
 
+.shuffle-repeat svg.icon {
+    width: var(--icon-size-sub);
+    height: var(--icon-size-sub);
+}
+
 .btn-play-pause {
-    background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
+    background-image: linear-gradient(0deg,var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -776,21 +800,31 @@ button:active {
 }
 
 .btn-play-pause:hover {
-    background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
+    background-image: linear-gradient(0deg,var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
 }
 
 .btn-play-pause:active {
-    background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
+    background-image: linear-gradient(0deg,var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
 }
-
+/*
 .btn-play-pause i {
     font-size: var(--icon-size-main);
     line-height: 0;
 }
-
+*/
+.btn-play-pause svg.icon {
+    width: var(--icon-size-main);
+    height: var(--icon-size-main);
+}
+/*
 .block-controls button:not(.btn-play-pause) i {
     font-size: var(--icon-size-sub);
     line-height: 0;
+}*/
+
+.block-controls button:not(.btn-play-pause) svg.icon {
+    width: var(--icon-size-sub);
+    height: var(--icon-size-sub);
 }
 
 /* =============================================================================
@@ -925,6 +959,11 @@ button:active {
     outline-offset: 2px;
 }
 
+.favorite-btn svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+}
+
 .favorite-btn:hover {
     color: var(--text-main);
     filter: brightness(1.1);
@@ -967,6 +1006,11 @@ button:active {
     -webkit-user-select: none;
     user-select: none;
     outline-offset: 2px;
+}
+
+.share-btn svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
 }
 
 .share-btn:hover {
@@ -1054,6 +1098,11 @@ button:active {
     transition: background 0.2s ease, color 0.2s ease;
     min-width: var(--touch-target);
     min-height: var(--touch-target);
+}
+
+.kebab-btn svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
 }
 
 .kebab-btn:hover {
@@ -1163,6 +1212,13 @@ button:active {
     border-radius: 0 40px 40px 0;
     color: var(--text-dim);
     pointer-events: none;
+    width: var(--icon-size);
+    height: var(--icon-size);
+}
+
+.modal-search .search-icon svg {
+    width: 100%;
+    height: 100%;
 }
 
 .modal-header-title {
@@ -1211,6 +1267,11 @@ button:active {
     font-weight: 700;
     font-size: clamp(1.1rem, 2vw, 1.3rem);
     flex-shrink: 0;
+}
+
+.toast-feedback .icon svg {
+    width: 100%;
+    height: 100%;
 }
 
 .toast-feedback .msg {
@@ -1293,6 +1354,11 @@ button:active {
     flex-shrink: 0;
 }
 
+.option-icon svg.icon {
+    width: 24px;
+    height: 24px;
+}
+
 .option-text {
     font-size: 1.05rem;
     font-weight: 600;
@@ -1309,6 +1375,11 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.modal-close svg.icon {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .modal-close:hover {
@@ -1568,11 +1639,7 @@ button:active {
     background: rgba(255, 255, 255, 0.04);
 }
 
-.user-menu-list i.material-icons {
-    font-size: 1.45rem;
-    color: var(--text-dim);
-    flex-shrink: 0;
-}
+
 
 .user-menu-list span {
     flex: 1;
@@ -1907,12 +1974,12 @@ button:active {
     gap: 0.75rem;
     padding: 0;
 }
-
+/*
 .feature-item i {
     color: var(--accent-roxo-light);
     flex-shrink: 0;
     margin-top: 0.1rem;
-}
+}*/
 
 .feature-item > div {
     flex: 1;
@@ -2015,7 +2082,7 @@ button:active {
 }
 
 .author-title {
-    color: var(--accent-roxo-light);
+    color: var(--accent-roxo);
     font-weight: 600;
     margin-bottom: 1rem;
     margin-top: 0;
@@ -2147,11 +2214,11 @@ button:active {
     margin-bottom: clamp(1rem, 2vw, 1.5rem);
     color: var(--text-main);
 }
-
+/*
 .zoom-alert-header i {
     font-size: clamp(1.5rem, 3vw, 2rem);
     color: var(--accent-roxo);
-}
+}*/
 
 .zoom-alert-header span {
     font-size: var(--font-lg);
@@ -2184,7 +2251,7 @@ button:active {
 }
 
 .sidebar-header {
-    border-left: 5px solid var(--accent-roxo-light);
+    border-left: 3px solid var(--accent-roxo-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2229,6 +2296,11 @@ button:active {
     min-height: var(--touch-target);
 }
 
+.sidebar-nav-btn svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+}
+
 .sidebar-nav-btn.hidden {
     display: none;
     pointer-events: none;
@@ -2249,9 +2321,7 @@ button:active {
     transform: scale(0.95);
 }
 
-.sidebar-nav-btn .material-icons {
-    font-size: 1.25rem;
-}
+
 
 .back-button {
     background: none;
@@ -2285,9 +2355,11 @@ button:active {
     transform: scale(0.95);
 }
 
-.back-button .material-icons {
-    font-size: 1.25rem;
+.back-button svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
 }
+
 
 .overlay-layer {
     position: absolute;
@@ -2340,6 +2412,11 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.overlay-layer-legendas button svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
 }
 
 .overlay-layer-legendas button:hover {
@@ -2397,10 +2474,10 @@ button:active {
     gap: clamp(0.75rem, 1.5vw, 1rem);
     color: var(--text-main);
 }
-
+/*
 .pwa-install-header i {
     font-size: clamp(1.5rem, 3vw, 2rem);
-}
+}*/
 
 .pwa-install-header span {
     font-size: var(--font-lg);
@@ -2418,10 +2495,16 @@ button:active {
     justify-content: center;
     padding: clamp(1rem, 2vw, 1.5rem) 0;
 }
-
+/*
 .pwa-install-icon i {
     font-size: clamp(3rem, 8vw, 4rem);
     color: var(--text-main);
+    animation: float 2s ease-in-out infinite;
+}*/
+
+.pwa-install-icon svg.icon {
+    width: clamp(3rem, 8vw, 4rem);
+    height: clamp(3rem, 8vw, 4rem);
     animation: float 2s ease-in-out infinite;
 }
 
@@ -2444,9 +2527,7 @@ button:active {
     flex-shrink: 0;
 }
 
-.material-symbols-outlined {
-    font-weight: 400;
-}
+
 
 .update-sheet {
     position: fixed;
@@ -2475,9 +2556,7 @@ button:active {
     gap: 15px;
 }
 
-.update-content .material-symbols-outlined {
-    font-size: 44px
-}
+
 
 .update-text strong {
     display: block;
@@ -2934,23 +3013,25 @@ button:active {
     .btn-play-pause {
         width: clamp(52px, 12vw, 64px);
         height: clamp(52px, 12vw, 64px);
-        background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
+        background-image: linear-gradient(0deg,var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
     }
 
     .btn-play-pause:hover,
     .btn-play-pause:active {
-        background-image: linear-gradient(0deg,var(--accent-roxo) 35%, var(--accent-roxo-light) 100%);
+        background-image: linear-gradient(0deg,var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
         opacity: 0.8;
     }
-
+/*
     .btn-play-pause i {
         font-size: clamp(1.8rem, 4vw, 2.5rem);
     }
+*/
 
+/*
     .block-controls button:not(.btn-play-pause) i {
         font-size: clamp(1.8rem, 3.2vw, 2rem);
     }
-
+*/
     .playlist-item {
         padding: var(--gap-sm) clamp(1rem, 3vw, 1rem);
     }
@@ -3012,6 +3093,11 @@ button:active {
         font-size: clamp(1.3rem, 3vw, 1.8rem);
         background: none;
         transition: color 0.2s;
+    }
+
+    .btn-hamburger svg.icon {
+        width: clamp(1.3rem, 3vw, 1.8rem);
+        height: clamp(1.3rem, 3vw, 1.8rem);
     }
 
     .btn-hamburger:active {

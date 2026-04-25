@@ -1,4 +1,5 @@
-﻿/**
+﻿
+/**
  * 🎵 SAN PLAYER - APP.JS
  * 
  * ⚠️ ARCHITECHT PROTECTION ATIVO ⚠️
@@ -1352,13 +1353,13 @@ function renderCard(data, config = {}) {
         const kebabBtn = document.createElement('button');
         kebabBtn.className = 'card-kebab';
         kebabBtn.setAttribute('aria-label', 'Opções');
-        const kebabIcon = document.createElement('i');
-        kebabIcon.className = 'material-icons';
-        kebabIcon.textContent = 'more_vert';
-        kebabBtn.appendChild(kebabIcon);
-        
-        kebabBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+        kebabBtn.appendChild(createSvgIcon('more-vert-case'));
+
+        // CORREÇÃO: Adicione o evento de clique corretamente
+        kebabBtn.addEventListener('click', (event) => {
+            // Previne que o clique no botão ative um evento no card pai (se houver)
+            event.stopPropagation(); 
+            
             if (config.type === 'playlist') {
                 openPlaylistShareModal(config.shareData);
             } else if (config.type === 'artist') {
@@ -1378,6 +1379,26 @@ function renderCard(data, config = {}) {
  * @param {Number} index - índice na lista
  * @returns {HTMLElement}
  */
+
+/**
+ * 🎨 HELPER: Cria um elemento SVG icon reutilizável
+ * Padrão: <svg><use href="/icons/package.svg#icon-id"></use></svg>
+ * 
+ * @param {String} iconId - ID do ícone em package.svg (ex: 'menu-case', 'close-case')
+ * @param {String} className - Classes CSS adicionais (ex: 'search-icon', 'shuffle-repeat')
+ * @returns {SVGElement} SVG element com <use> reference
+ */
+function createSvgIcon(iconId, className = '') {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', `icon ${className}`.trim());
+    
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    use.setAttribute('href', `/icons/package.svg#${iconId}`);
+    
+    svg.appendChild(use);
+    return svg;
+}
+
 /**
  * Cria um SVG animado de equalizador (mini-indicador)
  * @returns {SVGElement} Elemento SVG com viewBox="0 0 24 24"
@@ -1465,10 +1486,7 @@ function renderPlaylistItem(video, index) {
     kebabBtn.className = 'kebab-btn';
     kebabBtn.setAttribute('data-index', index);
     kebabBtn.setAttribute('title', 'Opções');
-    const kebabIcon = document.createElement('i');
-    kebabIcon.className = 'material-icons';
-    kebabIcon.textContent = 'more_vert';
-    kebabBtn.appendChild(kebabIcon);
+    kebabBtn.appendChild(createSvgIcon('more-vert-case'));
     
     item.appendChild(img);
     item.appendChild(info);
@@ -1511,10 +1529,7 @@ function renderModalHeader(video, onClose) {
     const closeBtn = document.createElement('button');
     closeBtn.className = 'modal-close';
     closeBtn.setAttribute('aria-label', 'Fechar');
-    const closeIcon = document.createElement('i');
-    closeIcon.className = 'material-icons';
-    closeIcon.textContent = 'close';
-    closeBtn.appendChild(closeIcon);
+    closeBtn.appendChild(createSvgIcon('close-case'));
     closeBtn.addEventListener('click', onClose);
     
     header.appendChild(img);
@@ -1535,10 +1550,18 @@ function renderOptionRow(data) {
     
     const icon = document.createElement('div');
     icon.className = 'option-icon';
-    const i = document.createElement('i');
-    i.className = 'material-icons';
-    i.textContent = data.icon;
-    icon.appendChild(i);
+    
+    // Mapear icon text para IDs de sprite
+    const iconMap = {
+        'share': 'share-case',
+        'close': 'close-case',
+        'more_vert': 'more-vert-case',
+        'delete': 'delete-case',
+        'edit': 'edit-case'
+    };
+    
+    const iconId = iconMap[data.icon] || data.icon;
+    icon.appendChild(createSvgIcon(iconId));
     
     const text = document.createElement('div');
     text.className = 'option-text';
@@ -3125,21 +3148,14 @@ function initPlayerUI() {
     favButton.setAttribute('aria-label', 'Adicionar aos favoritos');
     favButton.setAttribute('aria-pressed', 'false');
     favButton.type = 'button';
-    
-    const favIcon = document.createElement('i');
-    favIcon.className = 'material-icons';
-    favIcon.id = 'favIcon';
-    favIcon.textContent = 'favorite_border';
-    favButton.appendChild(favIcon);
+    favButton.appendChild(createSvgIcon('favorite-outlined-case'));
+    const favIcon = favButton.querySelector('svg use');
     
     const shareButton = document.createElement('button');
     shareButton.id = 'shareButton';
     shareButton.className = 'share-btn';
     shareButton.setAttribute('aria-label', 'Compartilhar');
-    const shareIcon = document.createElement('i');
-    shareIcon.className = 'material-icons reply';
-    shareIcon.textContent = 'reply';
-    shareButton.appendChild(shareIcon);
+    shareButton.appendChild(createSvgIcon('share-case'));
     
     currentActions.appendChild(favButton);
     currentActions.appendChild(shareButton);
@@ -4430,10 +4446,7 @@ function renderUserPlaylistRow(pl, idx, isAddingMode) {
         editBtn.className = 'icon-btn icon-btn-edit';
         editBtn.setAttribute('aria-label', 'Editar playlist');
         editBtn.setAttribute('title', 'Editar');
-        const editIcon = document.createElement('i');
-        editIcon.className = 'material-icons';
-        editIcon.textContent = 'edit';
-        editBtn.appendChild(editIcon);
+        editBtn.appendChild(createSvgIcon('edit-case'));
         editBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             openEditPlaylistModal(idx, pl.name);
@@ -4444,10 +4457,7 @@ function renderUserPlaylistRow(pl, idx, isAddingMode) {
         deleteBtn.className = 'icon-btn icon-btn-delete';
         deleteBtn.setAttribute('aria-label', 'Remover playlist');
         deleteBtn.setAttribute('title', 'Remover');
-        const deleteIcon = document.createElement('i');
-        deleteIcon.className = 'material-icons';
-        deleteIcon.textContent = 'delete';
-        deleteBtn.appendChild(deleteIcon);
+        deleteBtn.appendChild(createSvgIcon('delete-case'));
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             deleteUserPlaylist(idx);
@@ -4825,11 +4835,7 @@ function openPlaylistShareModal(playlistName) {
     const closeBtn = document.createElement('button');
     closeBtn.className = 'modal-close';
     closeBtn.setAttribute('aria-label', 'Fechar');
-    
-    const closeIcon = document.createElement('i');
-    closeIcon.className = 'material-icons';
-    closeIcon.textContent = 'close';
-    closeBtn.appendChild(closeIcon);
+    closeBtn.appendChild(createSvgIcon('close-case'));
     closeBtn.addEventListener('click', closeItemOptionsModal);
     
     headerEl.appendChild(title);
@@ -4881,11 +4887,7 @@ function openArtistShareModal(artistName) {
     const closeBtn = document.createElement('button');
     closeBtn.className = 'modal-close';
     closeBtn.setAttribute('aria-label', 'Fechar');
-    
-    const closeIcon = document.createElement('i');
-    closeIcon.className = 'material-icons';
-    closeIcon.textContent = 'close';
-    closeBtn.appendChild(closeIcon);
+    closeBtn.appendChild(createSvgIcon('close-case'));
     closeBtn.addEventListener('click', closeItemOptionsModal);
     
     headerEl.appendChild(title);
@@ -6206,44 +6208,37 @@ function updatePlayPauseButton() {
     // Procure pelo local que está setando player.isPlaying incorretamente.
     // ================================================================
     
-    const btn = document.querySelector('.btn-play-pause i');
-    btn.textContent = player.isPlaying ? 'pause' : 'play_arrow';
+    const btn = document.querySelector('.btn-play-pause');
+    const use = btn.querySelector('svg use');
+    use.setAttribute('href', 
+        player.isPlaying ? '/icons/package.svg#control-pause' : '/icons/package.svg#control-play'
+    );
 }
 
 function updateRepeatButton() {
     const btn = document.querySelector('.block-controls button:nth-child(5)');
-    const icon = btn.querySelector('i.material-icons') || document.createElement('i');
-    icon.className = 'material-icons shuffle-repeat';
+    const use = btn.querySelector('svg use');
     
     if (player.repeatMode === 0) {
-        icon.textContent = 'repeat';
+        use.setAttribute('href', '/icons/package.svg#control-repeat');
         btn.classList.remove('repeat-one-active');
     } else if (player.repeatMode === 1) {
-        icon.textContent = 'repeat';
+        use.setAttribute('href', '/icons/package.svg#control-repeat');
         btn.classList.remove('repeat-one-active');
     } else {
-        icon.textContent = 'repeat_one';
+        use.setAttribute('href', '/icons/package.svg#control-repeat-one');
         btn.classList.add('repeat-one-active');
-    }
-    
-    if (!btn.querySelector('i.material-icons')) {
-        btn.appendChild(icon);
     }
 }
 
 function updateShuffleButton() {
     const btn = document.querySelector('.block-controls button:nth-child(1)');
-    const icon = btn.querySelector('i.material-icons') || document.createElement('i');
-    icon.className = 'material-icons shuffle-repeat';
+    const use = btn.querySelector('svg use');
     
     if (player.isShuffle) {
-        icon.textContent = 'shuffle_on';
+        use.setAttribute('href', '/icons/package.svg#control-shuffle-active');
     } else {
-        icon.textContent = 'shuffle';
-    }
-    
-    if (!btn.querySelector('i.material-icons')) {
-        btn.appendChild(icon);
+        use.setAttribute('href', '/icons/package.svg#control-shuffle');
     }
 }
 
@@ -6416,17 +6411,17 @@ function toggleFavorite(event) {
         if (button) {
             button.classList.remove('active');
             button.setAttribute('aria-pressed', 'false');
-            const icon = button.querySelector('i');
-            if (icon) icon.textContent = 'favorite_border';
+            const use = button.querySelector('svg use');
+            if (use) use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/icons/package.svg#favorite-outlined-case');
         }
         
         // ✨ NOVO: Atualizar ícone em TODOS os items da sidebar que mostram esta música
         const sidebarItems = document.querySelectorAll(`.playlist-item[data-video-id="${favoriteId}"]`);
         sidebarItems.forEach(item => {
             const itemFavBtn = item.querySelector('.item-favorite-btn');
-            const itemFavIcon = itemFavBtn?.querySelector('i');
-            if (itemFavIcon) {
-                itemFavIcon.textContent = 'favorite_border';
+            const itemFavUse = itemFavBtn?.querySelector('svg use');
+            if (itemFavUse) {
+                itemFavUse.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/icons/package.svg#favorite-outlined-case');
             }
             if (itemFavBtn) {
                 itemFavBtn.classList.remove('active');
@@ -6460,8 +6455,8 @@ function toggleFavorite(event) {
         if (button) {
             button.classList.add('active');
             button.setAttribute('aria-pressed', 'true');
-            const icon = button.querySelector('i');
-            if (icon) icon.textContent = 'favorite';
+            const use = button.querySelector('svg use');
+            if (use) use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/icons/package.svg#favorite-filled-case');
             // Dispara explosão de partículas APENAS ao ADICIONAR
             createParticleExplosion(button);
         }
@@ -6470,9 +6465,9 @@ function toggleFavorite(event) {
         const sidebarItems = document.querySelectorAll(`.playlist-item[data-video-id="${favoriteId}"]`);
         sidebarItems.forEach(item => {
             const itemFavBtn = item.querySelector('.item-favorite-btn');
-            const itemFavIcon = itemFavBtn?.querySelector('i');
-            if (itemFavIcon) {
-                itemFavIcon.textContent = 'favorite';
+            const itemFavUse = itemFavBtn?.querySelector('svg use');
+            if (itemFavUse) {
+                itemFavUse.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '/icons/package.svg#favorite-filled-case');
             }
             if (itemFavBtn) {
                 itemFavBtn.classList.add('active');
@@ -6520,10 +6515,11 @@ function syncFavoriteState(track) {
     
     // Atualizar UI baseado no estado real
     const button = document.getElementById('favButton');
-    const icon = document.getElementById('favIcon');
+    const use = button?.querySelector('svg use');
     
-    if (icon) {
-        icon.textContent = isFavorite ? 'favorite' : 'favorite_border';
+    if (use) {
+        const iconId = isFavorite ? 'favorite-filled-case' : 'favorite-outlined-case';
+        use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', `/icons/package.svg#${iconId}`);
     }
     
     if (button) {

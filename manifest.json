@@ -7,8 +7,8 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f0f0f",
-  "theme_color": "#0f0f0f",
+  "background_color": "#0F0D12",
+  "theme_color": "#0F0D12",
   "categories": [
     "music",
     "multimedia"
@@ -117,7 +117,7 @@
       "url": "index.html?modal=favorites",
       "icons": [
         {
-          "src": "shortcuts/heart.png",
+          "src": "shortcuts/favorite.png",
           "sizes": "128x128",
           "type": "image/png"
         }
