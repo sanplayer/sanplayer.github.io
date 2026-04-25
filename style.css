@@ -365,7 +365,7 @@ button:active {
 
 .header-search .search-icon {
     color: var(--text-dim);
-    font-size: var(--icon-size);
+    /*font-size: var(--icon-size);*/
     pointer-events: none;
     flex-shrink: 0;
     padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.5rem, 1.5vw, 0.75rem);
@@ -3084,7 +3084,8 @@ button:active {
     }
 
     .header-search .search-icon {
-        border-radius: 0;
+        /*border-radius: 0;*/
+        width: 24px; height: 24px;
     }
 
     .btn-hamburger {
@@ -3255,6 +3256,30 @@ button:active {
         width: 100%;
         background: rgba(0, 0, 0, 0.3);
         border-radius: 25px;
+        display: flex;
+        align-items: center;
+        gap: 0;
+        padding: 0;
+    }
+
+    .header-search input {
+        background: transparent;
+        border: none;
+        border-radius: 25px;
+        color: var(--text-main);
+        width: 100%;
+        padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.75rem, 2vw, 1rem);
+        outline: none;
+    }
+
+    .header-search .search-icon {
+        color: var(--text-dim);
+        font-size: var(--icon-size);
+        pointer-events: none;
+        flex-shrink: 0;
+        padding: clamp(0.4rem, 1vw, 0.6rem) clamp(0.5rem, 1.5vw, 0.75rem);
+        width: var(--icon-size);
+        height: var(--icon-size);
     }
 
     .header-actions .btn-search-mobile {
