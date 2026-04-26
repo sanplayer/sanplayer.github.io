@@ -2982,7 +2982,9 @@ button:active {
         user-select: none;
         display: flex;
     }
+    
 /* BOTOES DOS CONTROLES */
+
     .block-controls button {
         width: clamp(44px, 10vw, 56px);
         height: clamp(44px, 10vw, 56px);
