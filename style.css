@@ -2379,11 +2379,12 @@ button:active {
     gap: var(--gap-md);
     align-items: center;
     margin-left: auto;
+    display: none;
 }
 
 .overlay-layer-legendas button {
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.8);
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -2982,7 +2983,7 @@ button:active {
         user-select: none;
         display: flex;
     }
-    
+
 /* BOTOES DOS CONTROLES */
 
     .block-controls button {
