@@ -780,13 +780,9 @@ button:active {
 }
 
 .shuffle-repeat {
-    color: #aaa;
+    color: var(--text-dim);
 }
 
-.shuffle-repeat svg.icon {
-    width: var(--icon-size-sub);
-    height: var(--icon-size-sub);
-}
 
 .btn-play-pause {
     background-image: linear-gradient(0deg,var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
@@ -806,26 +802,7 @@ button:active {
 .btn-play-pause:active {
     background-image: linear-gradient(0deg,var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
 }
-/*
-.btn-play-pause i {
-    font-size: var(--icon-size-main);
-    line-height: 0;
-}
-*/
-.btn-play-pause svg.icon {
-    width: var(--icon-size-main);
-    height: var(--icon-size-main);
-}
-/*
-.block-controls button:not(.btn-play-pause) i {
-    font-size: var(--icon-size-sub);
-    line-height: 0;
-}*/
 
-.block-controls button:not(.btn-play-pause) svg.icon {
-    width: var(--icon-size-sub);
-    height: var(--icon-size-sub);
-}
 
 /* =============================================================================
    7. COMPONENTES (SKELETON, CARDS, FAVORITES, SIDEBAR, USER MENU, MODAIS, TOASTS)
@@ -3003,11 +2980,18 @@ button:active {
         margin: var(--gap-sm);
         gap: clamp(0.75rem, 2vw, 1.5rem);
         user-select: none;
+        display: flex;
+        justify-content: space-around;
     }
 
     .block-controls button {
         width: clamp(44px, 10vw, 56px);
         height: clamp(44px, 10vw, 56px);
+        margin-top: 0.5rem;
+    }
+       .block-controls svg.icon {
+        width: clamp(40px, 6vw, 56px);
+        height: clamp(40px, 6vw, 56px);
     }
 
     .btn-play-pause {
@@ -3021,17 +3005,9 @@ button:active {
         background-image: linear-gradient(0deg,var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
         opacity: 0.8;
     }
-/*
-    .btn-play-pause i {
-        font-size: clamp(1.8rem, 4vw, 2.5rem);
-    }
-*/
+    
+ 
 
-/*
-    .block-controls button:not(.btn-play-pause) i {
-        font-size: clamp(1.8rem, 3.2vw, 2rem);
-    }
-*/
     .playlist-item {
         padding: var(--gap-sm) clamp(1rem, 3vw, 1rem);
     }
