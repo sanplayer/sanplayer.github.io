@@ -2981,17 +2981,22 @@ button:active {
         gap: clamp(0.75rem, 2vw, 1.5rem);
         user-select: none;
         display: flex;
-        justify-content: space-around;
     }
-
+/* BOTOES DOS CONTROLES */
     .block-controls button {
         width: clamp(44px, 10vw, 56px);
         height: clamp(44px, 10vw, 56px);
         margin-top: 0.5rem;
     }
+    
        .block-controls svg.icon {
         width: clamp(40px, 6vw, 56px);
         height: clamp(40px, 6vw, 56px);
+    }
+        .shuffle-repeat {
+        width: clamp(28px, 4vw, 36px) !important;
+        height: clamp(28px, 4vw, 36px) !important;
+        
     }
 
     .btn-play-pause {
