@@ -174,6 +174,7 @@ svg.icon {
     display: block;
     fill: currentColor;
     flex-shrink: 0;
+    transition: fill 0.3s ease;
 }
 
 /* =============================================================================
@@ -1880,17 +1881,15 @@ button:active {
 }
 
 .about-logo {
-    font-size: 4rem;
-    margin-bottom: 0.75rem;
     display: flex;
     justify-content: center;
+    margin-bottom: 0.5rem;
 }
-
-.about-logo img {
+.about-logo svg.icon {
     width: 100px;
     height: 100px;
+    fill: var(--accent-roxo);
 }
-
 .about-hero h3 {
     font-size: 1.8rem;
     font-weight: 600;
