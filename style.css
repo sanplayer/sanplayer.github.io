@@ -311,16 +311,21 @@ button:active {
     font-size: var(--font-lg);
 }
 
-.header-logo i {
-    font-size: clamp(1.5rem, 3vw, 1.8rem);
-}
-
 .header-app-logo {
     width: clamp(32px, 5vw, 44px);
     height: clamp(32px, 5vw, 44px);
     aspect-ratio: 1 / 1;
     object-fit: contain;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-app-logo svg.icon{
+    fill: var(--accent-roxo);
+    width: 36px;
+    height: 36px;
 }
 
 .header-search {
@@ -1890,6 +1895,7 @@ button:active {
     height: 100px;
     fill: var(--accent-roxo);
 }
+
 .about-hero h3 {
     font-size: 1.8rem;
     font-weight: 600;
@@ -1926,7 +1932,11 @@ button:active {
     margin-bottom: 0;
     text-align: center;
 }
-
+.logo-home svg.icon{
+    width: 32px;
+    height: 32px;
+    fill: var(--accent-roxo);
+}
 .section-title {
     font-weight: 600;
     color: var(--text-main);
