@@ -381,11 +381,10 @@ button:active {
 }
 
 .profile-avatar {
-    width: clamp(32px, 7vw, 40px);
-    height: clamp(32px, 7vw, 40px);
     border-radius: 50%;
     border: 1px solid var(--border-rgba);
     cursor: pointer;
+    
 }
 
 .notification-btn {
