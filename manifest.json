@@ -2,7 +2,7 @@
   "name": "SanPlayer",
   "short_name": "SanPlayer",
   "id": "/",
-  "description": "Player de músicas personalizado com experiência estilo YouTube Music. Acesse suas playlists, artistas favoritos e músicas em qualquer lugar.",
+  "description": "Sua música, sua experiência. O SanPlayer traz o design intuitivo e a fluidez que você ama, agora com total controle das suas playlists em um ambiente rápido e sem distrações.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
