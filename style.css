@@ -515,8 +515,8 @@ button:active {
 }
 
 .playlist-aside {
-    padding: 0 0.25rem;
-    border-left: 5px solid var(--border-rgba);
+    /*padding: 0 0.25rem;*/
+    border-left: 1px solid var(--border-rgba);
 }
 
 .playlist-aside h2 {
@@ -2904,6 +2904,7 @@ button:active {
 @media (max-width: 1023px) {
     .app-header {
         height: var(--header-height-mobile) !important;
+        background: #0F0D12;
     }
 
     .video-wrapper {
@@ -2911,10 +2912,10 @@ button:active {
     }
 
     .sidebar-header {
-        background: var(--bg-surface) !important;
+        background: #0F0D12;
         top: -5px !important;
     }
-
+    .sidebar-aside
     .sidebar-nav li {
         margin-bottom: var(--gap-sm);
     }
@@ -2966,15 +2967,20 @@ button:active {
         width: 100vw;
         min-height: 0;
         overflow-y: auto;
-        background: var(--bg-surface);
+        background: #0f0d12;
         border-left: none;
         padding: 0;
         position: relative;
         z-index: 1;
     }
 
-    .playlist-items {
+    .playlist-item {
         padding-bottom: 4rem;
+        border-bottom: none;
+    }
+
+    .app-player-footer{
+        background: #0f0d12;
     }
 
     .footer-content-wrapper {
@@ -3031,7 +3037,7 @@ button:active {
  
 
     .playlist-item {
-        padding: var(--gap-sm) clamp(1rem, 3vw, 1rem);
+        padding: var(--gap-sm) clamp(0.5rem, 3vw, 1rem);
     }
 
     .app-sidebar {
