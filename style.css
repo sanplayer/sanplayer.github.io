@@ -186,7 +186,7 @@ svg.icon {
     font-family: 'Exo 2', sans-serif;
     font-weight: 600;
     font-size: var(--font-xl);
-    color: var(--text-main);
+    color: var(--text-dim);
 }
 
 body.is-routing {
@@ -385,6 +385,7 @@ button:active {
     display: flex;
     align-items: center;
     gap: var(--gap-md);
+    color: var(--text-dim);
 }
 
 .profile-avatar {
@@ -398,7 +399,7 @@ button:active {
     position: relative;
     background: none;
     border: none;
-    color: var(--text-main);
+    color: var(--text-dim);
     cursor: pointer;
     padding: 8px;
     display: flex;
