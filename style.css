@@ -623,7 +623,7 @@ button:active {
     height: 3px;
     border-radius: 999px;
     background: #23232b;
-    background-image: linear-gradient(to right, var(--accent-roxo) 0%, var(--accent-roxo-light) 100%);
+    background-image: linear-gradient(to right, var(--accent-roxo-dark) 0%, var(--accent-roxo) 100%);
     background-repeat: no-repeat;
     background-size: var(--progress-bar-fill, 0% 100%);
     outline: none;
