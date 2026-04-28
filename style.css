@@ -64,7 +64,8 @@
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --accent-roxo: #A238FF;
-    --accent-roxo-dark: #5C119E;
+    /*--accent-roxo-dark: #5C119E;*/
+    --accent-roxo-dark: #1d0235;
     --accent-roxo-light: #9D00FF;
     --text-main: #ffffff;
     --text-dim: #aaaaaa;
@@ -72,7 +73,7 @@
 
     --gradient-top: #1f1f1f;
     --gradient-bottom: #070707;
-
+    --bg-gradient-radial: radial-gradient(circle,rgba(28, 4, 48, 1) 0%, rgba(15, 13, 18, 1) 100%);
     --footer-block-1: #18181c;
     --footer-block-2: #121217;
     --footer-block-3: #23232b;
@@ -80,9 +81,9 @@
     --footer-accent: #9d00dd;
 
     --font-xs: clamp(0.75rem, 1.5vw, 0.9rem);
-    --font-sm: clamp(0.875rem, 2vw, 1rem);
+    --font-sm: clamp(1rem, 2vw, 1.2rem);
     --font-md: clamp(1rem, 2.5vw, 1.25rem);
-    --font-mt: clamp(1rem, 2.5vw, 1.25rem);
+    --font-mt: clamp(1.2rem, 2.5vw, 1.3rem);
     --font-lg: clamp(1.1rem, 3vw, 1.4rem);
     --font-xl: clamp(1.3rem, 4vw, 1.8rem);
 
@@ -446,6 +447,7 @@ button:active {
     left: 0;
     right: 0;
     display: flex;
+    justify-content: center;
     z-index: var(--main-z-index);
     overflow-y: auto;
     padding-bottom: var(--footer-height);
@@ -529,7 +531,7 @@ button:active {
     gap: var(--gap-md);
     align-items: center;
     padding: var(--gap-sm) clamp(0.2rem, 0.5vw, 0.5rem);
-    border-bottom: 1px solid var(--border-rgba);
+    border-bottom: 1px solid var(--border-rgba); /*nao remover*/
     cursor: pointer;
     transition: background 0.2s;
     user-select: none;
@@ -714,7 +716,7 @@ button:active {
     align-items: center;
     gap: var(--gap-md);
     min-width: 0;
-    margin: 0 1rem;
+    margin: 0 0.6rem;
 }
 
 .current-thumb {
@@ -1304,7 +1306,7 @@ button:active {
 }
 
 .option-separator {
-    height: 1px;
+    height: 0px;
     background: var(--border-rgba);
     margin: 0;
     width: 100%;
@@ -1315,13 +1317,13 @@ button:active {
     align-items: center;
     gap: 1rem;
     padding: 0.5rem 1rem;
-    border-bottom: 1px solid var(--border-rgba);
+    /*border-bottom: 1px solid var(--border-rgba);*/
     transition: background 0.2s;
     cursor: pointer;
 }
 
 .option-row:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .option-icon {
@@ -1496,7 +1498,7 @@ button:active {
     align-items: center;
     justify-content: space-between;
     padding: clamp(0.75rem, 2vw, 1.5rem);
-    border-bottom: 1px solid var(--border-rgba);
+    /*border-bottom: 1px solid var(--border-rgba);*/
     transition: background 0.2s;
     cursor: pointer;
 }
@@ -1590,14 +1592,14 @@ button:active {
 .user-menu-list {
     list-style: none;
     margin: 0;
-    padding: 0.2rem 0 0.2rem 0;
+    /*padding: 0.2rem 0 0.2rem 0;*/
     display: flex;
     flex-direction: column;
     gap: 0;
 }
 
 .user-menu-list li {
-    border-bottom: 1px solid var(--border-rgba);
+    /*border-bottom: 1px solid var(--border-rgba);*/
 }
 
 .user-menu-list li:last-child {
@@ -1614,7 +1616,7 @@ button:active {
     text-decoration: none;
     padding: 1.05rem 1.2rem;
     transition: background 0.18s, color 0.18s;
-    border-radius: 0;
+    /*border-radius: 0;*/
 }
 
 .user-menu-list a:active {
@@ -1721,7 +1723,7 @@ button:active {
     font-size: 1.04rem;
     color: var(--text-dim);
     font-weight: 500;
-    margin-bottom: 0.1rem;
+    /*margin-bottom: 0.1rem;*/
 }
 
 #createPlaylistModal input[type="text"] {
@@ -1989,7 +1991,7 @@ button:active {
 }
 
 .links-list li {
-    border-top: 1px solid var(--border-rgba);
+    /*border-top: 1px solid var(--border-rgba);*/
 }
 
 .links-list li:first-child {
@@ -2363,8 +2365,8 @@ button:active {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 15%;
-    z-index: 10;
+    height: 15,5%;
+    z-index: 11;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -2372,8 +2374,7 @@ button:active {
     padding: var(--gap-lg);
     background: linear-gradient(0deg, rgba(19, 19, 19, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
     backdrop-filter: blur(3px);
-    color: rgba(255, 255, 255, 0.8);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+
 }
 
 .overlay-buttons-left {
@@ -2889,14 +2890,7 @@ button:active {
     flex-direction: column;    
     min-height: 150px;
 }
-/* =============================================================================
-   10. RESPONSIVIDADE MOBILE (@media max-width: 768px)
-   ============================================================================= */
-@media (max-width: 768px) {
-    .video-stage {
-    padding: 0;
-    }
-}
+
 /* =============================================================================
    10. RESPONSIVIDADE MOBILE (@media max-width: 1023px)
    ============================================================================= */
@@ -2905,6 +2899,7 @@ button:active {
     .app-header {
         height: var(--header-height-mobile) !important;
         background: #0F0D12;
+        border-bottom: none;
     }
 
     .video-wrapper {
@@ -2999,7 +2994,7 @@ button:active {
 
     .block-controls {
         margin: var(--gap-sm);
-        gap: clamp(0.75rem, 2vw, 1.5rem);
+        gap: clamp(1rem, 2vw, 1.5rem);
         user-select: none;
         display: flex;
     }
@@ -3118,13 +3113,18 @@ button:active {
         box-shadow: 2px 0 16px rgba(0, 0, 0, 0.667);
         z-index: 1000;
         transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow-y: auto;
+        /*overflow-y: auto;*/
         padding: clamp(0.5rem, 2vw, 1rem);
         display: block;
     }
 
     .app-sidebar.show {
         left: 0;
+        background: linear-gradient(rgba(28, 4, 48, 1), rgba(15, 13, 18, 1)), url(/screenshots/bg-sidebar.png);
+        background-blend-mode: overlay;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: bottom;
     }
 
     .sidebar-overlay {
@@ -3178,7 +3178,7 @@ button:active {
         align-items: center;
         gap: 0.85rem;
         
-        border-bottom: 1px solid var(--border-rgba);
+        /*border-bottom: 1px solid var(--border-rgba);*/
         min-height: 56px;
         font-size: 1.04rem;
         box-sizing: border-box;
@@ -3217,6 +3217,16 @@ button:active {
         text-align: center;
         color: var(--text-dim);
         font-size: 1.05rem;
+    }
+}
+/* =============================================================================
+   11. RESPONSIVIDADE DESKTOP (@media min-width: 1199px)
+   ============================================================================= */
+
+@media (min-width: 1199px) {
+
+    .video-stage {
+        max-width: 80%;
     }
 }
 
@@ -3298,7 +3308,26 @@ button:active {
    ============================================================================= */
 
 @media (max-width: 412px) {
-    .video-wrapper {
-        aspect-ratio: 4 / 3;       
+
+    .video-stage {
+        padding: 0px;
     }
+
+    .video-wrapper {
+        aspect-ratio: 4 / 3;
+        background: #000;
+        padding:0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        
+    }
+    .player-embed{
+        border-radius: 50px;
+        border: 8px solid var(--accent-roxo-dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
 }
