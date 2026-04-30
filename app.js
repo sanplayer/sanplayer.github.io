@@ -1333,7 +1333,7 @@ function renderCard(data, config = {}) {
     img.addEventListener('error', () => { img.src = 'covers/artists/default.jpg'; });
     
     const body = document.createElement('div');
-    body.className = 'card-body';
+    body.className = 'card-body card-overlay';
     
     const titleEl = document.createElement('div');
     titleEl.className = 'card-title';
