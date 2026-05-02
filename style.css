@@ -2398,7 +2398,7 @@ button:active {
     gap: var(--gap-md);
     align-items: center;
     margin-left: auto;
-    /*display: none;*/
+    display: none;
 }
 
 .overlay-layer-legendas button {
