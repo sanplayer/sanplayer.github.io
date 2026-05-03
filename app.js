@@ -2343,9 +2343,6 @@ async function initApp() {
     // 🔒 JAMAIS SEPARAR ESSAS DUAS LINHAS OU INVERTER A ORDEM
     setupEventListeners();
     
-    // 🎵 MEDIA SESSION: Registrar handlers de controle externo
-    setupMediaSessionHandlers();
-    
     // 🔔 Inicializar sistema de notificações (atualização SW)
     updateNotificationIconState();  // Restaurar estado ao carregar
     setupNotificationButtonListener();  // Setup listener do botão
@@ -5553,14 +5550,14 @@ function loadFirstVideo() {
  * - Usar getCurrentPlayingVideo() como fonte única de verdade
  * - Validar dados antes de usar
  * 
- * ⚠️ CRITICAL: Chamar IMEDIATAMENTE após ytPlayer.cueVideoById() em loadVideo()
+ * ⚠️ CRITICAL: Chamado APENAS em onPlayerStateChange(CUED)
+ * para garantir que o YouTube já sincronizou os metadados
  * 
  * @returns {void}
  */
 function updateMediaSessionMetadata() {
     // 🔒 SEGURANÇA: Verificar se browser suporta Media Session API
     if (!('mediaSession' in navigator)) {
-        console.warn('[MediaSession] ⚠️ Browser não suporta Media Session API');
         return;
     }
 
@@ -5576,7 +5573,7 @@ function updateMediaSessionMetadata() {
         // 🎨 Obter URL da capa do artista
         const artworkUrl = getArtistCoverUrl(video.artist);
         
-        // 📝 Atualizar metadados
+        // 📝 Atualizar metadados - AGORA COM CONTROLE TOTAL (não é do YouTube)
         navigator.mediaSession.metadata = new MediaMetadata({
             title: video.title || 'Música Desconhecida',
             artist: video.artist || 'Artista Desconhecido',
@@ -5590,9 +5587,10 @@ function updateMediaSessionMetadata() {
             ]
         });
 
-        console.log('[MediaSession] ✅ Metadados atualizados', {
+        console.log('[MediaSession] ✅ Metadados ASSUMIDOS (não YouTube)', {
             title: video.title,
-            artist: video.artist
+            artist: video.artist,
+            source: 'SanPlayer'
         });
     } catch (error) {
         console.error('[MediaSession] ❌ Erro ao atualizar metadados:', error);
@@ -5603,11 +5601,12 @@ function updateMediaSessionMetadata() {
  * 🎮 REGISTRAR HANDLERS DE CONTROLE (Botões da lockscreen/fone)
  * 
  * Responsável por:
- * - Referenciar funções EXISTENTES (play, pause, next, prev)
- * - Sincronizar com YouTube player
- * - NÃO criar novas funções de controle
+ * - Registrar play/pause/next/prev com nossas funções REAIS
+ * - Não os controles genéricos do YouTube
+ * - Dar ao app AUTORIDADE total sobre reprodução
  * 
- * ⚠️ Chamar UMA VEZ durante init (em setupEventListeners ou initApp)
+ * ⚠️ Chamado UMA VEZ em onPlayerReady() quando player existe
+ * Nunca em setupEventListeners (muito cedo, player não existe ainda)
  * 
  * @returns {void}
  */
@@ -5619,35 +5618,35 @@ function setupMediaSessionHandlers() {
     }
 
     try {
-        // 🎮 PLAY: Referencia função existente playerPlay()
+        // 🎮 PLAY: Chama nossa função real playerPlay()
         navigator.mediaSession.setActionHandler('play', () => {
-            console.log('[MediaSession] ▶️ Play via lockscreen');
-            playerPlay();
+            console.log('[MediaSession] ▶️ Play via lockscreen/fone/relógio');
+            playerPlay(); // 🔥 Nossa função, não YouTube
         });
 
-        // ⏸️ PAUSE: Referencia função existente playerPause()
+        // ⏸️ PAUSE: Chama nossa função real playerPause()
         navigator.mediaSession.setActionHandler('pause', () => {
-            console.log('[MediaSession] ⏸️ Pause via lockscreen');
-            playerPause();
+            console.log('[MediaSession] ⏸️ Pause via lockscreen/fone/relógio');
+            playerPause(); // 🔥 Nossa função, não YouTube
         });
 
-        // ⏭️ NEXT TRACK: Referencia função existente nextVideo()
+        // ⏭️ NEXT TRACK: Chama nossa função real nextVideo()
         navigator.mediaSession.setActionHandler('nexttrack', () => {
-            console.log('[MediaSession] ⏭️ Next track via lockscreen');
+            console.log('[MediaSession] ⏭️ Next track via fone/relógio');
             if (player.currentPlaylist) {
-                nextVideo();
+                nextVideo(); // 🔥 Nossa função, não YouTube
             }
         });
 
-        // ⏮️ PREVIOUS TRACK: Referencia função existente previousVideo()
+        // ⏮️ PREVIOUS TRACK: Chama nossa função real previousVideo()
         navigator.mediaSession.setActionHandler('previoustrack', () => {
-            console.log('[MediaSession] ⏮️ Previous track via lockscreen');
+            console.log('[MediaSession] ⏮️ Previous track via fone/relógio');
             if (player.currentPlaylist) {
-                previousVideo();
+                previousVideo(); // 🔥 Nossa função, não YouTube
             }
         });
 
-        console.log('[MediaSession] ✅ Handlers registrados com sucesso');
+        console.log('[MediaSession] ✅ Handlers REGISTRADOS (SanPlayer tem controle, não YouTube)');
     } catch (error) {
         console.error('[MediaSession] ❌ Erro ao registrar handlers:', error);
     }
@@ -5706,9 +5705,8 @@ function loadVideo(video) {
 
     if (ytPlayer && typeof ytPlayer.cueVideoById === 'function') {
         ytPlayer.cueVideoById(video.id);
-        // 🎵 MEDIA SESSION: Atualizar metadados na lockscreen
-        updateMediaSessionMetadata();
-        // playVideo() será chamado pelo handler CUED em onPlayerStateChange quando shouldPlayOnReady for true
+        // 🎵 NOTA: updateMediaSessionMetadata() é chamado em onPlayerStateChange(CUED)
+        // não aqui, para garantir timing correto
     } else if (window.YT && window.YT.Player && !ytPlayer && !ytPlayerInitialized) {
         onYouTubeIframeAPIReady();
     }
@@ -5757,6 +5755,10 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     player.ytReady = true;
+
+    // 🎵 MEDIA SESSION: Registrar handlers APÓS player estar pronto
+    // Isso garante que ytPlayer existe e está pronto para receber comandos
+    setupMediaSessionHandlers();
 
     // 🔥 REAPLICAR O VÍDEO CORRETO
     if (player.currentPlaylist) {
@@ -5862,6 +5864,10 @@ function onPlayerStateChange(event) {
         // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
         // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.CUED) {
+        // 🎵 MEDIA SESSION: Atualizar metadados IMEDIATAMENTE quando vídeo está CUED
+        // Este é o momento EXATO para sincronizar com lockscreen
+        updateMediaSessionMetadata();
+        
         // Player entrou em CUED após cueVideoById()
         // 💾 NEW: Se restaurando do localStorage, aplicar seek + auto-play
         if (player._restoreTime !== undefined && player._restoreTime > 0) {
