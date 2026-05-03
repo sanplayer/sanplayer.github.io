@@ -2339,6 +2339,9 @@ async function initApp() {
     // 🔒 JAMAIS SEPARAR ESSAS DUAS LINHAS OU INVERTER A ORDEM
     setupEventListeners();
     
+    // 🎵 MEDIA SESSION: Registrar handlers de controle externo
+    setupMediaSessionHandlers();
+    
     // 🔔 Inicializar sistema de notificações (atualização SW)
     updateNotificationIconState();  // Restaurar estado ao carregar
     setupNotificationButtonListener();  // Setup listener do botão
@@ -2809,7 +2812,7 @@ function initPWAInstall() {
         // Mostrar o prompt customizado após 30 segundos
         pwaInstallTimeout = setTimeout(() => {
             showPWAInstallPrompt();
-        }, 180000); // 180 segundos
+        }, 5000); // 5 segundos
     });
 
     // Capturar quando o app for instalado
@@ -5535,6 +5538,162 @@ function loadFirstVideo() {
 }
 
 // ============================================================================
+// MEDIA SESSION API - METADADOS E CONTROLE EXTERNO
+// ============================================================================
+
+/**
+ * 🎵 ATUALIZAR METADADOS DA MÚSICA NA LOCKSCREEN (Media Session API)
+ * 
+ * Responsável por:
+ * - Atualizar título, artista e artwork na lockscreen
+ * - Usar getCurrentPlayingVideo() como fonte única de verdade
+ * - Validar dados antes de usar
+ * 
+ * ⚠️ CRITICAL: Chamar IMEDIATAMENTE após ytPlayer.cueVideoById() em loadVideo()
+ * 
+ * @returns {void}
+ */
+function updateMediaSessionMetadata() {
+    // 🔒 SEGURANÇA: Verificar se browser suporta Media Session API
+    if (!('mediaSession' in navigator)) {
+        console.warn('[MediaSession] ⚠️ Browser não suporta Media Session API');
+        return;
+    }
+
+    // 🔒 FONTE ÚNICA DE VERDADE: Obter vídeo que está tocando
+    const video = getCurrentPlayingVideo();
+    
+    if (!video || !video.id) {
+        console.warn('[MediaSession] ❌ Nenhum vídeo tocando - não atualizar metadados');
+        return;
+    }
+
+    try {
+        // 🎨 Obter URL da capa do artista
+        const artworkUrl = getArtistCoverUrl(video.artist);
+        
+        // 📝 Atualizar metadados
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: video.title || 'Música Desconhecida',
+            artist: video.artist || 'Artista Desconhecido',
+            album: 'SanPlayer',
+            artwork: [
+                {
+                    src: artworkUrl,
+                    sizes: '512x512',
+                    type: 'image/jpeg'
+                }
+            ]
+        });
+
+        console.log('[MediaSession] ✅ Metadados atualizados', {
+            title: video.title,
+            artist: video.artist
+        });
+    } catch (error) {
+        console.error('[MediaSession] ❌ Erro ao atualizar metadados:', error);
+    }
+}
+
+/**
+ * 🎮 REGISTRAR HANDLERS DE CONTROLE (Botões da lockscreen/fone)
+ * 
+ * Responsável por:
+ * - Referenciar funções EXISTENTES (play, pause, next, prev)
+ * - Sincronizar com YouTube player
+ * - NÃO criar novas funções de controle
+ * 
+ * ⚠️ Chamar UMA VEZ durante init (em setupEventListeners ou initApp)
+ * 
+ * @returns {void}
+ */
+function setupMediaSessionHandlers() {
+    // 🔒 SEGURANÇA: Verificar se browser suporta Media Session API
+    if (!('mediaSession' in navigator)) {
+        console.warn('[MediaSession] ⚠️ Browser não suporta Media Session API');
+        return;
+    }
+
+    try {
+        // 🎮 PLAY: Referencia função existente playerPlay()
+        navigator.mediaSession.setActionHandler('play', () => {
+            console.log('[MediaSession] ▶️ Play via lockscreen');
+            playerPlay();
+        });
+
+        // ⏸️ PAUSE: Referencia função existente playerPause()
+        navigator.mediaSession.setActionHandler('pause', () => {
+            console.log('[MediaSession] ⏸️ Pause via lockscreen');
+            playerPause();
+        });
+
+        // ⏭️ NEXT TRACK: Referencia função existente nextVideo()
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            console.log('[MediaSession] ⏭️ Next track via lockscreen');
+            if (player.currentPlaylist) {
+                nextVideo();
+            }
+        });
+
+        // ⏮️ PREVIOUS TRACK: Referencia função existente previousVideo()
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            console.log('[MediaSession] ⏮️ Previous track via lockscreen');
+            if (player.currentPlaylist) {
+                previousVideo();
+            }
+        });
+
+        console.log('[MediaSession] ✅ Handlers registrados com sucesso');
+    } catch (error) {
+        console.error('[MediaSession] ❌ Erro ao registrar handlers:', error);
+    }
+}
+
+/**
+ * ⏱️ ATUALIZAR POSIÇÃO DE REPRODUÇÃO (Media Session Position State)
+ * 
+ * Responsável por:
+ * - Comunicar ao OS a duração, posição e velocidade da música
+ * - Permitir que o OS mostre uma barra de progresso na lockscreen
+ * 
+ * ⚠️ Chamar APENAS em:
+ * - playerPlay() (após ytPlayer.playVideo())
+ * - playerPause() (após ytPlayer.pauseVideo())
+ * 
+ * NÃO usar em loop - é chamado manualmente em eventos
+ * 
+ * @returns {void}
+ */
+function updateMediaSessionPosition() {
+    // 🔒 SEGURANÇA: Verificar se browser suporta Media Session API
+    if (!('mediaSession' in navigator) || !ytPlayer) {
+        return;
+    }
+
+    try {
+        // 📊 Obter valores do YouTube player
+        const duration = ytPlayer.getDuration() || 0;
+        const position = ytPlayer.getCurrentTime() || 0;
+        const playbackRate = 1;
+
+        // 📡 Enviar para Media Session
+        navigator.mediaSession.setPositionState({
+            duration: duration,
+            playbackRate: playbackRate,
+            position: position
+        });
+
+        console.log('[MediaSession] 📊 Position updated', {
+            duration: duration,
+            position: position,
+            playbackRate: playbackRate
+        });
+    } catch (error) {
+        console.warn('[MediaSession] ⚠️ Erro ao atualizar position state:', error);
+    }
+}
+
+// ============================================================================
 // CARREGAR VÍDEO E ATUALIZAR INTERFACE
 // ============================================================================
 
@@ -5543,6 +5702,8 @@ function loadVideo(video) {
 
     if (ytPlayer && typeof ytPlayer.cueVideoById === 'function') {
         ytPlayer.cueVideoById(video.id);
+        // 🎵 MEDIA SESSION: Atualizar metadados na lockscreen
+        updateMediaSessionMetadata();
         // playVideo() será chamado pelo handler CUED em onPlayerStateChange quando shouldPlayOnReady for true
     } else if (window.YT && window.YT.Player && !ytPlayer && !ytPlayerInitialized) {
         onYouTubeIframeAPIReady();
@@ -5751,6 +5912,8 @@ function playerPlay() {
     
     if (player.ytReady && ytPlayer) {
         ytPlayer.playVideo();
+        // 🎵 MEDIA SESSION: Atualizar posição de reprodução
+        updateMediaSessionPosition();
     }
 }
 
@@ -5776,6 +5939,8 @@ function playerPause() {
     player.isPlaying = false;
     updatePlayPauseButton();
     updateProgressBar();
+    // 🎵 MEDIA SESSION: Atualizar posição de reprodução
+    updateMediaSessionPosition();
 }
 
 
