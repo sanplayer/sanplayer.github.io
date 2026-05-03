@@ -1,0 +1,91 @@
+{
+  "playlists": [
+    {
+      "name": "Berg Guerra - (DVD)",
+      "slug": "berg-guerra-dvd",
+      "cover": "berg-guerra-dvd.jpg",
+      "videos": [
+        {
+          "id": "MqAmGt_Cq8g",
+          "title": "Berg Guerra & Banda Part. Rodrigo Ranniely - Amigos - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "Sq_YiVhQ4S4",
+          "title": "Berg Guerra & Banda - Coração de Vidro - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "DJU-ikqv4sA",
+          "title": "Berg Guerra & Banda - Esse Amor Que Mata  - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "j_CS-cwvZ_A",
+          "title": "Berg Guerra & Banda - Eu Duvido - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "CUhiJFakyic",
+          "title": "Berg Guerra & Banda - Fazenda Nogueira - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "p1J9mE7xvsY",
+          "title": "Berg Guerra & Banda - Grande Paixão - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "1Tu93bOqrmI",
+          "title": "Berg Guerra & Banda - A Nordestina - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "XAwT99leKkY",
+          "title": "Berg Guerra & Banda - Porta Retrato - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "eGNNUaexB9s",
+          "title": "Porteiro Apaixonado",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "p20SZ85OKpU",
+          "title": "Berg Guerra & Banda - Solidão - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "I2G9DWEEVvw",
+          "title": "Berg Guerra & Banda - Sou Feio Mas Tô Na Moda - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "CDVuJcSKdck",
+          "title": "Berg Guerra & Banda - Te Quiero  - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "u1R3LRvGGbM",
+          "title": "Berg Guerra & Banda - Tô Por Ai - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "aT5_dvHo1KA",
+          "title": "Berg Guerra & Banda - Tu Sabes - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "1kEcriot3O4",
+          "title": "Berg Guerra & Banda - Vamos Beber - Cartão Postal",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "wU_n0EPjpoA",
+          "title": "Berg Guerra & Banda - Você e Eu  - Cartão Postal",
+          "artist": "Berg Guerra"
+        }
+      ]
+    }
+  ]
+}

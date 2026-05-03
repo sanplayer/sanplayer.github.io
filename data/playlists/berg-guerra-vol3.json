@@ -1,0 +1,86 @@
+{
+  "playlists": [
+    {
+      "name": "Berg Guerra Vol.3",
+      "slug": "berg-guerra-vol3",
+      "cover": "berg-guerra-vol3.jpg",
+      "videos": [
+        {
+          "id": "KPrQMTg4HqU",
+          "title": "A Nordestina",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "nfrBobJkFdI",
+          "title": "A Paixão É A Mais Pura Razão",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "CnjV5AxJPQA",
+          "title": "Boêmio Colarinho Branco",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "btuxl7Jqb28",
+          "title": "Coração De Vidro",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "eTz6YWWYoT4",
+          "title": "Decida",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "FlJFZBfuibU",
+          "title": "Deixa",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "oK5uxkOsptg",
+          "title": "É Só Dizer O Preço",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "hJE5StCW3ks",
+          "title": "Faz Eu Perder O Juízo",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "8kA8KKT4VdE",
+          "title": "Mi Vida",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "a5DNYA36HCE",
+          "title": "O Futuro É Uma Incerteza",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "oMYBg3r3AW8",
+          "title": "Porta Retrato",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "RPD4noU5KR0",
+          "title": "Quer Casar Comigo",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "pK97DhRmE10",
+          "title": "Solidão",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "JpkykWTB8ns",
+          "title": "Tô Por Aí",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "Oe3g3A_rtMg",
+          "title": "Vamos Beber",
+          "artist": "Berg Guerra"
+        }
+      ]
+    }
+  ]
+}

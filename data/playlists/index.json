@@ -133,6 +133,34 @@
     "url": "./data/playlists/album-o-amor-e-brega.json"
   },
   {
+    "id": "berg-gerra-vol3",
+    "title": "Berg Guerra - Vol.3",
+    "name": "Berg Guerra",
+    "cover": "berg-guerra-vol3.jpg",
+    "url": "./data/playlists/berg-guerra-vol3.json"
+  },
+  {
+    "id": "berg-guerra-porta-retrato",
+    "title": "Berg Guerra - Porta Retrato",
+    "name": "Berg Guerra",
+    "cover": "berg-guerra-porta-retrato.jpg",
+    "url": "./data/playlists/berg-guerra-porta-retrato.json"
+  },
+  {
+    "id": "berg-guerra-acustico",
+    "title": "Berg Guerra - Acústico",
+    "name": "Berg Guerra",
+    "cover": "berg-guerra-acustico.jpg",
+    "url": "./data/playlists/berg-guerra-acustico.json"
+  },
+  {
+    "id": "berg-guerra-dvd",
+    "title": "Berg Guerra - DVD",
+    "name": "Berg Guerra",
+    "cover": "berg-guerra-dvd.jpg",
+    "url": "./data/playlists/berg-guerra-dvd.json"
+  },
+  {
     "id": "refugio-de-adoracao",
     "title": "Refúgio de Adoração",
     "name": "Refúgio de Adoração",
