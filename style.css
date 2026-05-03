@@ -2879,7 +2879,7 @@ button:active {
 .modal-header {
     position: sticky;
     top: 0;
-    z-index: 11;
+    z-index: 21;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -3358,6 +3358,9 @@ button:active {
     padding: var(--gap-lg);
     background: linear-gradient(0deg, rgb(15 13 18) 0%, rgba(0, 0, 0, 0) 100%);
     backdrop-filter: none;
-}
+    }
+    .overlay-buttons-left svg.icon{
+        color: var(--text-dim);
+    }
 
 }
