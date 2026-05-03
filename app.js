@@ -754,6 +754,10 @@ let metaThemeColor = null;
 let lastPersistTime = 0;            // Throttle: última vez que salvou
 const PERSIST_THROTTLE_MS = 3000;   // Salvar a cada 3s (timeupdate)
 
+// 🎵 Media Session Position State throttle
+let lastMediaSessionUpdateTime = 0;  // Throttle: última atualização de posição
+const MEDIA_SESSION_THROTTLE_MS = 500; // Atualizar a cada 500ms (sincronizar barra de notificação)
+
 // 🚀 Flag de inicialização completa (para não registrar primeira carga no histórico)
 let appInitComplete = false;
 
@@ -5788,6 +5792,12 @@ function onPlayerReady(event) {
             persistPlayerState();
             lastPersistTime = now;
         }
+        
+        // 🎵 NEW: Media Session Position - sincronizar barra de notificação a cada 500ms
+        if (now - lastMediaSessionUpdateTime > MEDIA_SESSION_THROTTLE_MS) {
+            updateMediaSessionPosition();
+            lastMediaSessionUpdateTime = now;
+        }
     }, 250);
 
     safeRender();
@@ -5912,8 +5922,6 @@ function playerPlay() {
     
     if (player.ytReady && ytPlayer) {
         ytPlayer.playVideo();
-        // 🎵 MEDIA SESSION: Atualizar posição de reprodução
-        updateMediaSessionPosition();
     }
 }
 
@@ -5939,8 +5947,6 @@ function playerPause() {
     player.isPlaying = false;
     updatePlayPauseButton();
     updateProgressBar();
-    // 🎵 MEDIA SESSION: Atualizar posição de reprodução
-    updateMediaSessionPosition();
 }
 
 
