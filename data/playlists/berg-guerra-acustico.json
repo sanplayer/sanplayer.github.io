@@ -1,0 +1,86 @@
+{
+  "playlists": [
+    {
+      "name": "Berg Guerra - Acústico",
+      "slug": "berg-guerra-acustico",
+      "cover": "berg-guerra-acustico.jpg",
+      "videos": [
+        {
+          "id": "l6YB_wvltNY",
+          "title": "Anjo Azul  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "cRfbeX61j7M",
+          "title": "Tô Morrendo de Saudade - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "P3Y0h5TGQVE",
+          "title": "Traz Mais Uma - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "hWf_AxAzzno",
+          "title": "Culpados - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "5WPkdAOaius",
+          "title": "Alto Preço  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "j3DgyqTgvIQ",
+          "title": "A Foto  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "ew3DRCpE7fE",
+          "title": "Me Mata De Uma Vez  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "6IXYEilY3_c",
+          "title": "Ela Não Veio  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "eE75kRCk77c",
+          "title": "As Mesmas Coisas  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "P4oF-XvRz3Q",
+          "title": "A Minha Vida   - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "-SpUGOseKdg",
+          "title": "Feito Eu  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "8szlOIOWO6I",
+          "title": "Brincar De Ser Feliz  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "85hgTVy_0Wc",
+          "title": "Preciso Entrar Você  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "mRBXzOnj9sQ",
+          "title": "Mãe  - Acústico",
+          "artist": "Berg Guerra"
+        },
+        {
+          "id": "nhCtfIoYksA",
+          "title": "Juro Que Não Vou Mais Chorar   - Acústico",
+          "artist": "Berg Guerra"
+        }
+      ]
+    }
+  ]
+}
