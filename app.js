@@ -754,7 +754,10 @@ let metaThemeColor = null;
 let fakeAudio = null;           // Elemento <audio> mudo que mantém contexto de áudio
 let fakeAudioBlob = null;       // Blob de silêncio para evitar requisições HTTP
 
-// 💾 Persistência de estado (localStorage throttle)
+// � WAKE LOCK: Mantém tela acordada enquanto tocando (mobile)
+let wakeLock = null;            // Referência ao WakeLock ativo
+
+// �💾 Persistência de estado (localStorage throttle)
 let lastPersistTime = 0;            // Throttle: última vez que salvou
 const PERSIST_THROTTLE_MS = 3000;   // Salvar a cada 3s (timeupdate)
 
@@ -3424,6 +3427,21 @@ window.addEventListener('focus', () => {
     }
 });
 
+// 🔆 WAKE LOCK: Liberar quando app é minimizado/ocultado
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        // App foi minimizado/ocultado
+        console.log('[WakeLock] 📱 App minimizado, liberando wake lock');
+        releaseWakeLock();
+    } else {
+        // App voltou para foreground
+        if (player.isPlaying) {
+            console.log('[WakeLock] 📱 App reapareceu, reativando wake lock');
+            requestWakeLock();
+        }
+    }
+});
+
 // Atualiza UI completa de player sem fazer novo fetch pesado
 function refreshPlayerUI() {
     updateCurrentVideoDisplay();
@@ -5974,6 +5992,74 @@ function stopFakeAudio() {
     }
 }
 
+// ============================================================================
+// 🔆 WAKE LOCK - MANTER TELA ACORDADA EM MOBILE
+// ============================================================================
+
+/**
+ * 🔆 SOLICITAR WAKE LOCK (quando player toca)
+ * Mantém tela acordada enquanto música toca em mobile
+ * 
+ * ⚠️ Requisitos:
+ * - Usuário deve estar com app em focus
+ * - Não funciona em background (limitação do browser)
+ * - Prioridade: Fake Audio > Wake Lock
+ * 
+ * Benefícios:
+ * - Tela não apaga durante reprodução
+ * - Improve UX em mobile
+ * - Funciona junto com Media Session
+ */
+async function requestWakeLock() {
+    // Verificar suporte (apenas navegadores modernos)
+    if (!('wakeLock' in navigator)) {
+        console.warn('[WakeLock] ⚠️ Não suportado neste browser');
+        return;
+    }
+    
+    // Se já ativo, não solicitar novamente
+    if (wakeLock) {
+        return;
+    }
+    
+    try {
+        // Solicitar wake lock de tela (não bateria)
+        wakeLock = await navigator.wakeLock.request('screen');
+        
+        console.log('[WakeLock] ✅ Ativado - tela mantida acordada');
+        
+        // Listener para quando wake lock é liberado (ex: outro app, sistema, etc)
+        wakeLock.addEventListener('release', () => {
+            console.log('[WakeLock] ⚠️ Liberado pelo sistema');
+            wakeLock = null;
+        });
+        
+    } catch (error) {
+        console.warn('[WakeLock] ⚠️ Erro ao solicitar:', error.name);
+        // Possíveis erros:
+        // - NotAllowedError: Permissão negada ou falta de user gesture
+        // - NotSupportedError: Browser não suporta
+        wakeLock = null;
+    }
+}
+
+/**
+ * 🔆 LIBERAR WAKE LOCK (quando player pausa)
+ * Permite que tela adormeça normalmente
+ */
+async function releaseWakeLock() {
+    if (!wakeLock) return;
+    
+    try {
+        await wakeLock.release();
+        wakeLock = null;
+        console.log('[WakeLock] ⏸️ Liberado');
+    } catch (error) {
+        console.warn('[WakeLock] ⚠️ Erro ao liberar:', error);
+        wakeLock = null;
+    }
+}
+
 function playerPlay() {
     // 🔒 CONGELADO: Comando para YouTube player iniciar playback
     // Sincronizar estado favorito atual
@@ -5997,6 +6083,9 @@ function playerPlay() {
     
     // 🎵 FAKE AUDIO: Iniciar áudio mudo para manter contexto em background
     startFakeAudio();
+    
+    // 🔆 WAKE LOCK: Manter tela acordada enquanto tocando
+    requestWakeLock();
 }
 
 function playerPause() {
@@ -6024,6 +6113,9 @@ function playerPause() {
     
     // 🎵 FAKE AUDIO: Parar áudio mudo quando pausar
     stopFakeAudio();
+    
+    // 🔆 WAKE LOCK: Liberar tela para dormir normalmente
+    releaseWakeLock();
 }
 
 
