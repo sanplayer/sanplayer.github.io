@@ -750,20 +750,9 @@ let lastKeyboardOffset = 0;         // Cache do último offset calculado (evita 
 const THEME_COLOR = '#0f0f0f';
 let metaThemeColor = null;
 
-// 🎵 FAKE AUDIO: Mantém app tocando em background (Chrome ignora Media Session)
-let fakeAudio = null;           // Elemento <audio> mudo que mantém contexto de áudio
-let fakeAudioBlob = null;       // Blob de silêncio para evitar requisições HTTP
-
-// � WAKE LOCK: Mantém tela acordada enquanto tocando (mobile)
-let wakeLock = null;            // Referência ao WakeLock ativo
-
-// �💾 Persistência de estado (localStorage throttle)
+// 💾 Persistência de estado (localStorage throttle)
 let lastPersistTime = 0;            // Throttle: última vez que salvou
 const PERSIST_THROTTLE_MS = 3000;   // Salvar a cada 3s (timeupdate)
-
-// 🎵 Media Session Position State throttle
-let lastMediaSessionUpdateTime = 0;  // Throttle: última atualização de posição
-const MEDIA_SESSION_THROTTLE_MS = 500; // Atualizar a cada 500ms (sincronizar barra de notificação)
 
 // 🚀 Flag de inicialização completa (para não registrar primeira carga no histórico)
 let appInitComplete = false;
@@ -2820,7 +2809,7 @@ function initPWAInstall() {
         // Mostrar o prompt customizado após 30 segundos
         pwaInstallTimeout = setTimeout(() => {
             showPWAInstallPrompt();
-        }, 5000); // 5 segundos
+        }, 180000); // 180 segundos
     });
 
     // Capturar quando o app for instalado
@@ -3424,21 +3413,6 @@ window.addEventListener('load', async () => {
 window.addEventListener('focus', () => {
     if (player.currentPlaylist && player.ytReady) {
         updateProgressBar();
-    }
-});
-
-// 🔆 WAKE LOCK: Liberar quando app é minimizado/ocultado
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-        // App foi minimizado/ocultado
-        console.log('[WakeLock] 📱 App minimizado, liberando wake lock');
-        releaseWakeLock();
-    } else {
-        // App voltou para foreground
-        if (player.isPlaying) {
-            console.log('[WakeLock] 📱 App reapareceu, reativando wake lock');
-            requestWakeLock();
-        }
     }
 });
 
@@ -4712,91 +4686,16 @@ function openItemOptionsModal(index) {
 }
 
 /**
- * 🔥 FUNÇÃO CENTRAL: Assume controle TOTAL do sistema de mídia
+ * 🔥 NOVO: Abre opções do item a partir do player (overlay kebab)
  * 
- * Responsabilidades (TUDO em um lugar):
- * 1. Forçar metadados do NOSSO JSON (não YouTube)
- * 2. Registrar handlers que chamam NOSSAS funções
- * 3. Informar ao Android/iOS que somos um "Player de Áudio" legítimo
+ * ✅ SIMPLES E CORRETO:
+ * - Recebe o vídeo diretamente (já foi setado em player.previewVideo)
+ * - Renderiza o modal com esse vídeo
+ * - Sem lógica complexa de videoToAdd ou busca na view
+ * - Funciona 100% independente da sidebar
  * 
- * ⚠️ CRITICAL: Chamar logo após ytPlayer.loadVideoById()
- * Antes: qualquer delay = YouTube retoma controle
- * 
- * @param {Object} track - Objeto vídeo { id, title, artist, ...}
+ * @param {Object} video - Objeto vídeo { id, title, artist }
  */
-function updateMediaSession(track) {
-    // 🔒 SEGURANÇA: Validar track e browser
-    if (!('mediaSession' in navigator)) {
-        console.warn('[MediaSession] ⚠️ Browser não suporta Media Session API');
-        return;
-    }
-    
-    if (!track || !track.id) {
-        console.warn('[MediaSession] ⚠️ Track inválido:', track);
-        return;
-    }
-
-    try {
-        // 🔥 PASSO 1: FORÇAR METADADOS DO NOSSO JSON (não YouTube)
-        // Isso é o que aparece na lockscreen, notificação e periféricos
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: track.title || 'Música Desconhecida',
-            artist: track.artist || 'Artista Desconhecido',
-            album: 'SanPlayer',
-            artwork: [
-                {
-                    src: getArtistCoverUrl(track.artist),
-                    sizes: '512x512',
-                    type: 'image/jpeg'
-                }
-            ]
-        });
-
-        // 🔥 PASSO 2: REGISTRAR HANDLERS COM NOSSAS FUNÇÕES REAIS
-        // Isso é o que REALMENTE executa quando usuário clica no controle
-        
-        // ▶️ PLAY: Chama nossa função playerPlay()
-        navigator.mediaSession.setActionHandler('play', () => {
-            console.log('[MediaSession] ▶️ PLAY (via lockscreen/fone/smartwatch)');
-            if (player.ytReady && ytPlayer) {
-                ytPlayer.playVideo();
-            }
-        });
-
-        // ⏸️ PAUSE: Chama nossa função playerPause()
-        navigator.mediaSession.setActionHandler('pause', () => {
-            console.log('[MediaSession] ⏸️ PAUSE (via lockscreen/fone/smartwatch)');
-            if (player.ytReady && ytPlayer) {
-                ytPlayer.pauseVideo();
-            }
-        });
-
-        // ⏭️ NEXT: Chama nossa função nextVideo() (NÃO seek de 10s do YouTube)
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-            console.log('[MediaSession] ⏭️ PRÓXIMA (via fone/smartwatch) - mudando música');
-            if (player.currentPlaylist) {
-                nextVideo(); // 🔥 NOSSA FUNÇÃO, não YouTube
-            }
-        });
-
-        // ⏮️ PREVIOUS: Chama nossa função previousVideo() (NÃO seek de 10s do YouTube)
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            console.log('[MediaSession] ⏮️ ANTERIOR (via fone/smartwatch) - mudando música');
-            if (player.currentPlaylist) {
-                previousVideo(); // 🔥 NOSSA FUNÇÃO, não YouTube
-            }
-        });
-
-        console.log('[MediaSession] ✅ CONTROLE ASSUMIDO', {
-            track: track.title,
-            artist: track.artist,
-            status: 'SanPlayer (não YouTube)'
-        });
-    } catch (error) {
-        console.error('[MediaSession] ❌ Erro:', error);
-    }
-}
-
 function openItemOptionsModalFromPlayer(video) {
     if (!video || !video.id) {
         console.error('[openItemOptionsModalFromPlayer] ❌ Vídeo inválido');
@@ -5636,52 +5535,6 @@ function loadFirstVideo() {
 }
 
 // ============================================================================
-// MEDIA SESSION API - CONSOLIDADO
-// ============================================================================
-// Nota: updateMediaSession() é a ÚNICA função que controla metadados + handlers
-// Chamada em loadVideo() logo após cueVideoById()
-
-/**
- * ⏱️ ATUALIZAR POSIÇÃO DE REPRODUÇÃO (Media Session Position State)
- * 
- * Responsável por:
- * - Comunicar ao OS a duração, posição e velocidade da música
- * - Permitir que o OS mostre uma barra de progresso na lockscreen
- * 
- * Sincronizado a cada 500ms no intervalo de 250ms
- * 
- * @returns {void}
- */
-function updateMediaSessionPosition() {
-    // 🔒 SEGURANÇA: Verificar se browser suporta Media Session API
-    if (!('mediaSession' in navigator) || !ytPlayer) {
-        return;
-    }
-
-    try {
-        // 📊 Obter valores do YouTube player
-        const duration = ytPlayer.getDuration() || 0;
-        const position = ytPlayer.getCurrentTime() || 0;
-        const playbackRate = 1;
-
-        // 📡 Enviar para Media Session
-        navigator.mediaSession.setPositionState({
-            duration: duration,
-            playbackRate: playbackRate,
-            position: position
-        });
-
-        console.log('[MediaSession] 📊 Position updated', {
-            duration: duration,
-            position: position,
-            playbackRate: playbackRate
-        });
-    } catch (error) {
-        console.warn('[MediaSession] ⚠️ Erro ao atualizar position state:', error);
-    }
-}
-
-// ============================================================================
 // CARREGAR VÍDEO E ATUALIZAR INTERFACE
 // ============================================================================
 
@@ -5690,9 +5543,7 @@ function loadVideo(video) {
 
     if (ytPlayer && typeof ytPlayer.cueVideoById === 'function') {
         ytPlayer.cueVideoById(video.id);
-        // 🎵 MEDIA SESSION: Atualizar IMEDIATAMENTE após cueVideoById()
-        // Isso garante que lockscreen mostra dados corretos ANTES do YouTube reafirmar controle
-        updateMediaSession(video);
+        // playVideo() será chamado pelo handler CUED em onPlayerStateChange quando shouldPlayOnReady for true
     } else if (window.YT && window.YT.Player && !ytPlayer && !ytPlayerInitialized) {
         onYouTubeIframeAPIReady();
     }
@@ -5775,12 +5626,6 @@ function onPlayerReady(event) {
         if (now - lastPersistTime > PERSIST_THROTTLE_MS) {
             persistPlayerState();
             lastPersistTime = now;
-        }
-        
-        // 🎵 NEW: Media Session Position - sincronizar barra de notificação a cada 500ms
-        if (now - lastMediaSessionUpdateTime > MEDIA_SESSION_THROTTLE_MS) {
-            updateMediaSessionPosition();
-            lastMediaSessionUpdateTime = now;
         }
     }, 250);
 
@@ -5887,179 +5732,6 @@ function onPlayerStateChange(event) {
     }
 }
 
-// ============================================================================
-// 🎵 FAKE AUDIO - BACKGROUND PLAYBACK SUPPORT (Chrome workaround)
-// ============================================================================
-
-/**
- * 🎯 Criar blob de silêncio para fake audio
- * Garante que não há requisição HTTP desnecessária
- * 
- * Blob contém PCM mudo válido (~100ms)
- * Repetição infinita mantém contexto de áudio Chrome
- */
-function createSilentAudioBlob() {
-    // MP3 frame de silêncio (valid PCM, ~100ms)
-    const silentMp3 = new Uint8Array([
-        0xFF, 0xFB, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-    ]);
-    
-    return new Blob([silentMp3], { type: 'audio/mpeg' });
-}
-
-/**
- * 🎵 INICIALIZAR fake audio element
- * Chamado uma única vez, pode ser reutilizado
- */
-function initFakeAudio() {
-    if (fakeAudio) return; // Já inicializado
-    
-    try {
-        // Criar elemento audio
-        fakeAudio = new Audio();
-        
-        // Criar blob de silêncio se não existir
-        if (!fakeAudioBlob) {
-            fakeAudioBlob = createSilentAudioBlob();
-        }
-        
-        // Atribuir blob como source
-        fakeAudio.src = URL.createObjectURL(fakeAudioBlob);
-        
-        // Configurações críticas
-        fakeAudio.loop = true;                 // Repetir infinitamente
-        fakeAudio.volume = 0;                  // Totalmente mudo (não audível)
-        fakeAudio.crossOrigin = 'anonymous';   // CORS
-        fakeAudio.preload = 'auto';            // Pré-carregar
-        
-        // Suprimir erros de contexto de usuario
-        fakeAudio.addEventListener('error', (e) => {
-            console.warn('[FakeAudio] Erro ao carregar:', e);
-        });
-        
-        console.log('[FakeAudio] ✅ Inicializado (silêncio, volume=0, loop=true)');
-    } catch (error) {
-        console.error('[FakeAudio] ❌ Erro ao inicializar:', error);
-        fakeAudio = null;
-    }
-}
-
-/**
- * ▶️ INICIAR fake audio (quando player.play())
- * Garante que Chrome mantém app como "music player" em background
- */
-function startFakeAudio() {
-    initFakeAudio();
-    
-    if (!fakeAudio) return; // Falhou ao inicializar
-    
-    // Se já está tocando, não fazer nada
-    if (!fakeAudio.paused) {
-        return;
-    }
-    
-    // Tentar iniciar playback
-    const playPromise = fakeAudio.play();
-    
-    if (playPromise !== undefined) {
-        playPromise
-            .then(() => {
-                console.log('[FakeAudio] ▶️ Iniciado (app mantém background audio)');
-            })
-            .catch(error => {
-                console.warn('[FakeAudio] ⚠️ Não foi possível iniciar (bloqueado por UX policy):', error.name);
-                // Chrome bloqueou por falta de user gesture - normal na primeira vez
-                // Será retentado quando usuário interagir
-            });
-    }
-}
-
-/**
- * ⏸️ PARAR fake audio (quando player.pause())
- */
-function stopFakeAudio() {
-    if (!fakeAudio || fakeAudio.paused) return;
-    
-    try {
-        fakeAudio.pause();
-        fakeAudio.currentTime = 0; // Reset para próxima reprodução
-        console.log('[FakeAudio] ⏸️ Parado');
-    } catch (error) {
-        console.warn('[FakeAudio] ⚠️ Erro ao parar:', error);
-    }
-}
-
-// ============================================================================
-// 🔆 WAKE LOCK - MANTER TELA ACORDADA EM MOBILE
-// ============================================================================
-
-/**
- * 🔆 SOLICITAR WAKE LOCK (quando player toca)
- * Mantém tela acordada enquanto música toca em mobile
- * 
- * ⚠️ Requisitos:
- * - Usuário deve estar com app em focus
- * - Não funciona em background (limitação do browser)
- * - Prioridade: Fake Audio > Wake Lock
- * 
- * Benefícios:
- * - Tela não apaga durante reprodução
- * - Improve UX em mobile
- * - Funciona junto com Media Session
- */
-async function requestWakeLock() {
-    // Verificar suporte (apenas navegadores modernos)
-    if (!('wakeLock' in navigator)) {
-        console.warn('[WakeLock] ⚠️ Não suportado neste browser');
-        return;
-    }
-    
-    // Se já ativo, não solicitar novamente
-    if (wakeLock) {
-        return;
-    }
-    
-    try {
-        // Solicitar wake lock de tela (não bateria)
-        wakeLock = await navigator.wakeLock.request('screen');
-        
-        console.log('[WakeLock] ✅ Ativado - tela mantida acordada');
-        
-        // Listener para quando wake lock é liberado (ex: outro app, sistema, etc)
-        wakeLock.addEventListener('release', () => {
-            console.log('[WakeLock] ⚠️ Liberado pelo sistema');
-            wakeLock = null;
-        });
-        
-    } catch (error) {
-        console.warn('[WakeLock] ⚠️ Erro ao solicitar:', error.name);
-        // Possíveis erros:
-        // - NotAllowedError: Permissão negada ou falta de user gesture
-        // - NotSupportedError: Browser não suporta
-        wakeLock = null;
-    }
-}
-
-/**
- * 🔆 LIBERAR WAKE LOCK (quando player pausa)
- * Permite que tela adormeça normalmente
- */
-async function releaseWakeLock() {
-    if (!wakeLock) return;
-    
-    try {
-        await wakeLock.release();
-        wakeLock = null;
-        console.log('[WakeLock] ⏸️ Liberado');
-    } catch (error) {
-        console.warn('[WakeLock] ⚠️ Erro ao liberar:', error);
-        wakeLock = null;
-    }
-}
-
 function playerPlay() {
     // 🔒 CONGELADO: Comando para YouTube player iniciar playback
     // Sincronizar estado favorito atual
@@ -6080,12 +5752,6 @@ function playerPlay() {
     if (player.ytReady && ytPlayer) {
         ytPlayer.playVideo();
     }
-    
-    // 🎵 FAKE AUDIO: Iniciar áudio mudo para manter contexto em background
-    startFakeAudio();
-    
-    // 🔆 WAKE LOCK: Manter tela acordada enquanto tocando
-    requestWakeLock();
 }
 
 function playerPause() {
@@ -6110,12 +5776,6 @@ function playerPause() {
     player.isPlaying = false;
     updatePlayPauseButton();
     updateProgressBar();
-    
-    // 🎵 FAKE AUDIO: Parar áudio mudo quando pausar
-    stopFakeAudio();
-    
-    // 🔆 WAKE LOCK: Liberar tela para dormir normalmente
-    releaseWakeLock();
 }
 
 

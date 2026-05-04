@@ -83,7 +83,7 @@
     --font-xs: clamp(0.75rem, 1.5vw, 0.9rem);
     --font-sm: clamp(1rem, 2vw, 1.2rem);
     --font-md: clamp(1rem, 2.5vw, 1.25rem);
-    --font-mt: clamp(1.2rem, 2.5vw, 1.3rem);
+    --font-mt: clamp(1.1rem, 2.5vw, 1.3rem);
     --font-lg: clamp(1.1rem, 3vw, 1.4rem);
     --font-xl: clamp(1.3rem, 4vw, 1.8rem);
 
@@ -378,7 +378,7 @@ button:active {
 .header-actions {
     display: flex;
     align-items: center;
-    gap: var(--gap-md);
+    /*gap: var(--gap-md);*/
     color: var(--text-dim);
 }
 
@@ -768,7 +768,7 @@ button:active {
 .current-actions {
     margin-left: auto;
     display: flex;
-    gap: var(--gap-lg);
+    /*gap: var(--gap-lg);*/
     flex-shrink: 0;
 }
 
@@ -2249,7 +2249,7 @@ button:active {
 }
 
 .sidebar-header {
-    border-left: 3px solid var(--accent-roxo-light);
+    /*border-left: 3px solid var(--accent-roxo-light);*/
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2258,10 +2258,17 @@ button:active {
     top: 0;
     z-index: 10;
     background: rgb(28, 28, 28);
-    padding: 0 0.5rem;
+    padding: 0 0.6rem;
     user-select: none;
 }
-
+.sidebar-header::before {
+  content: ""; /* Necessário para pseudo-elementos */
+  position: absolute;
+  left: 0px;                /* Alinha à esquerda */
+  top: 35%;               /* Começa 20% abaixo do topo */
+  height: 30%;            /* A linha ocupa 60% da altura do pai */
+  border-left: 7px solid var(--accent-roxo); /* A cor e espessura da linha */
+}
 .sidebar-header .title-pl {
     flex: 1 1 auto;
     margin: 0;
@@ -2389,7 +2396,7 @@ button:active {
 
 .overlay-buttons-left {
     display: flex;
-    gap: var(--gap-md);
+    /*gap: var(--gap-md);*/
     align-items: center;
 }
 
@@ -3361,6 +3368,35 @@ button:active {
     }
     .overlay-buttons-left svg.icon{
         color: var(--text-dim);
+    }
+    .current-actions{
+        gap: 0;
+    }
+    .playlist-item{
+        padding: 0 12px;
+    }
+    .progress{
+    display: flex;
+    flex-direction: column;
+    gap: 0rem;
+    padding: 10.5px 0;
+    margin: -10.5px 0;
+    user-select: none;
+    -webkit-user-select: none;
+    }
+    .block-controls{
+        z-index: 20;
+    }
+    .progress-time-labels{
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-sm);
+    font-weight: bold;
+    color: #b0b0c0;
+    padding: 0 var(--gap-md);
+    bottom: 25px;
+    width: 100%;
+    position: absolute;
     }
 
 }
