@@ -2543,7 +2543,7 @@ button:active {
     border-top: 1px solid #333;
     border-radius: 16px 16px 0 0;
     z-index: 9999;
-    transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: bottom 0.65s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -2817,7 +2817,7 @@ button:active {
 
 .modal.show {
     display: flex;
-    animation: bottomSheetBackdropOpen 0.5s ease-out forwards;
+    animation: bottomSheetBackdropOpen 0.8s ease-out forwards;
 }
 
 .modal-content {
@@ -2828,7 +2828,7 @@ button:active {
     height: 100dvh;
     overflow-y: auto;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-    animation: bottomSheetContentOpen 0.5s ease-out forwards;
+    animation: bottomSheetContentOpen 0.8s ease-out forwards;
 }
 
 @keyframes bottomSheetBackdropOpen {
@@ -2876,11 +2876,11 @@ button:active {
 }
 
 .modal.closing {
-    animation: bottomSheetBackdropClose 0.5s cubic-bezier(0.25, 0, 0.46, 1) forwards;
+    animation: bottomSheetBackdropClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
 }
 
 .modal-content.closing {
-    animation: bottomSheetContentClose 0.5s cubic-bezier(0.25, 0, 0.46, 1) forwards;
+    animation: bottomSheetContentClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
 }
 
 .modal-header {
@@ -3125,7 +3125,7 @@ button:active {
         background: var(--bg-surface);
         box-shadow: 2px 0 16px rgba(0, 0, 0, 0.667);
         z-index: 1000;
-        transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1);
         /*overflow-y: auto;*/
         padding: clamp(0.5rem, 2vw, 1rem);
         display: block;
@@ -3178,7 +3178,6 @@ button:active {
         max-width: 100vw;
         width: 100vw;
         border-radius: 16px 16px 0 0;
-        animation: bottomSheetUp 0.25s cubic-bezier(.4, 0, .2, 1);
         box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
         z-index: 3001;
         height: auto;
@@ -3397,6 +3396,9 @@ button:active {
     bottom: 25px;
     width: 100%;
     position: absolute;
+    }
+    .sidebar-nav li a{
+        padding: clamp(0.7rem, 1.5vw, 1rem);
     }
 
 }
