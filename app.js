@@ -750,6 +750,10 @@ let lastKeyboardOffset = 0;         // Cache do último offset calculado (evita 
 const THEME_COLOR = '#0f0f0f';
 let metaThemeColor = null;
 
+// 🎵 FAKE AUDIO: Mantém app tocando em background (Chrome ignora Media Session)
+let fakeAudio = null;           // Elemento <audio> mudo que mantém contexto de áudio
+let fakeAudioBlob = null;       // Blob de silêncio para evitar requisições HTTP
+
 // 💾 Persistência de estado (localStorage throttle)
 let lastPersistTime = 0;            // Throttle: última vez que salvou
 const PERSIST_THROTTLE_MS = 3000;   // Salvar a cada 3s (timeupdate)
@@ -5865,6 +5869,111 @@ function onPlayerStateChange(event) {
     }
 }
 
+// ============================================================================
+// 🎵 FAKE AUDIO - BACKGROUND PLAYBACK SUPPORT (Chrome workaround)
+// ============================================================================
+
+/**
+ * 🎯 Criar blob de silêncio para fake audio
+ * Garante que não há requisição HTTP desnecessária
+ * 
+ * Blob contém PCM mudo válido (~100ms)
+ * Repetição infinita mantém contexto de áudio Chrome
+ */
+function createSilentAudioBlob() {
+    // MP3 frame de silêncio (valid PCM, ~100ms)
+    const silentMp3 = new Uint8Array([
+        0xFF, 0xFB, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    ]);
+    
+    return new Blob([silentMp3], { type: 'audio/mpeg' });
+}
+
+/**
+ * 🎵 INICIALIZAR fake audio element
+ * Chamado uma única vez, pode ser reutilizado
+ */
+function initFakeAudio() {
+    if (fakeAudio) return; // Já inicializado
+    
+    try {
+        // Criar elemento audio
+        fakeAudio = new Audio();
+        
+        // Criar blob de silêncio se não existir
+        if (!fakeAudioBlob) {
+            fakeAudioBlob = createSilentAudioBlob();
+        }
+        
+        // Atribuir blob como source
+        fakeAudio.src = URL.createObjectURL(fakeAudioBlob);
+        
+        // Configurações críticas
+        fakeAudio.loop = true;                 // Repetir infinitamente
+        fakeAudio.volume = 0;                  // Totalmente mudo (não audível)
+        fakeAudio.crossOrigin = 'anonymous';   // CORS
+        fakeAudio.preload = 'auto';            // Pré-carregar
+        
+        // Suprimir erros de contexto de usuario
+        fakeAudio.addEventListener('error', (e) => {
+            console.warn('[FakeAudio] Erro ao carregar:', e);
+        });
+        
+        console.log('[FakeAudio] ✅ Inicializado (silêncio, volume=0, loop=true)');
+    } catch (error) {
+        console.error('[FakeAudio] ❌ Erro ao inicializar:', error);
+        fakeAudio = null;
+    }
+}
+
+/**
+ * ▶️ INICIAR fake audio (quando player.play())
+ * Garante que Chrome mantém app como "music player" em background
+ */
+function startFakeAudio() {
+    initFakeAudio();
+    
+    if (!fakeAudio) return; // Falhou ao inicializar
+    
+    // Se já está tocando, não fazer nada
+    if (!fakeAudio.paused) {
+        return;
+    }
+    
+    // Tentar iniciar playback
+    const playPromise = fakeAudio.play();
+    
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => {
+                console.log('[FakeAudio] ▶️ Iniciado (app mantém background audio)');
+            })
+            .catch(error => {
+                console.warn('[FakeAudio] ⚠️ Não foi possível iniciar (bloqueado por UX policy):', error.name);
+                // Chrome bloqueou por falta de user gesture - normal na primeira vez
+                // Será retentado quando usuário interagir
+            });
+    }
+}
+
+/**
+ * ⏸️ PARAR fake audio (quando player.pause())
+ */
+function stopFakeAudio() {
+    if (!fakeAudio || fakeAudio.paused) return;
+    
+    try {
+        fakeAudio.pause();
+        fakeAudio.currentTime = 0; // Reset para próxima reprodução
+        console.log('[FakeAudio] ⏸️ Parado');
+    } catch (error) {
+        console.warn('[FakeAudio] ⚠️ Erro ao parar:', error);
+    }
+}
+
 function playerPlay() {
     // 🔒 CONGELADO: Comando para YouTube player iniciar playback
     // Sincronizar estado favorito atual
@@ -5885,6 +5994,9 @@ function playerPlay() {
     if (player.ytReady && ytPlayer) {
         ytPlayer.playVideo();
     }
+    
+    // 🎵 FAKE AUDIO: Iniciar áudio mudo para manter contexto em background
+    startFakeAudio();
 }
 
 function playerPause() {
@@ -5909,6 +6021,9 @@ function playerPause() {
     player.isPlaying = false;
     updatePlayPauseButton();
     updateProgressBar();
+    
+    // 🎵 FAKE AUDIO: Parar áudio mudo quando pausar
+    stopFakeAudio();
 }
 
 
