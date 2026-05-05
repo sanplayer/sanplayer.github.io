@@ -3383,8 +3383,9 @@ button:active {
     user-select: none;
     -webkit-user-select: none;
     }
-    .block-controls{
+    .block-controls {
         z-index: 20;
+        gap: 0.5rem;
     }
     .progress-time-labels{
     display: flex;
