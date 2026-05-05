@@ -447,8 +447,6 @@ button:active {
     overflow-y: auto;
     padding-bottom: var(--footer-height);
 
-    background: red;
-    top: -50px;
 }
 
 .app-sidebar {
