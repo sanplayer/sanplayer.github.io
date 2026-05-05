@@ -296,7 +296,7 @@ button:active {
     align-items: center;
     justify-content: space-between;
     padding: 0 var(--padding-app);
-    background-color: var(--bg-surface);
+    
     border-bottom: 1px solid var(--border-rgba);
     position: sticky;
     top: 0;
@@ -446,6 +446,9 @@ button:active {
     z-index: var(--main-z-index);
     overflow-y: auto;
     padding-bottom: var(--footer-height);
+
+    background: red;
+    top: -50px;
 }
 
 .app-sidebar {
@@ -2915,7 +2918,7 @@ button:active {
 @media (max-width: 1023px) {
     .app-header {
         height: var(--header-height-mobile) !important;
-        background: #0F0D12;
+        
         border-bottom: none;
     }
 
@@ -3321,9 +3324,29 @@ button:active {
    ============================================================================= */
 
 @media (max-width: 412px) {
+    .app-main-grid{
+        top:0;
+    }
+    .app-header {
+        background: linear-gradient(180deg, #0f0d1273, transparent);
+    }
+    .app-header .title-player{
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .app-header svg.icon{
+        color: #fff;
+    }
+    .header-app-logo svg.icon{
+        fill: rgba(255, 255, 255, 0.3);
+        width: 24px;
+        height: 24px;
+    }
+
 
     .video-stage {
         padding: 0px;
+        
     }
 
     .video-wrapper {
@@ -3373,6 +3396,7 @@ button:active {
     }
     .playlist-item{
         padding: 0 12px;
+        margin-bottom: 5px;
     }
     .progress{
     display: flex;
