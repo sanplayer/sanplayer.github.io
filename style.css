@@ -1,6 +1,6 @@
 
 /* =============================================================================
-   1. VARIÁVEIS CSS E TIPOGRAFIA
+   1. VARIÃVEIS CSS E TIPOGRAFIA
    ============================================================================= */
 
 /* roboto-regular - latin */
@@ -179,7 +179,7 @@ svg.icon {
 }
 
 /* =============================================================================
-   3. ESTILOS BASE (TÍTULOS, BOTÕES)
+   3. ESTILOS BASE (TÃTULOS, BOTÃ•ES)
    ============================================================================= */
 
 .title-player {
@@ -2049,13 +2049,13 @@ button:active {
 }
 
 .links-list a::before {
-    content: '⌕';
+    content: 'âŒ•';
     margin-right: 0.5rem;
     opacity: 0.5;
 }
 
 .links-list a::after {
-    content: '›';
+    content: 'â€º';
     color: var(--text-dim);
     font-weight: bold;
 }
@@ -2139,7 +2139,7 @@ button:active {
 }
 
 .skills-list li::before {
-    content: '✓';
+    content: 'âœ“';
     position: absolute;
     left: 0;
     color: var(--accent-roxo-light);
@@ -2190,7 +2190,7 @@ button:active {
 }
 
 .legal-content ul li::before {
-    content: '•';
+    content: 'â€¢';
     position: absolute;
     left: 0;
 }
@@ -2285,10 +2285,10 @@ button:active {
     user-select: none;
 }
 .sidebar-header::before {
-  content: ""; /* Necessário para pseudo-elementos */
+  content: ""; /* NecessÃ¡rio para pseudo-elementos */
   position: absolute;
-  left: 0px;                /* Alinha à esquerda */
-  top: 35%;               /* Começa 20% abaixo do topo */
+  left: 0px;                /* Alinha Ã  esquerda */
+  top: 35%;               /* ComeÃ§a 20% abaixo do topo */
   height: 30%;            /* A linha ocupa 60% da altura do pai */
   border-left: 7px solid var(--accent-roxo); /* A cor e espessura da linha */
 }
@@ -2604,7 +2604,7 @@ button:active {
 }
 
 /* =============================================================================
-   8. ANIMAÇÕES (@keyframes)
+   8. ANIMAÃ‡Ã•ES (@keyframes)
    ============================================================================= */
 
 @keyframes pulse-badge {
@@ -2946,7 +2946,7 @@ button:active {
     }
 
     .video-wrapper {
-        border-radius: 0 !important;
+        border-radius: 1rem;
     }
 
     .sidebar-aside
@@ -3225,6 +3225,19 @@ button:active {
         color: var(--text-dim);
         font-size: 1.05rem;
     }
+
+        .progress-time-labels{
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-sm);
+    font-weight: bold;
+    color: #b0b0c0;
+    padding: 0 var(--gap-md);
+    bottom: 25px;
+    width: 100%;
+    position: absolute;
+    }
+
 
 }
 /* =============================================================================
