@@ -2,7 +2,7 @@
   "name": "SanPlayer",
   "short_name": "SanPlayer",
   "id": "/",
-  "description": "Sua música, sua experiência. O SanPlayer traz o design intuitivo e a fluidez que você ama, agora com total controle das suas playlists em um ambiente rápido e sem distrações.",
+  "description": "Sua músicas, sua experiência. O SanPlayer traz o design intuitivo e a fluidez que você ama, agora com total controle das suas playlists em um ambiente rápido e sem distrações.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -18,7 +18,7 @@
   },
   "file_handlers": [
     {
-      "action": "index.html",
+      "action": "/index.html",
       "accept": {
         "audio/*": [".mp3", ".wav", ".ogg", ".m4a"]
       }
@@ -27,7 +27,7 @@
   "protocol_handlers": [
     {
       "protocol": "web+sanplayer",
-      "url": "index.html?action=%s"
+      "url": "/index.html?action=%s"
     }
   ],
   "screenshots": [
@@ -120,7 +120,7 @@
     {
       "name": "Favoritos",
       "short_name": "Favoritos",
-      "description": "Suas múscas favoritas",
+      "description": "Suas músicas favoritas",
       "url": "index.html?modal=favorites",
       "icons": [
         {
@@ -132,9 +132,9 @@
     }
   ],
   "dir": "auto",
-  "lang": "pt",
+  "lang": "pt-BR",
   "display_override": [
     "standalone",
-    "minimal-ui"
+    "window-controls-overlay"  
   ]
 }
