@@ -179,9 +179,6 @@ body {
     min-height: 100vh;
     min-height: 100dvh;
     transition: opacity 0.2s ease;
-    /* Garante que o conteúdo respeite as áreas seguras do Android */
-    padding-top: env(safe-area-inset-top, 20px); 
-    padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 ul {
@@ -332,7 +329,10 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
-    height: var(--header-height);
+    /* Altura base + o tamanho da barra de status do Android */
+    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2985,10 +2985,9 @@ animation: float 2s ease-in-out infinite;
     }
 
     .app-player-footer {
-        /* Adiciona um respiro extra para não colar nos gestos do Android */
-        padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+        /*padding-bottom: calc(env(safe-area-inset-bottom) + 5px);*/
         background: rgba(15, 13, 18, 0.95);
-        backdrop-filter: blur(10px); /* Toque premium de transparência */
+        backdrop-filter: blur(10px);
     }
 
     .footer-content-wrapper {
@@ -3326,6 +3325,15 @@ animation: float 2s ease-in-out infinite;
 
     .app-header {
         background: linear-gradient(180deg, #0f0d1261, transparent);
+        position: absolute; /* Ele flutua, não ocupa espaço na grade */
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 101; /* Fica acima do vídeo */
+
+        /* Protege o Logo e ícones para não ficarem sob a bateria/hora */
+        padding-top: env(safe-area-inset-top, 20px);
+        height: calc(var(--header-height) + env(safe-area-inset-top, 20px));
     }
 
     .app-header .title-player {
@@ -3344,6 +3352,8 @@ animation: float 2s ease-in-out infinite;
 
     .video-stage {
         padding: 0px;
+        width: 100%;
+        padding-top: env(safe-area-inset-top, 0px);
     }
 
     .video-wrapper {
