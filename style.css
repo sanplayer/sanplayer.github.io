@@ -3318,7 +3318,7 @@ animation: float 2s ease-in-out infinite;
 /* =============================================================================
 12. RESPONSIVIDADE MOBILE (@media max-width: 412px) SAMSUNG A23
 ============================================================================= */
-@media (max-width: 412px) {
+@media (max-width: 768px) {
     .app-main-grid {
         top: 0;
     }
@@ -3349,11 +3349,14 @@ animation: float 2s ease-in-out infinite;
         width: 24px;
         height: 24px;
     }
-
+    body{
+        margin: 0;
+    }
     .video-stage {
         padding: 0px;
         width: 100%;
-        padding-top: env(safe-area-inset-top, 0px);
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
     }
 
     .video-wrapper {
