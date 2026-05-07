@@ -180,8 +180,8 @@ body {
     min-height: 100dvh;
     transition: opacity 0.2s ease;
     /* Garante que o conteúdo respeite as áreas seguras do Android */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-top: env(safe-area-inset-top, 20px); 
+    padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 ul {
@@ -2985,7 +2985,10 @@ animation: float 2s ease-in-out infinite;
     }
 
     .app-player-footer {
-        background: #0f0d12;
+        /* Adiciona um respiro extra para não colar nos gestos do Android */
+        padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+        background: rgba(15, 13, 18, 0.95);
+        backdrop-filter: blur(10px); /* Toque premium de transparência */
     }
 
     .footer-content-wrapper {
