@@ -127,7 +127,8 @@
   "dir": "auto",
   "lang": "pt",
   "display_override": [
-    "window-controls-overlay",
-    "standalone"
+    "fullscreen",
+    "standalone",
+    "minimal-ui"
   ]
 }

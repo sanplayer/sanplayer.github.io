@@ -97,13 +97,11 @@
 }
 
 :root {
-    --bg-main: #000000;
+    --bg-main: #0f0d12;
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --accent-roxo: #A238FF;
-    /*--accent-roxo-dark: #5C119E;*/
-    --accent-roxo-dark: #1d0235;
-    --accent-roxo-light: #9D00FF;
+    --accent-roxo-dark: #5c119e;
     --text-main: #EEF1F6;
     --text-dim: #C1C7CE;
     --border-rgba: rgba(255, 255, 255, 0.1);
@@ -180,9 +178,10 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     min-height: 100dvh;
+    transition: opacity 0.2s ease;
+    /* Garante que o conteúdo respeite as áreas seguras do Android */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
-    transition: opacity 0.2s ease;
 }
 
 ul {
@@ -217,7 +216,7 @@ svg.icon {
 body.is-routing {
     opacity: 0.6;
 }
-
+/* class temp disable for donate text*/
 .button-donate {
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -1423,7 +1422,7 @@ button:active {
 
 .card:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 20px var(--accent-roxo-light);
+    box-shadow: 0 8px 20px var(--accent-roxo);
 }
 
 .card-kebab {
@@ -1531,7 +1530,7 @@ button:active {
 }
 
 .btn-add:hover {
-    background: var(--accent-roxo-light);
+    background: var(--accent-roxo);
 }
 
 .btn-remove {
@@ -2011,12 +2010,6 @@ button:active {
     padding: 0;
 }
 
-/*
-.feature-item i {
-color: var(--accent-roxo-light);
-flex-shrink: 0;
-margin-top: 0.1rem;
-}*/
 .feature-item>div {
     flex: 1;
     display: flex;
@@ -2156,7 +2149,7 @@ margin-top: 0.1rem;
 
 .legal-content h3 {
     font-weight: 700;
-    color: var(--accent-roxo-light);
+    color: var(--accent-roxo);
     margin-top: 1.2rem;
     margin-bottom: 0.75rem;
 }
@@ -2271,7 +2264,7 @@ color: var(--accent-roxo);
 }
 
 .sidebar-header {
-    /*border-left: 3px solid var(--accent-roxo-light);*/
+    /*border-left: 3px solid var(--accent-roxo);*/
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -3133,7 +3126,7 @@ animation: float 2s ease-in-out infinite;
         border-bottom-right-radius: 1rem;
         left: 0;
         width: 70%;
-        /*background: linear-gradient(90deg, #0f0d12, #000000c7);*/
+        /*background: linear-gradient(90deg, #0f0d12, #0f0d12c7);*/
         background: #181F1C;
     }
 
