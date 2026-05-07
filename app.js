@@ -747,7 +747,7 @@ let keyboardOffsetTimeout = null;   // Throttle para updateKeyboardOffset
 let lastKeyboardOffset = 0;         // Cache do último offset calculado (evita reflow desnecessário)
 
 // Theme Color Control (Android Navbar - PWA Excellence)
-const THEME_COLOR = '#0f0f0f';
+const THEME_COLOR = '#0F0D12';
 let metaThemeColor = null;
 
 // 💾 Persistência de estado (localStorage throttle)
@@ -2809,7 +2809,7 @@ function initPWAInstall() {
         // Mostrar o prompt customizado após 30 segundos
         pwaInstallTimeout = setTimeout(() => {
             showPWAInstallPrompt();
-        }, 180000); // 180 segundos
+        }, 60000); // 60 segundos
     });
 
     // Capturar quando o app for instalado
