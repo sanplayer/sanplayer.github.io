@@ -82,8 +82,15 @@
       "purpose": "maskable"
     }
   ],
-  "prefer_related_applications": false,
-  "shortcuts": [
+      "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=io.github.sanplayer.twa",
+      "id": "io.github.sanplayer.twa"
+    }
+  ],
+    "prefer_related_applications": true,
+    "shortcuts": [
     {
       "name": "Playlists",
       "short_name": "Playlists",
