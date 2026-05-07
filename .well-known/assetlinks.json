@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.sanplayer.twa",
+        "sha256_cert_fingerprints": ["3D:BD:19:A7:7E:E5:C2:8C:4F:D5:21:FC:8F:56:AB:52:7C:79:D1:C1:09:1A:FE:D3:C0:95:CB:61:C2:22:1E:B2"]
+      }
+    }]
