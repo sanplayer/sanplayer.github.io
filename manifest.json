@@ -127,7 +127,6 @@
   "dir": "auto",
   "lang": "pt",
   "display_override": [
-    "fullscreen",
     "standalone",
     "minimal-ui"
   ]
