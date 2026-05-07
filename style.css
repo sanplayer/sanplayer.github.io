@@ -2134,7 +2134,8 @@ margin-top: 0.1rem;
 }
 
 .skills-list {
-    list-style: none;
+    list-style-type: disc;
+    list-style-position: inside;
     padding: 0;
     margin: 0;
     display: flex;
@@ -2144,16 +2145,8 @@ margin-top: 0.1rem;
 
 .skills-list li {
     color: var(--text-main);
-    padding-left: 1.5rem;
+    padding-left: 0.5rem;
     position: relative;
-}
-
-.skills-list li::before {
-    content: 'Ã¢Å“â€œ';
-    position: absolute;
-    left: 0;
-    color: var(--accent-roxo-light);
-    font-weight: bold;
 }
 
 .legal-content {
