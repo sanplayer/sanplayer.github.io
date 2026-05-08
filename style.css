@@ -150,6 +150,8 @@
     --z-overlay-max: 5000;
     --keyboard-offset: 0px;
     --main-z-index: 10;
+    --primary: #065FD4;
+    --gradient-roxo: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
 }
 
 /* =============================================================================
@@ -213,25 +215,6 @@ svg.icon {
 body.is-routing {
     opacity: 0.6;
 }
-/* class temp disable for donate text*/
-.button-donate {
-    cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    background: transparent;
-    justify-content: center;
-    display: flex;
-    align-items: center;
-    border-radius: 25px;
-    color: inherit;
-    transition: background 0.2s ease;
-    aspect-ratio: none;
-    padding: 0 20px;
-    gap: 5px;
-    height: 30px;
-    width: 120px;
-    min-width: var(--touch-target);
-    min-height: var(--touch-target);
-}
 
 button {
     cursor: pointer;
@@ -247,6 +230,21 @@ button {
     padding: 0;
     min-width: var(--touch-target);
     min-height: var(--touch-target);
+}
+.btn-download {
+    background: var(--primary);
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    color: var(--text-main) !important;    
+    font-weight: bold;
+    gap: 5px;
+    min-height: 30px;
+    min-width: 130px;
+    height: 30px;
+    position: relative;
+    margin-bottom: 5px;
+    margin-right: 5px;
 }
 
 button:hover {
@@ -824,7 +822,7 @@ button:active {
 }
 
 .btn-play-pause {
-    background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
+    background-image: var(--gradient-roxo);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -2930,8 +2928,8 @@ animation: float 2s ease-in-out infinite;
 10. RESPONSIVIDADE MOBILE (@media max-width: 1023px)
 ============================================================================= */
 @media (max-width: 1023px) {
+
     .app-header {
-        height: var(--header-height-mobile);
         border-bottom: none;
     }
 
@@ -2956,7 +2954,7 @@ animation: float 2s ease-in-out infinite;
     .app-main-grid {
         flex-direction: column;
         position: fixed;
-        top: var(--header-height);
+        top: 0;
         bottom: 0;
         left: 0;
         right: 0;
@@ -3031,12 +3029,11 @@ animation: float 2s ease-in-out infinite;
     .btn-play-pause {
         width: clamp(52px, 12vw, 64px);
         height: clamp(52px, 12vw, 64px);
-        background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
     }
 
     .btn-play-pause:hover,
     .btn-play-pause:active {
-        background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
+        background-image: ;
         opacity: 0.8;
     }
 
@@ -3235,15 +3232,6 @@ animation: float 2s ease-in-out infinite;
 }
 
 /* =============================================================================
-11. RESPONSIVIDADE DESKTOP (@media min-width: 1199px)
-============================================================================= */
-@media (min-width: 1199px) {
-    .video-stage {
-        max-width: 80%;
-    }
-}
-
-/* =============================================================================
 11. RESPONSIVIDADE DESKTOP (@media min-width: 1024px)
 ============================================================================= */
 @media (min-width: 1024px) {
@@ -3329,11 +3317,7 @@ animation: float 2s ease-in-out infinite;
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 101; /* Fica acima do vídeo */
-
-        /* Protege o Logo e ícones para não ficarem sob a bateria/hora */
-        padding-top: env(safe-area-inset-top, 20px);
-        height: calc(var(--header-height) + env(safe-area-inset-top, 20px));
+        z-index: 101;
     }
 
     .app-header .title-player {
@@ -3357,6 +3341,7 @@ animation: float 2s ease-in-out infinite;
         width: 100%;
         padding-top: env(safe-area-inset-top);
         padding-bottom: env(safe-area-inset-bottom);
+        top:0;
     }
 
     .video-wrapper {
@@ -3447,4 +3432,61 @@ animation: float 2s ease-in-out infinite;
     .app-sidebar {
         box-shadow: none;
     }
+}
+
+/* DOWNLOAD */
+
+:root {
+  --bg-dark: #121212;
+  --surface: #1e1e1e;
+  --text: #ffffff;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-conteudo {
+  background: var(--surface);
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid #333;
+  line-height: 2;
+}
+.modal-conteudo .btn-secondary{
+    display: flex;
+    margin: 0 auto;
+    background: var(--accent-roxo-dark);
+    margin-top: 20px;
+}
+.loader-bar {
+  height: 4px;
+  background: #333;
+  margin: 1.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-bar::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; height: 100%; width: 50%;
+  background: var(--primary);
+  animation: loading 2s infinite ease-in-out;
+}
+
+@keyframes loading {
+  0% { left: -50%; }
+  100% { left: 100%; }
 }
