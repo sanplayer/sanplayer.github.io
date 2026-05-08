@@ -2924,19 +2924,85 @@ animation: float 2s ease-in-out infinite;
     border-radius: 1.2rem;
 }
 
-/* =============================================================================
-10. RESPONSIVIDADE MOBILE (@media max-width: 1023px)
-============================================================================= */
+/* =================================================
+
+RESPONSIVIDADE MOBILE (@media max-width: 1023px)
+
+==================================================== */
+
 @media (max-width: 1023px) {
+    .header-app-logo svg.icon {
+        fill: rgba(255, 255, 255, 0.3);
+        width: 24px;
+        height: 24px;
+    }
 
     .app-header {
         border-bottom: none;
+        background: linear-gradient(180deg, #0f0d1261, transparent);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 101;
+
+    }
+    .video-stage {
+        padding: 0px;
+        width: 100%;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        top:0;
     }
 
     .video-wrapper {
         border-radius: 1rem;
     }
+       .video-wrapper {
+        aspect-ratio: 1 / 1;
+        background: #000;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        border-radius: 1.3rem;
+    }
+       .player-embed {
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /*tecnica 1/1*/
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 177.77%;
+        height: 100%;
+        transform: translate(-50%, -50%);
+    }
+/**/
+.overlay-layer-legendas {
+        position: absolute;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 11;
+        display: flex;
+        align-items: end;
+        justify-content: flex-start;
+        gap: 0;
+        padding: 0;
+        /* TESTE EM ANDAMENTO */
+        bottom: -1px;
+        height: 10%;
+        background: linear-gradient(360deg, #0f0d127d, transparent);
+    }
 
+
+
+    .current-actions {
+        gap: 0;
+    }
     .sidebar-aside .sidebar-nav li {
         margin-bottom: var(--gap-sm);
     }
@@ -2948,10 +3014,11 @@ animation: float 2s ease-in-out infinite;
         background: #2C3134;
         margin-bottom: 0.5rem;
         border-radius: 1.2rem;
-        padding: 1rem;
+        padding: clamp(0.7rem, 1.5vw, 1rem);
     }
 
     .app-main-grid {
+        top: 0;
         flex-direction: column;
         position: fixed;
         top: 0;
@@ -2980,10 +3047,12 @@ animation: float 2s ease-in-out infinite;
     .playlist-item {
         padding-bottom: 4rem;
         border-bottom: none;
+        padding: 0 12px;
+        margin-bottom: 5px;
     }
 
     .app-player-footer {
-        /*padding-bottom: calc(env(safe-area-inset-bottom) + 5px);*/
+        padding-bottom: calc(env(safe-area-inset-bottom) + 5px);
         background: rgba(15, 13, 18, 0.95);
         backdrop-filter: blur(10px);
     }
@@ -3004,12 +3073,16 @@ animation: float 2s ease-in-out infinite;
 
     .block-controls {
         margin: var(--gap-sm);
-        gap: clamp(1rem, 2vw, 1.5rem);
+        /*gap: clamp(1rem, 2vw, 1.5rem);*/
         user-select: none;
         display: flex;
+
+        z-index: 20;
+        gap: 0.5rem;
     }
 
     /* BOTOES DOS CONTROLES */
+
     .block-controls button {
         width: clamp(44px, 10vw, 56px);
         height: clamp(44px, 10vw, 56px);
@@ -3043,6 +3116,7 @@ animation: float 2s ease-in-out infinite;
 
     .app-sidebar {
         display: none;
+        box-shadow: none;
     }
 
     .header-search {
@@ -3125,7 +3199,6 @@ animation: float 2s ease-in-out infinite;
         border-bottom-right-radius: 1rem;
         left: 0;
         width: 70%;
-        /*background: linear-gradient(90deg, #0f0d12, #0f0d12c7);*/
         background: #181F1C;
     }
 
@@ -3229,176 +3302,7 @@ animation: float 2s ease-in-out infinite;
         width: 100%;
         position: absolute;
     }
-}
-
-/* =============================================================================
-11. RESPONSIVIDADE DESKTOP (@media min-width: 1024px)
-============================================================================= */
-@media (min-width: 1024px) {
-    .app-main-grid {
-        flex-direction: row;
-    }
-
-    .app-sidebar {
-        flex: 0 0 clamp(220px, 18vw, 260px);
-        height: 100%;
-        overflow-y: auto;
-    }
-
-    .video-stage {
-        flex: 1 1 auto;
-        height: 100%;
-        overflow-y: auto;
-        max-width: 70%;
-    }
-
-    .playlist-aside {
-        flex: 0 0 clamp(260px, 28vw, 380px);
-        height: 100%;
-        overflow-y: auto;
-    }
-
-    .header-search {
-        display: flex;
-        flex: 1;
-        max-width: clamp(300px, 40vw, 600px);
-        margin: 0 var(--gap-md);
-    }
-
-    .header-search form {
-        width: 100%;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 25px;
-    }
-
-    .header-actions .btn-search-mobile {
-        display: none;
-    }
-
-    .btn-hamburger {
-        display: none;
-    }
-
-    .app-sidebar {
-        position: static;
-        width: auto;
-        height: auto;
-        box-shadow: none;
-        display: block;
-        left: 0;
-    }
-
-    .sidebar-overlay {
-        display: none;
-    }
-
-    .footer-content-wrapper {
-        flex-direction: row;
-    }
-
-    .pwa-install-content {
-        max-width: 450px;
-        border-radius: clamp(12px, 3vw, 16px);
-        margin-bottom: 2rem;
-    }
-}
-
-/* =============================================================================
-12. RESPONSIVIDADE MOBILE (@media max-width: 412px) SAMSUNG A23
-============================================================================= */
-@media (max-width: 768px) {
-    .app-main-grid {
-        top: 0;
-    }
-
-    .app-header {
-        background: linear-gradient(180deg, #0f0d1261, transparent);
-        position: absolute; /* Ele flutua, não ocupa espaço na grade */
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 101;
-    }
-
-    .app-header .title-player {
-        color: rgba(255, 255, 255, 0.3);
-    }
-
-    .app-header svg.icon {
-        color: #fff;
-    }
-
-    .header-app-logo svg.icon {
-        fill: rgba(255, 255, 255, 0.3);
-        width: 24px;
-        height: 24px;
-    }
-    body{
-        margin: 0;
-    }
-    .video-stage {
-        padding: 0px;
-        width: 100%;
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-        top:0;
-    }
-
-    .video-wrapper {
-        aspect-ratio: 1 / 1;
-        background: #000;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        border-radius: 1.3rem;
-    }
-
-    .player-embed {
-        border-radius: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        /*tecnica 1/1*/
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 177.77%;
-        height: 100%;
-        transform: translate(-50%, -50%);
-    }
-
-    .overlay-layer-legendas {
-        position: absolute;
-        left: 0;
-        right: 0;
-        width: 100%;
-        z-index: 11;
-        display: flex;
-        align-items: end;
-        justify-content: flex-start;
-        gap: 0;
-        padding: 0;
-        /* TESTE EM ANDAMENTO */
-        bottom: -1px;
-        height: 10%;
-        background: linear-gradient(360deg, #0f0d127d, transparent);
-    }
-
-    .overlay-buttons-left svg.icon {
-        color: var(--text-main);
-    }
-
-    .current-actions {
-        gap: 0;
-    }
-
-    .playlist-item {
-        padding: 0 12px;
-        margin-bottom: 5px;
-    }
-
-    .progress {
+       .progress {
         display: flex;
         flex-direction: column;
         gap: 0rem;
@@ -3408,31 +3312,8 @@ animation: float 2s ease-in-out infinite;
         -webkit-user-select: none;
     }
 
-    .block-controls {
-        z-index: 20;
-        gap: 0.5rem;
-    }
-
-    .progress-time-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: var(--font-sm);
-        font-weight: bold;
-        color: #b0b0c0;
-        padding: 0 var(--gap-md);
-        bottom: 25px;
-        width: 100%;
-        position: absolute;
-    }
-
-    .sidebar-nav li a {
-        padding: clamp(0.7rem, 1.5vw, 1rem);
-    }
-
-    .app-sidebar {
-        box-shadow: none;
-    }
 }
+
 
 /* DOWNLOAD */
 
