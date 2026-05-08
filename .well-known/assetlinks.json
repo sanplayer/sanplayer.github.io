@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "io.github.sanplayer.twa",
-        "sha256_cert_fingerprints": ["3D:BD:19:A7:7E:E5:C2:8C:4F:D5:21:FC:8F:56:AB:52:7C:79:D1:C1:09:1A:FE:D3:C0:95:CB:61:C2:22:1E:B2"]
+        "sha256_cert_fingerprints": ["70:5F:1D:A3:3D:D9:84:32:85:91:C6:85:A8:D5:3B:F1:7A:3A:D7:7E:45:8C:99:B0:EE:64:B0:1D:4A:4A:DC:28"]
       }
     }]
