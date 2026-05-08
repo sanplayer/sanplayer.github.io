@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <title>Edge-to-Edge Test</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    .video-stage {
+      position: fixed;
+      inset: 0;
+
+      width: 100%;
+      height: 100dvh;
+
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-stage iframe {
+      position: absolute;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      border: none;
+
+      object-fit: cover;
+    }
+
+    .top-overlay {
+      position: fixed;
+
+      top: 0;
+      left: 0;
+      right: 0;
+
+      z-index: 10;
+
+      padding-top: env(safe-area-inset-top);
+
+      height: 120px;
+
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,.45),
+        transparent
+      );
+
+      pointer-events: none;
+    }
+
+    .label {
+      position: absolute;
+
+      top: calc(env(safe-area-inset-top) + 18px);
+      left: 18px;
+
+      color: #fff;
+
+      font-family: sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+
+      z-index: 20;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="video-stage">
+
+    <iframe
+      src="https://www.youtube.com/embed/ScMzIvxBSi4?autoplay=1&mute=1&controls=0&loop=1&playlist=ScMzIvxBSi4"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+
+  </div>
+
+  <div class="top-overlay"></div>
+
+  <div class="label">
+    SanPlayer Edge-to-Edge
+  </div>
+
+</body>
+
+</html>
