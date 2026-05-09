@@ -178,13 +178,12 @@ body {
     color: var(--text-main);
     line-height: 1.4;
     overflow-x: hidden;
-    /*min-height: 100vh;*/
-   /* min-height: 100dvh;*/
     transition: opacity 0.2s ease;
-
-    /* NEW CONFIG FOR SAFE-AREA*/
+    
+    min-height: 100vh;
+    min-height: 100dvh;
     min-height: calc(100dvh + env(safe-area-inset-top));
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+
 }
 
 ul {
