@@ -1,690 +1,805 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
-<head>
-
-
-
-    <meta charset="UTF-8">
-    <!--san-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
-    <title>SanPlayer v1.7.5</title>
-    <meta name="description" content="Música para os seus ouvidos">
-    <link rel="stylesheet" href="style.css">
-    <!--<script src="/sp.js"></script>-->
-
-    <!-- ICONES -->
-
-    <link rel="icon" type="image/svg+xml" href="icons/favicon.svg" />
-    <link rel="icon" type="image/png" href="icons/favicon-96x96.png" sizes="96x96" />
-    <link rel="shortcut icon" href="icons/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
-    <!-- safari -->
-    <link rel="mask-icon" href="/icons/favicon.svg" color="#a238ff">
-
-    <!-- PWA CONFIG -->
-
-    <link rel="manifest" href="/manifest.json" />
-
-    <meta name="theme-color" content="#0f0d12">
-    <meta name="color-scheme" content="dark">
-    <meta name="msapplication-navbutton-color" content="#0f0d12">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://sanplayer.github.io/">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="SanPlayer">
-    <meta property="og:description" content="Música para os seus ouvidos">
-    <meta property="og:image" content="https://sanplayer.github.io/og-image.jpg">
-
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="sanplayer.github.io">
-    <meta property="twitter:url" content="https://sanplayer.github.io/">
-    <meta name="twitter:title" content="SanPlayer">
-    <meta name="twitter:description" content="Música para os seus ouvidos">
-    <meta name="twitter:image" content="https://sanplayer.github.io/og-image.jpg">
-
-</head>
-
-<body>
-
-    <header class="app-header">
-        <div class="header-logo">
+   <head>
+      <meta charset="UTF-8">
+      <!--san-->
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+      <title>SanPlayer v1.7.5</title>
+      <meta name="description" content="Música para os seus ouvidos">
+      <link rel="stylesheet" href="style.css">
+      <!--<script src="/sp.js"></script>-->
+      <!-- ICONES -->
+      <link rel="icon" type="image/svg+xml" href="icons/favicon.svg" />
+      <link rel="icon" type="image/png" href="icons/favicon-96x96.png" sizes="96x96" />
+      <link rel="shortcut icon" href="icons/favicon.ico" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+      <!-- safari -->
+      <link rel="mask-icon" href="/icons/favicon.svg" color="#a238ff">
+      <!-- PWA CONFIG -->
+      <link rel="manifest" href="/manifest.json" />
+      <meta name="theme-color" content="#0f0d12">
+      <meta name="color-scheme" content="dark">
+      <meta name="msapplication-navbutton-color" content="#0f0d12">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="mobile-web-app-capable" content="yes">
+      <!-- Facebook Meta Tags -->
+      <meta property="og:url" content="https://sanplayer.github.io/">
+      <meta property="og:type" content="website">
+      <meta property="og:title" content="SanPlayer">
+      <meta property="og:description" content="Música para os seus ouvidos">
+      <meta property="og:image" content="https://sanplayer.github.io/og-image.jpg">
+      <!-- Twitter Meta Tags -->
+      <meta name="twitter:card" content="summary_large_image">
+      <meta property="twitter:domain" content="sanplayer.github.io">
+      <meta property="twitter:url" content="https://sanplayer.github.io/">
+      <meta name="twitter:title" content="SanPlayer">
+      <meta name="twitter:description" content="Música para os seus ouvidos">
+      <meta name="twitter:image" content="https://sanplayer.github.io/og-image.jpg">
+   </head>
+   <body>
+      <header class="app-header">
+         <div class="header-logo">
             <button class="btn-hamburger" aria-label="Abrir menu">
-                <svg class="icon"><use href="/icons/package.svg#menu-case"></use></svg>
+               <svg class="icon">
+                  <use href="/icons/package.svg#menu-case"></use>
+               </svg>
             </button>
             <div class="header-app-logo" alt="Logo do SanPlayer">
-               <svg class="icon"><use href="/icons/package.svg#logo-case"></use></svg>
+               <svg class="icon">
+                  <use href="/icons/package.svg#logo-case"></use>
+               </svg>
             </div>
             <span class="title-player">SanPlayer</span>
-        </div>
-
-        <div class="header-search">
+         </div>
+         <div class="header-search">
             <form action="#">
-                <input type="search" placeholder="Pesquise músicas, artis..." id="searchInput">
-                <svg class="icon"><use href="/icons/package.svg#search-case"></use></svg>
+               <input type="search" placeholder="Pesquise músicas, artis..." id="searchInput">
+               <svg class="icon">
+                  <use href="/icons/package.svg#search-case"></use>
+               </svg>
             </form>
-        </div>
-
-        <div class="header-actions">
+         </div>
+         <div class="header-actions">
             <button class="btn-search-mobile" aria-label="Buscar">
-                <svg class="icon"><use href="/icons/package.svg#search-case"></use></svg>
+               <svg class="icon">
+                  <use href="/icons/package.svg#search-case"></use>
+               </svg>
             </button>
             <button id="btn-notifications" class="notification-btn" aria-label="Notificações">
-                <svg class="icon"><use href="/icons/package.svg#notifications-case"></use></svg>
+               <svg class="icon">
+                  <use href="/icons/package.svg#notifications-case"></use>
+               </svg>
             </button>
-        <!-- foto do usuário -->
+            <!-- foto do usuário -->
             <button id="userMenuButton" class="profile-avatar">
-                <svg class="icon"><use href="/icons/package.svg#person-case"></use></svg>
+               <svg class="icon">
+                  <use href="/icons/package.svg#person-case"></use>
+               </svg>
             </button>
-
-        </div>
-    </header>
-
-    <div class="app-main-grid">
-
-        <nav class="app-sidebar app-sidebar-mobile">
+         </div>
+      </header>
+      <div class="app-main-grid">
+         <nav class="app-sidebar app-sidebar-mobile">
             <div class="sidebar-overlay"></div>
             <div class="sidebar-content">
-                <ul class="sidebar-nav">
-
-                    <li><a href="index.html?playlistId=LoveSongs"><svg class="icon"><use href="/icons/package.svg#home-case"></use></svg> Home</a></li>
-                    <li><a href="/index.html?modal=playlists" id="link-playlists"><svg class="icon"><use href="/icons/package.svg#playlist-case"></use></svg>
-                            Playlists</a></li>
-                    <li><a href="/index.html?modal=artists" id="link-artistas"><svg class="icon"><use href="/icons/package.svg#artist-case"></use></svg>Artistas</a></li>
-                    <li><a href="#" id="link-criar-playlist"><svg class="icon"><use href="/icons/package.svg#add-case"></use></svg>
-                            Criar Playlist</a></li>
-                    <li><a href="#" id="link-favoritos"><svg class="icon"><use href="/icons/package.svg#favorite-outlined-case"></use></svg>Favoritos</a></li>
-
-                    <li><a href="#" id="link-sobre"><svg class="icon"><use href="/icons/package.svg#info-case"></use></svg> Sobre</a></li>
-
-                </ul>
+               <ul class="sidebar-nav">
+                  <li>
+                     <a href="index.html?playlistId=LoveSongs">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#home-case"></use>
+                        </svg>
+                        Home
+                     </a>
+                  </li>
+                  <li>
+                     <a href="/index.html?modal=playlists" id="link-playlists">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#playlist-case"></use>
+                        </svg>
+                        Playlists
+                     </a>
+                  </li>
+                  <li>
+                     <a href="/index.html?modal=artists" id="link-artistas">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#artist-case"></use>
+                        </svg>
+                        Artistas
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" id="link-criar-playlist">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#add-case"></use>
+                        </svg>
+                        Criar Playlist
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" id="link-favoritos">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#favorite-outlined-case"></use>
+                        </svg>
+                        Favoritos
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" id="link-sobre">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#info-case"></use>
+                        </svg>
+                        Sobre
+                     </a>
+                  </li>
+               </ul>
             </div>
-        </nav>
-
-        <main class="video-stage">
+         </nav>
+         <main class="video-stage">
             <div class="video-wrapper">
-                <div id="player" class="player-embed"></div>
-                <div class="overlay-layer"></div>
-                <!-- LEGENDAS -->
-                <div class="overlay-layer-legendas">
-                    <!-- Botões à esquerda -->
-                    <div class="overlay-buttons-left">
-                        <button title="Ver Playlists"><svg class="icon"><use href="/icons/package.svg#playlist-case"></use></svg></button>
-                        <button title="Criar Playlist"><svg class="icon"><use href="/icons/package.svg#add-case"></use></svg></button>
-                        <button alt="compartilhar item da tela" title="compartilha item da tela"><svg class="icon"><use href="/icons/package.svg#share-case"></use></svg></button>
-                        <button title="Opções do item"><svg class="icon"><use href="/icons/package.svg#more-vert-case"></use></svg></button>
-                    </div>
-
-                    <!-- Botões à direita -->
-                    <div class="overlay-buttons-right">
-                        <button style="display:none;" id="btnFullscreen" title="Tela cheia"><svg class="icon"><use href="/icons/package.svg#fullscreen-case"></use></svg></button>
-
-<button id="" title="Doar">
-<svg class="icon"><use href="/icons/package.svg#donate-case"></use></svg></button>
-
-                    </div>
-                </div>
+               <div id="player" class="player-embed"></div>
+               <div class="overlay-layer"></div>
+               <!-- LEGENDAS -->
+               <div class="overlay-layer-legendas">
+                  <!-- Botões à esquerda -->
+                  <div class="overlay-buttons-left">
+                     <button title="Ver Playlists">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#playlist-case"></use>
+                        </svg>
+                     </button>
+                     <button title="Criar Playlist">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#add-case"></use>
+                        </svg>
+                     </button>
+                     <button alt="compartilhar item da tela" title="compartilha item da tela">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#share-case"></use>
+                        </svg>
+                     </button>
+                     <button title="Opções do item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#more-vert-case"></use>
+                        </svg>
+                     </button>
+                  </div>
+                  <!-- Botões à direita -->
+                  <div class="overlay-buttons-right">
+                     <button style="display:none;" id="btnFullscreen" title="Tela cheia">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#fullscreen-case"></use>
+                        </svg>
+                     </button>
+                     <button id="" title="Doar">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#donate-case"></use>
+                        </svg>
+                     </button>
+                  </div>
+               </div>
             </div>
-
-        </main>
-
-        <aside class="playlist-aside">
+         </main>
+         <aside class="playlist-aside">
             <div class="sidebar-header">
-                <h2 class="title-pl">Playlist</h2>
-                <div class="sidebar-nav-buttons">
-                    <button class="sidebar-nav-btn" id="sidebarBackBtn" title="Voltar" aria-label="Voltar na navegação"
-                        disabled>
-                        <svg class="icon"><use href="/icons/package.svg#arrow-back-case"></use></svg>
-                    </button>
-                    <button class="sidebar-nav-btn" id="sidebarForwardBtn" title="Avançar"
-                        aria-label="Avançar na navegação" disabled>
-                        <svg class="icon"><use href="/icons/package.svg#arrow-forward-case"></use></svg>
-                    </button>
-                </div>
+               <h2 class="title-pl">Playlist</h2>
+               <div class="sidebar-nav-buttons">
+                  <button class="sidebar-nav-btn" id="sidebarBackBtn" title="Voltar" aria-label="Voltar na navegação"
+                     disabled>
+                     <svg class="icon">
+                        <use href="/icons/package.svg#arrow-back-case"></use>
+                     </svg>
+                  </button>
+                  <button class="sidebar-nav-btn" id="sidebarForwardBtn" title="Avançar"
+                     aria-label="Avançar na navegação" disabled>
+                     <svg class="icon">
+                        <use href="/icons/package.svg#arrow-forward-case"></use>
+                     </svg>
+                  </button>
+               </div>
             </div>
             <div class="playlist-items"></div>
-        </aside>
-    </div>
-
-<footer class="app-player-footer">
-
-        <div class="player-progress-area">
+         </aside>
+      </div>
+      <footer class="app-player-footer">
+         <div class="player-progress-area">
             <div class="progress">
-                <input id="progressBar" class="progress-bar" type="range" min="0" max="100" value="0">
-                <div class="progress-time-labels">
-                    <span id="timeCurrent">0:00</span>
-                    <span id="timeDuration">0:00</span>
-                </div>
+               <input id="progressBar" class="progress-bar" type="range" min="0" max="100" value="0">
+               <div class="progress-time-labels">
+                  <span id="timeCurrent">0:00</span>
+                  <span id="timeDuration">0:00</span>
+               </div>
             </div>
-        </div>
-
-        <div class="footer-content-wrapper">
-
+         </div>
+         <div class="footer-content-wrapper">
             <div class="footer-block block-info">
-                <!--<img src="covers/user.jpg" alt="Capa" class="current-thumb">-->
-                <svg class="current-thumb"><use href="/icons/package.svg#music-case"></use></svg>
-                <div class="current-details">
-                    <span class="c-title">SanPlayer App</span>
-                    <span class="c-artist">Músicas para os ouvidos</span>
-                </div>
-                <div class="current-actions">
-                    <button alt="favoritar" title="favoritar"><svg class="icon"><use href="/icons/package.svg#favorite-outlined-case"></use></svg></button>
-                    <button alt="compartilhar" title="compartilhar"><svg class="icon"><use href="/icons/package.svg#share-case"></use></svg></button>
-                </div>
+               <!--<img src="covers/user.jpg" alt="Capa" class="current-thumb">-->
+               <svg class="current-thumb">
+                  <use href="/icons/package.svg#music-case"></use>
+               </svg>
+               <div class="current-details">
+                  <span class="c-title">SanPlayer App</span>
+                  <span class="c-artist">Músicas para os ouvidos</span>
+               </div>
+               <div class="current-actions">
+                  <button alt="favoritar" title="favoritar">
+                     <svg class="icon">
+                        <use href="/icons/package.svg#favorite-outlined-case"></use>
+                     </svg>
+                  </button>
+                  <button alt="compartilhar" title="compartilhar">
+                     <svg class="icon">
+                        <use href="/icons/package.svg#share-case"></use>
+                     </svg>
+                  </button>
+               </div>
             </div>
-
             <div class="footer-block block-controls">
-                <button><svg class="icon shuffle-repeat"><use href="/icons/package.svg#control-shuffle"></use></svg></button>
-                <button><svg class="icon"><use href="/icons/package.svg#control-prev"></use></svg></button>
-                <button class="btn-play-pause">
-                    <svg class="icon"><use href="/icons/package.svg#control-pause"></use></svg>
-                </button>
-                <button><svg class="icon"><use href="/icons/package.svg#control-next"></use></svg></button>
-                <button><svg class="icon shuffle-repeat"><use href="/icons/package.svg#control-repeat"></use></svg></button>
+               <button>
+                  <svg class="icon shuffle-repeat">
+                     <use href="/icons/package.svg#control-shuffle"></use>
+                  </svg>
+               </button>
+               <button>
+                  <svg class="icon">
+                     <use href="/icons/package.svg#control-prev"></use>
+                  </svg>
+               </button>
+               <button class="btn-play-pause">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#control-pause"></use>
+                  </svg>
+               </button>
+               <button>
+                  <svg class="icon">
+                     <use href="/icons/package.svg#control-next"></use>
+                  </svg>
+               </button>
+               <button>
+                  <svg class="icon shuffle-repeat">
+                     <use href="/icons/package.svg#control-repeat"></use>
+                  </svg>
+               </button>
             </div>
-
-        </div>
-    </footer>
-
-    <!-- MODAL DE PLAYLISTS -->
-    <div id="playlistModal" class="modal">
-        <div class="modal-content">
+         </div>
+      </footer>
+      <!-- MODAL DE PLAYLISTS -->
+      <div id="playlistModal" class="modal">
+         <div class="modal-content">
             <div class="modal-header modal-header--with-search">
-                <div class="modal-search">
-                    <input type="search" placeholder="Filtrar playlists..." id="playlistSearchInput"
-                        class="modal-search-input">
-                    <svg class="icon search-icon"><use href="/icons/package.svg#search-case"></use></svg>
-                </div>
-                <button class="modal-close" id="closePlaylistModal" aria-label="Fechar">
-                    <svg class="icon"><use href="/icons/package.svg#close-case"></use></svg>
-                </button>
+               <div class="modal-search">
+                  <input type="search" placeholder="Filtrar playlists..." id="playlistSearchInput"
+                     class="modal-search-input">
+                  <svg class="icon search-icon">
+                     <use href="/icons/package.svg#search-case"></use>
+                  </svg>
+               </div>
+               <button class="modal-close" id="closePlaylistModal" aria-label="Fechar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#close-case"></use>
+                  </svg>
+               </button>
             </div>
             <div id="playlistCardsContainer" class="cards-grid"></div>
-        </div>
-    </div>
-
-    <!-- MODAL DE ARTISTAS -->
-    <div id="artistsModal" class="modal">
-        <div class="modal-content">
+         </div>
+      </div>
+      <!-- MODAL DE ARTISTAS -->
+      <div id="artistsModal" class="modal">
+         <div class="modal-content">
             <div class="modal-header modal-header--with-search">
-                <div class="modal-search">
-                    <input type="search" placeholder="Filtrar artistas..." id="artistSearchInput"
-                        class="modal-search-input">
-                    <svg class="icon search-icon"><use href="/icons/package.svg#search-case"></use></svg>
-                </div>
-                <button class="modal-close" id="closeArtistsModal" aria-label="Fechar">
-                    <svg class="icon"><use href="/icons/package.svg#close-case"></use></svg>
-                </button>
+               <div class="modal-search">
+                  <input type="search" placeholder="Filtrar artistas..." id="artistSearchInput"
+                     class="modal-search-input">
+                  <svg class="icon search-icon">
+                     <use href="/icons/package.svg#search-case"></use>
+                  </svg>
+               </div>
+               <button class="modal-close" id="closeArtistsModal" aria-label="Fechar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#close-case"></use>
+                  </svg>
+               </button>
             </div>
             <div id="artistsCardsContainer" class="cards-grid"></div>
-        </div>
-    </div>
-
-    <!-- MODAL DE RESULTADOS DE BUSCA -->
-    <div id="searchModal" class="modal">
-        <div class="modal-content">
+         </div>
+      </div>
+      <!-- MODAL DE RESULTADOS DE BUSCA -->
+      <div id="searchModal" class="modal">
+         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="searchTitle">Resultados de busca</h2>
-                <button class="modal-close" id="closeSearchModal" aria-label="Fechar">
-                    <svg class="icon"><use href="/icons/package.svg#close-case"></use></svg>
-                </button>
+               <h2 id="searchTitle">Resultados de busca</h2>
+               <button class="modal-close" id="closeSearchModal" aria-label="Fechar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#close-case"></use>
+                  </svg>
+               </button>
             </div>
             <div id="searchResultsContainer" class="search-results"></div>
-        </div>
-    </div>
-
-    <!-- MODAL CRIAR PLAYLIST (bottom-sheet) -->
-    <div id="createPlaylistModal" class="modal modal-bottom-sheet">
-        <div class="modal-content bottom-sheet-content">
+         </div>
+      </div>
+      <!-- MODAL CRIAR PLAYLIST (bottom-sheet) -->
+      <div id="createPlaylistModal" class="modal modal-bottom-sheet">
+         <div class="modal-content bottom-sheet-content">
             <div class="modal-header modal-header--item">
-                <h2 class="modal-header-title">Criar Playlist</h2>
-                <button class="modal-close" id="closeCreatePlaylistModal" aria-label="Fechar">
-                    <svg class="icon"><use href="/icons/package.svg#close-case"></use></svg>
-                </button>
+               <h2 class="modal-header-title">Criar Playlist</h2>
+               <button class="modal-close" id="closeCreatePlaylistModal" aria-label="Fechar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#close-case"></use>
+                  </svg>
+               </button>
             </div>
             <div class="modal-body">
-                <form id="createPlaylistForm" autocomplete="off">
-                    <div class="input-group">
-                        <label for="newPlaylistName">Nome da playlist</label>
-                        <input type="text" id="newPlaylistName" required placeholder="Digite o nome da playlist">
-                    </div>
-                    <div class="create-playlist-actions">
-                        <button type="button" id="cancelCreatePlaylist" class="btn-secondary">Cancelar</button>
-                        <button type="submit" class="btn-primary">Criar</button>
-                    </div>
-                </form>
+               <form id="createPlaylistForm" autocomplete="off">
+                  <div class="input-group">
+                     <label for="newPlaylistName">Nome da playlist</label>
+                     <input type="text" id="newPlaylistName" required placeholder="Digite o nome da playlist">
+                  </div>
+                  <div class="create-playlist-actions">
+                     <button type="button" id="cancelCreatePlaylist" class="btn-secondary">Cancelar</button>
+                     <button type="submit" class="btn-primary">Criar</button>
+                  </div>
+               </form>
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL MENU DO USUÁRIO -->
-    <div id="userMenuModal" class="modal modal-bottom-sheet">
-        <div class="modal-content bottom-sheet-content">
+         </div>
+      </div>
+      <!-- MODAL MENU DO USUÁRIO -->
+      <div id="userMenuModal" class="modal modal-bottom-sheet">
+         <div class="modal-content bottom-sheet-content">
             <div class="modal-header">
-                <h2>Minha Conta</h2>
-                <button class="modal-close" id="closeUserMenuModal" aria-label="Fechar">
-                    <svg class="icon"><use href="/icons/package.svg#close-case"></use></svg>
-                </button>
+               <h2>Minha Conta</h2>
+               <button class="modal-close" id="closeUserMenuModal" aria-label="Fechar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#close-case"></use>
+                  </svg>
+               </button>
             </div>
             <div class="modal-body">
-                <ul class="user-menu-list">
-                    <li><a href="#" id="userAccountBtn"><svg class="icon"><use href="/icons/package.svg#person-case"></use></svg><span>Minha conta</span></a>
-                    </li>
-                    <li><a href="#" id="userPlaylistsBtn"><svg class="icon"><use href="/icons/package.svg#playlist-case"></use></svg><span>Minhas
-                                Playlists</span></a></li>
-                    <li><a href="#" id="userFavoritesBtn"><svg class="icon"><use href="/icons/package.svg#favorite-filled-case"></use></svg><span>Meus
-                                favoritos</span></a></li>
-                    <li><a href="#" id="top10Btn"><svg class="icon"><use href="/icons/package.svg#star-case"></use></svg><span>As 10 Mais ouvidas</span></a>
-                    </li>
-                </ul>
+               <ul class="user-menu-list">
+                  <li>
+                     <a href="#" id="userAccountBtn">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#person-case"></use>
+                        </svg>
+                        <span>Minha conta</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" id="userPlaylistsBtn">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#playlist-case"></use>
+                        </svg>
+                        <span>Minhas
+                        Playlists</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" id="userFavoritesBtn">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#favorite-filled-case"></use>
+                        </svg>
+                        <span>Meus
+                        favoritos</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="#" id="top10Btn">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#star-case"></use>
+                        </svg>
+                        <span>As 10 Mais ouvidas</span>
+                     </a>
+                  </li>
+               </ul>
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL MINHAS PLAYLISTS (usuário) -->
-    <div id="userPlaylistsModal" class="modal modal-bottom-sheet">
-        <div class="modal-content bottom-sheet-content">
+         </div>
+      </div>
+      <!-- MODAL MINHAS PLAYLISTS (usuário) -->
+      <div id="userPlaylistsModal" class="modal modal-bottom-sheet">
+         <div class="modal-content bottom-sheet-content">
             <div class="modal-header">
-                <h2>Minhas Playlists</h2>
-                <button class="modal-close" id="closeUserPlaylistsModal" aria-label="Fechar">
-                    <svg class="icon"><use href="/icons/package.svg#close-case"></use></svg>
-                </button>
+               <h2>Minhas Playlists</h2>
+               <button class="modal-close" id="closeUserPlaylistsModal" aria-label="Fechar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#close-case"></use>
+                  </svg>
+               </button>
             </div>
             <div class="modal-body" id="userPlaylistsContainer">
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL OPÇÕES DO ITEM (kebab) - bottom sheet -->
-    <div id="itemOptionsModal" class="modal modal-bottom-sheet">
-        <div class="modal-content bottom-sheet-content">
+         </div>
+      </div>
+      <!-- MODAL OPÇÕES DO ITEM (kebab) - bottom sheet -->
+      <div id="itemOptionsModal" class="modal modal-bottom-sheet">
+         <div class="modal-content bottom-sheet-content">
             <div class="modal-header">
-                <h2 id="itemOptionsTitle">Opções</h2>
-                <button class="modal-close" id="closeItemOptionsModal" aria-label="Fechar">
-                    <svg class="icon"><use href="/icons/package.svg#close-case"></use></svg>
-                </button>
+               <h2 id="itemOptionsTitle">Opções</h2>
+               <button class="modal-close" id="closeItemOptionsModal" aria-label="Fechar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#close-case"></use>
+                  </svg>
+               </button>
             </div>
             <div class="modal-body" id="itemOptionsBody">
-                <!-- Conteúdo gerado dinamicamente -->
+               <!-- Conteúdo gerado dinamicamente -->
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL FEEDBACK (bottom-sheet) -->
-    <div id="feedbackModal" class="modal modal-bottom-sheet">
-        <div class="modal-content bottom-sheet-content">
+         </div>
+      </div>
+      <!-- MODAL FEEDBACK (bottom-sheet) -->
+      <div id="feedbackModal" class="modal modal-bottom-sheet">
+         <div class="modal-content bottom-sheet-content">
             <div class="modal-body" id="feedbackContent"></div>
-        </div>
-    </div>
-
-    <!-- MODAL EDITAR PLAYLIST (bottom-sheet) -->
-    <div id="editPlaylistModal" class="modal modal-bottom-sheet">
-        <div class="modal-content bottom-sheet-content">
+         </div>
+      </div>
+      <!-- MODAL EDITAR PLAYLIST (bottom-sheet) -->
+      <div id="editPlaylistModal" class="modal modal-bottom-sheet">
+         <div class="modal-content bottom-sheet-content">
             <div class="modal-header modal-header--item">
-                <h2 class="modal-header-title">Editar Playlist</h2>
-                <button class="modal-close" id="editPlaylistCloseBtn" aria-label="Fechar">
-                    <svg class="icon"><use href="/icons/package.svg#close-case"></use></svg>
-                </button>
+               <h2 class="modal-header-title">Editar Playlist</h2>
+               <button class="modal-close" id="editPlaylistCloseBtn" aria-label="Fechar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#close-case"></use>
+                  </svg>
+               </button>
             </div>
             <div class="modal-body">
-                <form id="editPlaylistForm" autocomplete="off">
-                    <div class="input-group">
-                        <label for="editPlaylistNameInput">Nome da playlist</label>
-                        <input type="text" id="editPlaylistNameInput" required placeholder="Digite o novo nome">
-                    </div>
-                    <div class="create-playlist-actions">
-                        <button type="button" id="editPlaylistCancelBtn" class="btn-secondary">Cancelar</button>
-                        <button type="button" id="editPlaylistSaveBtn" class="btn-primary">Salvar</button>
-                    </div>
-                </form>
+               <form id="editPlaylistForm" autocomplete="off">
+                  <div class="input-group">
+                     <label for="editPlaylistNameInput">Nome da playlist</label>
+                     <input type="text" id="editPlaylistNameInput" required placeholder="Digite o novo nome">
+                  </div>
+                  <div class="create-playlist-actions">
+                     <button type="button" id="editPlaylistCancelBtn" class="btn-secondary">Cancelar</button>
+                     <button type="button" id="editPlaylistSaveBtn" class="btn-primary">Salvar</button>
+                  </div>
+               </form>
             </div>
-        </div>
-    </div>
-
-    <!-- ZOOM ALERT MODAL -->
-    <div id="zoomAlertModal" class="zoom-alert-modal">
-        <div class="zoom-alert-content">
+         </div>
+      </div>
+      <!-- ZOOM ALERT MODAL -->
+      <div id="zoomAlertModal" class="zoom-alert-modal">
+         <div class="zoom-alert-content">
             <div class="zoom-alert-header">
-                <svg class="icon"><use href="/icons/package.svg#zoom-in-case"></use></svg>
-                <span>Modo zoom ativo</span>
+               <svg class="icon">
+                  <use href="/icons/package.svg#zoom-in-case"></use>
+               </svg>
+               <span>Modo zoom ativo</span>
             </div>
             <div class="zoom-alert-message">
-                Use pinch out (dois dedos) para reduzir o zoom.
+               Use pinch out (dois dedos) para reduzir o zoom.
             </div>
             <div class="zoom-alert-actions">
-                <button type="button" id="zoomUnderstandBtn" class="btn-primary">Entendi</button>
+               <button type="button" id="zoomUnderstandBtn" class="btn-primary">Entendi</button>
             </div>
-        </div>
-    </div>
-
-    <!-- PWA INSTALL PROMPT MODAL (BOTTOM-SHEET) -->
-    <div id="pwaInstallPromptModal" class="pwa-install-modal">
-        <div class="pwa-install-overlay"></div>
-        <div class="pwa-install-content">
+         </div>
+      </div>
+      <!-- PWA INSTALL PROMPT MODAL (BOTTOM-SHEET) -->
+      <div id="pwaInstallPromptModal" class="pwa-install-modal">
+         <div class="pwa-install-overlay"></div>
+         <div class="pwa-install-content">
             <div class="pwa-install-header">
-                <img src="logo.png" class="pwa-install-logo" alt="Ícone do app" />
-                <span>Instalar SanPlayer</span>
+               <img src="logo.png" class="pwa-install-logo" alt="Ícone do app" />
+               <span>Instalar SanPlayer</span>
             </div>
             <div class="pwa-install-message">
-                Acesse o San Player rapidamente pela sua tela de início, para melhor experiência.
+               Acesse o San Player rapidamente pela sua tela de início, para melhor experiência.
             </div>
             <div class="pwa-install-icon">
-                <svg class="icon"><use href="/icons/package.svg#download-case"></use></svg>
+               <svg class="icon">
+                  <use href="/icons/package.svg#download-case"></use>
+               </svg>
             </div>
             <div class="pwa-install-actions">
-                <button type="button" id="pwaInstallCancelBtn" class="btn-secondary">Agora não</button>
-                <button type="button" id="pwaInstallConfirmBtn" class="btn-primary">Instalar</button>
+               <button type="button" id="pwaInstallCancelBtn" class="btn-secondary">Agora não</button>
+               <button type="button" id="pwaInstallConfirmBtn" class="btn-primary">Instalar</button>
             </div>
-        </div>
-    </div>
-
-    <!-- PUSH NOTIFICATIONS -->
-
-    <div id="update-banner" class="update-sheet">
-        <div class="update-content">
-            <svg class="icon"><use href="/icons/package.svg#update-case"></use></svg>
+         </div>
+      </div>
+      <!-- PUSH NOTIFICATIONS -->
+      <div id="update-banner" class="update-sheet">
+         <div class="update-content">
+            <svg class="icon">
+               <use href="/icons/package.svg#update-case"></use>
+            </svg>
             <div class="update-text">
-                <strong>Nova versão disponível</strong>
-                <p>Atualize para aproveitar as melhorias no SanPlayer.</p>
+               <strong>Nova versão disponível</strong>
+               <p>Atualize para aproveitar as melhorias no SanPlayer.</p>
             </div>
-        </div>
-        <div class="update-actions">
+         </div>
+         <div class="update-actions">
             <button id="btn-update-later" class="btn-secondary">DEPOIS</button>
             <button id="btn-update-now" class="btn-primary">ATUALIZAR AGORA</button>
-        </div>
-    </div>
-
-    <!-- MODAL SOBRE (About) -->
-    <div id="aboutModal" class="modal">
-        <div class="modal-content about-modal-content">
+         </div>
+      </div>
+      <!-- MODAL SOBRE (About) -->
+      <div id="aboutModal" class="modal">
+         <div class="modal-content about-modal-content">
             <div class="modal-header native-header">
-                <button class="modal-close modal-back-btn" id="closeAboutModal" aria-label="Voltar">
-                    <svg class="icon"><use href="/icons/package.svg#arrow-back-case"></use></svg>
-                </button>
-                <h2 class="native-header-title">Sobre</h2>
-                <div style="width: 40px;"></div>
+               <button class="modal-close modal-back-btn" id="closeAboutModal" aria-label="Voltar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#arrow-back-case"></use>
+                  </svg>
+               </button>
+               <h2 class="native-header-title">Sobre</h2>
+               <div style="width: 40px;"></div>
             </div>
             <div class="modal-body">
-                <div class="about-hero">
-                    <div class="about-logo" alt="Logo do SanPlayer">
-                        <svg class="icon"><use href="/icons/package.svg#logo-case"></use></svg>
-                    </div>
-                    <h3>SanPlayer</h3>
-                    <p class="about-subtitle">Music & Video Player PWA</p>
-                    <p class="about-version" id="aboutVersion">v1.0.0</p>
-                </div>
-
-                <div class="about-section">
-                    <p class="about-description">Descubra uma experiência de mídia contínua e poderosa em todos os seus
-                        dispositivos. SanPlayer é um PWA moderno criado para velocidade, qualidade e liberdade do
-                        usuário.</p>
-                </div>
-
-                <div class="about-section">
-                    <h4 class="section-title">Recursos Principais</h4>
-                    <ul class="features-list">
-                        <li class="feature-item">
-                            <svg class="icon"><use href="/icons/package.svg#control-play"></use></svg>
-                            <div>
-                                <strong>Reprodução Fluida</strong>
-                                <span>Vídeos e músicas em alta qualidade</span>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <svg class="icon"><use href="/icons/package.svg#playlist-case"></use></svg>
-                            <div>
-                                <strong>Gerenciamento de Playlists</strong>
-                                <span>Crie, edite e organize suas playlists</span>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <svg class="icon"><use href="/icons/package.svg#favorite-filled-case"></use></svg>
-                            <div>
-                                <strong>Sistema de Favoritos</strong>
-                                <span>Salve suas músicas preferidas</span>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <svg class="icon"><use href="/icons/package.svg#equalizer-case"></use></svg>
-                            <div>
-                                <strong>Equalizador Avançado</strong>
-                                <span>Controle completo do áudio</span>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <svg class="icon"><use href="/icons/package.svg#cloud-off-case"></use></svg>
-                            <div>
-                                <strong>Suporte Offline</strong>
-                                <span>PWA moderno e responsivo</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="about-section">
-                    <h4 class="section-title">Legal</h4>
-                    <ul class="features-list">
-                        <li class="feature-item">
-                            <svg class="icon"><use href="/icons/package.svg#privacy-link-case"></use></svg>
-                            <div>
-                                <a href="#" id="privacyLink" style="text-decoration: none; color: inherit; display: flex; justify-content: space-between; align-items: center;">
-                                    <strong>Política de Privacidade</strong>
-                                    <span style="color: var(--text-dim); font-weight: bold;">›</span>
-                                </a>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <svg class="icon"><use href="/icons/package.svg#terms-link-case"></use></svg>
-                            <div>
-                                <a href="#" id="termsLink" style="text-decoration: none; color: inherit; display: flex; justify-content: space-between; align-items: center;">
-                                    <strong>Termos de Serviços</strong>
-                                    <span style="color: var(--text-dim); font-weight: bold;">›</span>
-                                </a>
-                            </div>
-                        </li>
-                        <li class="feature-item">
-                            <svg class="icon"><use href="/icons/package.svg#credits-link-case"></use></svg>
-                            <div>
-                                <a href="#" id="creditsLink" style="text-decoration: none; color: inherit; display: flex; justify-content: space-between; align-items: center;">
-                                    <strong>Créditos e Atribuições</strong>
-                                    <span style="color: var(--text-dim); font-weight: bold;">›</span>
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+               <div class="about-hero">
+                  <div class="about-logo" alt="Logo do SanPlayer">
+                     <svg class="icon">
+                        <use href="/icons/package.svg#logo-case"></use>
+                     </svg>
+                  </div>
+                  <h3>SanPlayer</h3>
+                  <p class="about-subtitle">Music & Video Player PWA</p>
+                  <p class="about-version" id="aboutVersion">v1.0.0</p>
+               </div>
+               <div class="about-section">
+                  <p class="about-description">Descubra uma experiência de mídia contínua e poderosa em todos os seus
+                     dispositivos. SanPlayer é um PWA moderno criado para velocidade, qualidade e liberdade do
+                     usuário.
+                  </p>
+               </div>
+               <div class="about-section">
+                  <h4 class="section-title">Recursos Principais</h4>
+                  <ul class="features-list">
+                     <li class="feature-item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#control-play"></use>
+                        </svg>
+                        <div>
+                           <strong>Reprodução Fluida</strong>
+                           <span>Vídeos e músicas em alta qualidade</span>
+                        </div>
+                     </li>
+                     <li class="feature-item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#playlist-case"></use>
+                        </svg>
+                        <div>
+                           <strong>Gerenciamento de Playlists</strong>
+                           <span>Crie, edite e organize suas playlists</span>
+                        </div>
+                     </li>
+                     <li class="feature-item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#favorite-filled-case"></use>
+                        </svg>
+                        <div>
+                           <strong>Sistema de Favoritos</strong>
+                           <span>Salve suas músicas preferidas</span>
+                        </div>
+                     </li>
+                     <li class="feature-item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#equalizer-case"></use>
+                        </svg>
+                        <div>
+                           <strong>Equalizador Avançado</strong>
+                           <span>Controle completo do áudio</span>
+                        </div>
+                     </li>
+                     <li class="feature-item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#cloud-off-case"></use>
+                        </svg>
+                        <div>
+                           <strong>Suporte Offline</strong>
+                           <span>PWA moderno e responsivo</span>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+               <div class="about-section">
+                  <h4 class="section-title">Legal</h4>
+                  <ul class="features-list">
+                     <li class="feature-item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#privacy-link-case"></use>
+                        </svg>
+                        <div>
+                           <a href="#" id="privacyLink" style="text-decoration: none; color: inherit; display: flex; justify-content: space-between; align-items: center;">
+                           <strong>Política de Privacidade</strong>
+                           <span style="color: var(--text-dim); font-weight: bold;">›</span>
+                           </a>
+                        </div>
+                     </li>
+                     <li class="feature-item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#terms-link-case"></use>
+                        </svg>
+                        <div>
+                           <a href="#" id="termsLink" style="text-decoration: none; color: inherit; display: flex; justify-content: space-between; align-items: center;">
+                           <strong>Termos de Serviços</strong>
+                           <span style="color: var(--text-dim); font-weight: bold;">›</span>
+                           </a>
+                        </div>
+                     </li>
+                     <li class="feature-item">
+                        <svg class="icon">
+                           <use href="/icons/package.svg#credits-link-case"></use>
+                        </svg>
+                        <div>
+                           <a href="#" id="creditsLink" style="text-decoration: none; color: inherit; display: flex; justify-content: space-between; align-items: center;">
+                           <strong>Créditos e Atribuições</strong>
+                           <span style="color: var(--text-dim); font-weight: bold;">›</span>
+                           </a>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
             </div>
             <div class="modal-footer">
-                <p class="copyright-text">&copy; 2026 Waltemar Carneiro. Todos os direitos reservados.</p>
+               <p class="copyright-text">&copy; 2026 Waltemar Carneiro. Todos os direitos reservados.</p>
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL AUTOR -->
-    <div id="authorModal" class="modal">
-        <div class="modal-content">
+         </div>
+      </div>
+      <!-- MODAL AUTOR -->
+      <div id="authorModal" class="modal">
+         <div class="modal-content">
             <div class="modal-header native-header">
-                <button class="modal-close modal-back-btn" id="closeAuthorModal" aria-label="Voltar">
-                    <svg class="icon"><use href="/icons/package.svg#arrow-back-case"></use></svg>
-                </button>
-                <h2 class="native-header-title">Sobre o Desenvolvedor</h2>
-                <div style="width: 40px;"></div>
+               <button class="modal-close modal-back-btn" id="closeAuthorModal" aria-label="Voltar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#arrow-back-case"></use>
+                  </svg>
+               </button>
+               <h2 class="native-header-title">Sobre o Desenvolvedor</h2>
+               <div style="width: 40px;"></div>
             </div>
             <div class="modal-body">
-                <div class="author-section">
-                    <div class="author-avatar"><img src="/icons/admin.jpg" alt="Avatar do Autor"></div>
-                    <h3 class="author-name">Waltemar Carneiro</h3>
-                    <p class="author-title">Full-Stack Developer</p>
-                    <p class="author-bio">
-                        Apaixonado por criar experiências web imersivas e performáticas.
-                        Especialista em JavaScript puro, PWA e arquitetura frontend.
-                        Desenvolvedor autodidata com foco em qualidade e inovação.
-                    </p>
-                </div>
-
-                <div class="about-section">
-                    <h4 class="section-title">Sobre este Projeto</h4>
-                    <p class="author-description">
-                        SanPlayer foi criado como um projeto de excelência em desenvolvimento frontend,
-                        demostrando expertise em:
-                    </p>
-                    <ul class="skills-list">
-                        <li>JavaScript Vanilla (sem frameworks)</li>
-                        <li>Performance e otimização</li>
-                        <li>Design responsivo mobile-first</li>
-                        <li>PWA e Service Workers</li>
-                        <li>UI/UX moderno e intuitivo</li>
-                        <li>Arquitetura limpa e escalável</li>
-                    </ul>
-                </div>
+               <div class="author-section">
+                  <div class="author-avatar"><img src="/icons/admin.jpg" alt="Avatar do Autor"></div>
+                  <h3 class="author-name">Waltemar Carneiro</h3>
+                  <p class="author-title">Full-Stack Developer</p>
+                  <p class="author-bio">
+                     Apaixonado por criar experiências web imersivas e performáticas.
+                     Especialista em JavaScript puro, PWA e arquitetura frontend.
+                     Desenvolvedor autodidata com foco em qualidade e inovação.
+                  </p>
+               </div>
+               <div class="about-section">
+                  <h4 class="section-title">Sobre este Projeto</h4>
+                  <p class="author-description">
+                     SanPlayer foi criado como um projeto de excelência em desenvolvimento frontend,
+                     demostrando expertise em:
+                  </p>
+                  <ul class="skills-list">
+                     <li>JavaScript Vanilla (sem frameworks)</li>
+                     <li>Performance e otimização</li>
+                     <li>Design responsivo mobile-first</li>
+                     <li>PWA e Service Workers</li>
+                     <li>UI/UX moderno e intuitivo</li>
+                     <li>Arquitetura limpa e escalável</li>
+                  </ul>
+               </div>
             </div>
             <div class="modal-footer">
-                <p class="copyright-text">Desenvolvido com ❤️ para a música</p>
+               <p class="copyright-text">Desenvolvido com ❤️ para a música</p>
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL POLÍTICA DE PRIVACIDADE -->
-    <div id="privacyModal" class="modal">
-        <div class="modal-content">
+         </div>
+      </div>
+      <!-- MODAL POLÍTICA DE PRIVACIDADE -->
+      <div id="privacyModal" class="modal">
+         <div class="modal-content">
             <div class="modal-header native-header">
-                <button class="modal-close modal-back-btn" id="closePrivacyModal" aria-label="Voltar">
-                    <svg class="icon"><use href="/icons/package.svg#arrow-back-case"></use></svg>
-                </button>
-                <h2 class="native-header-title">Política de Privacidade</h2>
-                <div style="width: 40px;"></div>
+               <button class="modal-close modal-back-btn" id="closePrivacyModal" aria-label="Voltar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#arrow-back-case"></use>
+                  </svg>
+               </button>
+               <h2 class="native-header-title">Política de Privacidade</h2>
+               <div style="width: 40px;"></div>
             </div>
             <div class="modal-body">
-                <div class="legal-content">
-                    <h3>Privacidade do Usuário</h3>
-                    <p>
-                        O SanPlayer respeita sua privacidade. Este aplicativo é um PWA local que funciona
-                        principalmente no seu dispositivo, sem coletar dados pessoais sem seu consentimento.
-                    </p>
-
-                    <h4>Dados Armazenados</h4>
-                    <p>
-                        Os dados armazenados localmente incluem:
-                    </p>
-                    <ul>
-                        <li>Playlists criadas por você</li>
-                        <li>Favoritos salvos</li>
-                        <li>Preferências de interface</li>
-                        <li>Histórico de reprodução</li>
-                    </ul>
-
-                    <h4>Armazenamento Local</h4>
-                    <p>
-                        Todos os dados são armazenados exclusivamente no seu navegador usando localStorage
-                        e IndexedDB. Nenhum dado é enviado para servidores externos sem sua autorização.
-                    </p>
-
-                    <h4>Integração com YouTube</h4>
-                    <p>
-                        Este aplicativo usa a YouTube IFrame API para reproduzir conteúdo.
-                        Leia a política de privacidade do YouTube em: youtube.com/privacy
-                    </p>
-
-                    <h4>Cookies</h4>
-                    <p>
-                        O SanPlayer não usa cookies rastreadores. Apenas cookies técnicos necessários
-                        para o funcionamento do PWA podem ser armazenados.
-                    </p>
-
-                    <h4>Contato</h4>
-                    <p>
-                        Para dúvidas sobre privacidade, entre em contato através dos canais oficiais do projeto.
-                    </p>
-                </div>
+               <div class="legal-content">
+                  <h3>Privacidade do Usuário</h3>
+                  <p>
+                     O SanPlayer respeita sua privacidade. Este aplicativo é um PWA local que funciona
+                     principalmente no seu dispositivo, sem coletar dados pessoais sem seu consentimento.
+                  </p>
+                  <h4>Dados Armazenados</h4>
+                  <p>
+                     Os dados armazenados localmente incluem:
+                  </p>
+                  <ul>
+                     <li>Playlists criadas por você</li>
+                     <li>Favoritos salvos</li>
+                     <li>Preferências de interface</li>
+                     <li>Histórico de reprodução</li>
+                  </ul>
+                  <h4>Armazenamento Local</h4>
+                  <p>
+                     Todos os dados são armazenados exclusivamente no seu navegador usando localStorage
+                     e IndexedDB. Nenhum dado é enviado para servidores externos sem sua autorização.
+                  </p>
+                  <h4>Integração com YouTube</h4>
+                  <p>
+                     Este aplicativo usa a YouTube IFrame API para reproduzir conteúdo.
+                     Leia a política de privacidade do YouTube em: youtube.com/privacy
+                  </p>
+                  <h4>Cookies</h4>
+                  <p>
+                     O SanPlayer não usa cookies rastreadores. Apenas cookies técnicos necessários
+                     para o funcionamento do PWA podem ser armazenados.
+                  </p>
+                  <h4>Contato</h4>
+                  <p>
+                     Para dúvidas sobre privacidade, entre em contato através dos canais oficiais do projeto.
+                  </p>
+               </div>
             </div>
             <div class="modal-footer">
-                <p class="copyright-text">Última atualização: Abril de 2026</p>
+               <p class="copyright-text">Última atualização: Abril de 2026</p>
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL TERMOS DE SERVIÇOS -->
-    <div id="termsModal" class="modal">
-        <div class="modal-content">
+         </div>
+      </div>
+      <!-- MODAL TERMOS DE SERVIÇOS -->
+      <div id="termsModal" class="modal">
+         <div class="modal-content">
             <div class="modal-header native-header">
-                <button class="modal-close modal-back-btn" id="closeTermsModal" aria-label="Voltar">
-                    <svg class="icon"><use href="/icons/package.svg#arrow-back-case"></use></svg>
-                </button>
-                <h2 class="native-header-title">Termos de Serviços</h2>
-                <div style="width: 40px;"></div>
+               <button class="modal-close modal-back-btn" id="closeTermsModal" aria-label="Voltar">
+                  <svg class="icon">
+                     <use href="/icons/package.svg#arrow-back-case"></use>
+                  </svg>
+               </button>
+               <h2 class="native-header-title">Termos de Serviços</h2>
+               <div style="width: 40px;"></div>
             </div>
             <div class="modal-body">
-                <div class="legal-content">
-                    <h3>Termos de Uso do SanPlayer</h3>
-                    <p>
-                        Ao usar o SanPlayer, você concorda com estes termos de serviço.
-                        Leia-os com cuidado.
-                    </p>
-
-                    <h4>Uso Permitido</h4>
-                    <p>
-                        O SanPlayer é fornecido para uso pessoal e não comercial.
-                        Você pode:
-                    </p>
-                    <ul>
-                        <li>Usar o aplicativo em seus dispositivos pessoais</li>
-                        <li>Criar e gerenciar suas próprias playlists</li>
-                        <li>Compartilhar conteúdo conforme permitido pelas fontes</li>
-                    </ul>
-
-                    <h4>Restrições</h4>
-                    <p>
-                        Você não pode:
-                    </p>
-                    <ul>
-                        <li>Modificar ou descompilar o aplicativo</li>
-                        <li>Usar para fins comerciais sem autorização</li>
-                        <li>Violar direitos autorais ou propriedade intelectual</li>
-                        <li>Realizar engenharia reversa do código</li>
-                    </ul>
-
-                    <h4>Conteúdo de Terceiros</h4>
-                    <p>
-                        O SanPlayer integra-se com fontes de conteúdo como YouTube.
-                        O uso dessas plataformas está sujeito aos seus respectivos termos de serviço.
-                    </p>
-
-                    <h4>Isenção de Responsabilidade</h4>
-                    <p>
-                        O aplicativo é fornecido "no estado em que se encontra".
-                        O desenvolvedor não se responsabiliza por perdas de dados ou danos diretos/indiretos.
-                    </p>
-
-                    <h4>Modificações</h4>
-                    <p>
-                        Estes termos podem ser modificados a qualquer momento.
-                        O uso continuado do aplicativo após alterações constitui aceitação.
-                    </p>
-
-                    <h4>Lei Aplicável</h4>
-                    <p>
-                        Estes termos são regidos pelas leis aplicáveis ao desenvolvedor.
-                        Qualquer disputa será resolvida através de meios legais apropriados.
-                    </p>
-                </div>
+               <div class="legal-content">
+                  <h3>Termos de Uso do SanPlayer</h3>
+                  <p>
+                     Ao usar o SanPlayer, você concorda com estes termos de serviço.
+                     Leia-os com cuidado.
+                  </p>
+                  <h4>Uso Permitido</h4>
+                  <p>
+                     O SanPlayer é fornecido para uso pessoal e não comercial.
+                     Você pode:
+                  </p>
+                  <ul>
+                     <li>Usar o aplicativo em seus dispositivos pessoais</li>
+                     <li>Criar e gerenciar suas próprias playlists</li>
+                     <li>Compartilhar conteúdo conforme permitido pelas fontes</li>
+                  </ul>
+                  <h4>Restrições</h4>
+                  <p>
+                     Você não pode:
+                  </p>
+                  <ul>
+                     <li>Modificar ou descompilar o aplicativo</li>
+                     <li>Usar para fins comerciais sem autorização</li>
+                     <li>Violar direitos autorais ou propriedade intelectual</li>
+                     <li>Realizar engenharia reversa do código</li>
+                  </ul>
+                  <h4>Conteúdo de Terceiros</h4>
+                  <p>
+                     O SanPlayer integra-se com fontes de conteúdo como YouTube.
+                     O uso dessas plataformas está sujeito aos seus respectivos termos de serviço.
+                  </p>
+                  <h4>Isenção de Responsabilidade</h4>
+                  <p>
+                     O aplicativo é fornecido "no estado em que se encontra".
+                     O desenvolvedor não se responsabiliza por perdas de dados ou danos diretos/indiretos.
+                  </p>
+                  <h4>Modificações</h4>
+                  <p>
+                     Estes termos podem ser modificados a qualquer momento.
+                     O uso continuado do aplicativo após alterações constitui aceitação.
+                  </p>
+                  <h4>Lei Aplicável</h4>
+                  <p>
+                     Estes termos são regidos pelas leis aplicáveis ao desenvolvedor.
+                     Qualquer disputa será resolvida através de meios legais apropriados.
+                  </p>
+               </div>
             </div>
             <div class="modal-footer">
-                <p class="copyright-text">Última atualização: Abril de 2026</p>
+               <p class="copyright-text">Última atualização: Abril de 2026</p>
             </div>
-        </div>
-    </div>
-
-    <!-- OTHERS SCRIPTS -->
-
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="/app.js"></script>
-
-</body>
-
+         </div>
+      </div>
+      <!-- OTHERS SCRIPTS -->
+      <script src="https://www.youtube.com/iframe_api"></script>
+      <script src="/app.js"></script>
+   </body>
 </html>
