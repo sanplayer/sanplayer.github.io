@@ -3,17 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f0d12">
   <title>Video Stage PWA</title>
-  <link rel="stylesheet" href="/style.css">
   <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="transparent">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: #0F0D12;
+    }
+
+    .video-stage {
+      width: 100vw;
+      height: 100vh;
+      background: #0F0D12;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    iframe.youtube {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
 <body>
   <div class="video-stage">
     <iframe class="youtube"
-      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-      title="YouTube video"
-      frameborder="0"
+      src="https://www.youtube.com/embed/yGxcaTuf3s0?playsinline=1"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen>
     </iframe>
