@@ -179,11 +179,8 @@ body {
     line-height: 1.4;
     overflow-x: hidden;
     transition: opacity 0.2s ease;
-    
     min-height: 100vh;
     min-height: 100dvh;
-    min-height: calc(100dvh + env(safe-area-inset-top));
-
 }
 
 ul {
