@@ -1,4 +1,4 @@
-{
+amo{
   "name": "San Player",
   "short_name": "San Player",
   "id": "/",
@@ -9,7 +9,7 @@
     "window-controls-overlay",
     "fullscreen"
   ],
-  "display": "standalone",
+  "display": "fullsceeen",
   "orientation": "portrait",
   "background_color": "#0F0D12",
   "theme_color": "#0F0D12",
