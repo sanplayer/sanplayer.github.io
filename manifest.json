@@ -7,7 +7,7 @@
   "scope": "/",
   "display_override": [
     "window-controls-overlay",
-    "fullscreen"
+    "standalone"
   ],
   "display": "standalone",
   "orientation": "portrait",
