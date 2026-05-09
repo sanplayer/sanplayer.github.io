@@ -2,7 +2,7 @@
   "name": "Video Stage PWA",
   "short_name": "VideoStage",
   "start_url": "/index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#0F0D12",
   "theme_color": "#0F0D12",
   "icons": [
