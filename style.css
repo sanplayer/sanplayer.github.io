@@ -3050,7 +3050,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
     }
 
     .app-player-footer {
-        padding-bottom: calc(env(safe-area-inset-bottom) + 5px);
         background: var(--bg-main)
         backdrop-filter: blur(10px);
     }
@@ -3082,7 +3081,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
     .block-controls button {
         width: clamp(44px, 10vw, 56px);
         height: clamp(44px, 10vw, 56px);
-        margin-top: 0.5rem;
     }
 
     .block-controls svg.icon {
