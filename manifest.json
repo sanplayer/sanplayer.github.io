@@ -6,10 +6,10 @@
   "start_url": "/",
   "scope": "/",
   "display_override": [
-    "fullscreen",
-    "window-controls-overlay"
+    "window-controls-overlay",
+    "fullscreen"
   ],
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "portrait",
   "background_color": "#0F0D12",
   "theme_color": "#0F0D12",
