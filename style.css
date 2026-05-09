@@ -2950,7 +2950,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
     .video-stage {
         padding: 0px;
         width: 100%;
-        top: 0;
+        top: calc(100dvh - 20px);
         background: var(--bg-main);
     }
     .video-wrapper {
