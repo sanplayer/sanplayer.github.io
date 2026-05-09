@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Background Stage</title>
-  <link rel="manifest" href="/manifest.json">
-  <!-- Define a status bar transparente -->
+  <link rel="manifest" href="manifest.json">
+  <!-- Status bar transparente -->
   <meta name="theme-color" content="transparent">
   <style>
     html, body {
@@ -16,26 +16,20 @@
     }
 
     .stage {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
-      background: url('https://www.pixelstalk.net/wp-content/uploads/2016/07/Free-Desktop-1080p-HD-Wallpaper-Nature.jpg') no-repeat center center;
+      background: url('background.jpg') no-repeat center center;
       background-size: cover;
-      position: relative;
+      z-index: -1;
     }
 
-    /* Ajuste para recortes/notches */
-    .stage {
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-      padding-left: env(safe-area-inset-left);
-      padding-right: env(safe-area-inset-right);
-    }
-
-    /* Conteúdo opcional */
     .overlay {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
+      bottom: env(safe-area-inset-bottom, 20px);
+      left: env(safe-area-inset-left, 20px);
       color: white;
       font-size: 1.2rem;
       text-shadow: 0 2px 4px rgba(0,0,0,0.6);
@@ -43,9 +37,8 @@
   </style>
 </head>
 <body>
-  <div class="stage">
-    <div class="overlay">Imagem por baixo da status bar</div>
-  </div>
+  <div class="stage"></div>
+  <div class="overlay">Imagem por baixo da status bar</div>
 
   <script>
     if ('serviceWorker' in navigator) {
