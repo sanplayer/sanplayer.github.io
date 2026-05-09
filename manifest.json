@@ -1,10 +1,14 @@
 {
-  "name": "SanPlayer",
-  "short_name": "SanPlayer",
+  "name": "San Player",
+  "short_name": "San Player",
   "id": "/",
-  "description": "Sua músicas, sua experiência. O SanPlayer traz o design intuitivo e a fluidez que você ama, agora com total controle das suas playlists em um ambiente rápido e sem distrações.",
+  "description": "Suas músicas, sua experiência. O San Player traz o design intuitivo e a fluidez que você ama, agora com total controle das suas playlists em um ambiente rápido e sem distrações.",
   "start_url": "/",
   "scope": "/",
+  "display_override": [
+    "window-controls-overlay",
+    "fullscreen"
+  ],
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0F0D12",
@@ -82,15 +86,15 @@
       "purpose": "maskable"
     }
   ],
-      "related_applications": [
+  "related_applications": [
     {
       "platform": "play",
       "url": "https://play.google.com/store/apps/details?id=io.github.sanplayer.twa",
       "id": "io.github.sanplayer.twa"
     }
   ],
-    "prefer_related_applications": true,
-    "shortcuts": [
+  "prefer_related_applications": true,
+  "shortcuts": [
     {
       "name": "Playlists",
       "short_name": "Playlists",
@@ -132,9 +136,5 @@
     }
   ],
   "dir": "auto",
-  "lang": "pt-BR",
-  "display_override": [
-    "standalone",
-    "window-controls-overlay"  
-  ]
+  "lang": "pt-BR"
 }
