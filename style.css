@@ -2953,7 +2953,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         width: 100vw;
         min-height: 100dvh;
         overflow: hidden;
-        /*z-index: var(--main-z-index);*/
+        z-index: var(--main-z-index);
     }
     .video-stage {
         display: flex;
