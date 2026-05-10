@@ -6,7 +6,6 @@
   "start_url": "/",
   "scope": "/",
   "display_override": [
-    "window-controls-overlay",
     "fullscreen"
   ],
   "display": "fullscreen",
