@@ -2964,6 +2964,10 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         overflow: hidden;
         box-shadow: none;
         border-radius: 1.3rem;
+
+        top: 0;
+        left: 0;
+        z-index: -1;
     }
 
        .player-embed {
