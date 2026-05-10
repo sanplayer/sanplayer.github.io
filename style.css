@@ -226,7 +226,6 @@ body.is-routing {
     display: flex;
     align-items: center;
     border-radius: 25px;
-    color: inherit;
     transition: background 0.2s ease;
     aspect-ratio: none;
     padding: 0 20px;
@@ -245,7 +244,6 @@ button {
     display: flex;
     align-items: center;
     border-radius: 50%;
-    color: inherit;
     transition: background 0.2s ease;
     aspect-ratio: 1 / 1;
     padding: 0;
@@ -433,7 +431,6 @@ button:active {
     position: relative;
     background: none;
     border: none;
-    color: var(--text-dim);
     cursor: pointer;
     padding: 8px;
     display: flex;
