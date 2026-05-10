@@ -101,7 +101,9 @@
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --accent-roxo: #A238FF;
-    --accent-roxo-dark: #5c119e;
+    /*--accent-roxo-dark: #5C119E;*/
+    --accent-roxo-dark: #1d0235;
+    --accent-roxo-light: #9D00FF;
     --text-main: #EEF1F6;
     --text-dim: #C1C7CE;
     --border-rgba: rgba(255, 255, 255, 0.1);
@@ -150,8 +152,6 @@
     --z-overlay-max: 5000;
     --keyboard-offset: 0px;
     --main-z-index: 10;
-    --primary: #065FD4;
-    --gradient-roxo: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
 }
 
 /* =============================================================================
@@ -168,18 +168,20 @@
 
 html,
 body {
-    background-color: #000000;
+    background-color: #0f0d12;
 }
 
 body {
     font-family: 'Inter', sans-serif;
-    /*background: linear-gradient(180deg, var(--gradient-top) 0%, var(--gradient-bottom) 100%);*/
+    background: linear-gradient(180deg, var(--gradient-top) 0%, var(--gradient-bottom) 100%);
     background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.4;
     overflow-x: hidden;
     min-height: 100vh;
     min-height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
     transition: opacity 0.2s ease;
 }
 
@@ -209,11 +211,30 @@ svg.icon {
     font-family: 'Exo 2', sans-serif;
     font-weight: 600;
     font-size: var(--font-xl);
-    color: rgba(255,255,255,0.3);
+    color: var(--text-dim);
 }
 
 body.is-routing {
     opacity: 0.6;
+}
+/* class temp disable for donate text*/
+.button-donate {
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    border-radius: 25px;
+    color: inherit;
+    transition: background 0.2s ease;
+    aspect-ratio: none;
+    padding: 0 20px;
+    gap: 5px;
+    height: 30px;
+    width: 120px;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
 }
 
 button {
@@ -230,21 +251,6 @@ button {
     padding: 0;
     min-width: var(--touch-target);
     min-height: var(--touch-target);
-}
-.btn-download {
-    background: var(--primary);
-    justify-content: center;
-    align-items: center;
-    border-radius: 25px;
-    color: var(--text-main) !important;    
-    font-weight: bold;
-    gap: 5px;
-    min-height: 30px;
-    min-width: 130px;
-    height: 30px;
-    position: relative;
-    margin-bottom: 5px;
-    margin-right: 5px;
 }
 
 button:hover {
@@ -327,6 +333,7 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
+    height: var(--header-height);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -522,6 +529,7 @@ button:active {
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
+
 .player-embed {
     width: 100%;
     height: 100%;
@@ -817,7 +825,7 @@ button:active {
 }
 
 .btn-play-pause {
-    background-image: var(--gradient-roxo);
+    background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1415,7 +1423,7 @@ button:active {
 
 .card:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 20px var(--accent-roxo);
+    box-shadow: 0 8px 20px var(--accent-roxo-light);
 }
 
 .card-kebab {
@@ -1523,7 +1531,7 @@ button:active {
 }
 
 .btn-add:hover {
-    background: var(--accent-roxo);
+    background: var(--accent-roxo-light);
 }
 
 .btn-remove {
@@ -2003,6 +2011,12 @@ button:active {
     padding: 0;
 }
 
+/*
+.feature-item i {
+color: var(--accent-roxo-light);
+flex-shrink: 0;
+margin-top: 0.1rem;
+}*/
 .feature-item>div {
     flex: 1;
     display: flex;
@@ -2142,7 +2156,7 @@ button:active {
 
 .legal-content h3 {
     font-weight: 700;
-    color: var(--accent-roxo);
+    color: var(--accent-roxo-light);
     margin-top: 1.2rem;
     margin-bottom: 0.75rem;
 }
@@ -2257,7 +2271,7 @@ color: var(--accent-roxo);
 }
 
 .sidebar-header {
-    /*border-left: 3px solid var(--accent-roxo);*/
+    /*border-left: 3px solid var(--accent-roxo-light);*/
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2919,104 +2933,19 @@ animation: float 2s ease-in-out infinite;
     border-radius: 1.2rem;
 }
 
-/* =================================================
-
-RESPONSIVIDADE MOBILE (@media max-width: 1023px)
-
-==================================================== */
-
+/* =============================================================================
+10. RESPONSIVIDADE MOBILE (@media max-width: 1023px)
+============================================================================= */
 @media (max-width: 1023px) {
-    .header-app-logo svg.icon {
-        fill: rgba(255, 255, 255, 0.3);
-        width: 24px;
-        height: 24px;
-    }
-
     .app-header {
+        height: var(--header-height-mobile);
         border-bottom: none;
-        background: linear-gradient(180deg, #0f0d1261, transparent);
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 101;
-
-    }
-    .app-main-grid {
-    width: 100vw;
-    min-height: 100dvh;
-    box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    z-index: var(--main-z-index);
-    overflow-y: auto;
-}
-    .video-stage {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 0px;
-        width: 100%;
-        top:0;
-        
     }
 
     .video-wrapper {
-        display: flex;
-        justify-content: center;
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        position: relative;
-        overflow: hidden;
-        box-shadow: none;
-        border-radius: 1.3rem;
-        background: #000000;
+        border-radius: 1rem;
     }
 
-       .player-embed {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        /*tecnica 1/1*/
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 177.77%;
-        min-height: 71dvh;
-        transform: translate(-50%, -50%);
-    }
-
-
-.overlay-layer-legendas {
-        position: absolute;
-        left: 0;
-        right: 0;
-        width: 100%;
-        z-index: 11;
-        display: flex;
-        align-items: end;
-        justify-content: flex-start;
-        gap: 0;
-        padding: 0;
-        /* TESTE EM ANDAMENTO */
-        bottom: -1px;
-        height: 10%;
-        background: linear-gradient(360deg, #0f0d127d, transparent);
-    }
-
-
-
-    .current-actions {
-        gap: 0;
-    }
     .sidebar-aside .sidebar-nav li {
         margin-bottom: var(--gap-sm);
     }
@@ -3028,14 +2957,13 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         background: #2C3134;
         margin-bottom: 0.5rem;
         border-radius: 1.2rem;
-        padding: clamp(0.7rem, 1.5vw, 1rem);
+        padding: 1rem;
     }
 
     .app-main-grid {
-        top: 0;
         flex-direction: column;
         position: fixed;
-        top: 0;
+        top: var(--header-height);
         bottom: 0;
         left: 0;
         right: 0;
@@ -3061,14 +2989,10 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
     .playlist-item {
         padding-bottom: 4rem;
         border-bottom: none;
-        padding: 0 12px;
-        margin-bottom: 5px;
     }
 
     .app-player-footer {
-        padding-bottom: calc(env(safe-area-inset-bottom) + 5px);
-        background: rgba(15, 13, 18, 0.95);
-        backdrop-filter: blur(10px);
+        background: #0f0d12;
     }
 
     .footer-content-wrapper {
@@ -3087,16 +3011,12 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
 
     .block-controls {
         margin: var(--gap-sm);
-        /*gap: clamp(1rem, 2vw, 1.5rem);*/
+        gap: clamp(1rem, 2vw, 1.5rem);
         user-select: none;
         display: flex;
-
-        z-index: 20;
-        gap: 0.5rem;
     }
 
     /* BOTOES DOS CONTROLES */
-
     .block-controls button {
         width: clamp(44px, 10vw, 56px);
         height: clamp(44px, 10vw, 56px);
@@ -3116,11 +3036,12 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
     .btn-play-pause {
         width: clamp(52px, 12vw, 64px);
         height: clamp(52px, 12vw, 64px);
+        background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
     }
 
     .btn-play-pause:hover,
     .btn-play-pause:active {
-        background-image: ;
+        background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
         opacity: 0.8;
     }
 
@@ -3130,7 +3051,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
 
     .app-sidebar {
         display: none;
-        box-shadow: none;
     }
 
     .header-search {
@@ -3213,6 +3133,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         border-bottom-right-radius: 1rem;
         left: 0;
         width: 70%;
+        /*background: linear-gradient(90deg, #0f0d12, #000000c7);*/
         background: #181F1C;
     }
 
@@ -3316,7 +3237,174 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         width: 100%;
         position: absolute;
     }
-       .progress {
+}
+
+/* =============================================================================
+11. RESPONSIVIDADE DESKTOP (@media min-width: 1199px)
+============================================================================= */
+@media (min-width: 1199px) {
+    .video-stage {
+        max-width: 80%;
+    }
+}
+
+/* =============================================================================
+11. RESPONSIVIDADE DESKTOP (@media min-width: 1024px)
+============================================================================= */
+@media (min-width: 1024px) {
+    .app-main-grid {
+        flex-direction: row;
+    }
+
+    .app-sidebar {
+        flex: 0 0 clamp(220px, 18vw, 260px);
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .video-stage {
+        flex: 1 1 auto;
+        height: 100%;
+        overflow-y: auto;
+        max-width: 70%;
+    }
+
+    .playlist-aside {
+        flex: 0 0 clamp(260px, 28vw, 380px);
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .header-search {
+        display: flex;
+        flex: 1;
+        max-width: clamp(300px, 40vw, 600px);
+        margin: 0 var(--gap-md);
+    }
+
+    .header-search form {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 25px;
+    }
+
+    .header-actions .btn-search-mobile {
+        display: none;
+    }
+
+    .btn-hamburger {
+        display: none;
+    }
+
+    .app-sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        box-shadow: none;
+        display: block;
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+
+    .footer-content-wrapper {
+        flex-direction: row;
+    }
+
+    .pwa-install-content {
+        max-width: 450px;
+        border-radius: clamp(12px, 3vw, 16px);
+        margin-bottom: 2rem;
+    }
+}
+
+/* =============================================================================
+12. RESPONSIVIDADE MOBILE (@media max-width: 412px) SAMSUNG A23
+============================================================================= */
+@media (max-width: 412px) {
+    .app-main-grid {
+        top: 0;
+    }
+
+    .app-header {
+        background: linear-gradient(180deg, #0f0d1261, transparent);
+    }
+
+    .app-header .title-player {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .app-header svg.icon {
+        color: #fff;
+    }
+
+    .header-app-logo svg.icon {
+        fill: rgba(255, 255, 255, 0.3);
+        width: 24px;
+        height: 24px;
+    }
+
+    .video-stage {
+        padding: 0px;
+    }
+
+    .video-wrapper {
+        aspect-ratio: 1 / 1;
+        background: #000;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        border-radius: 1.3rem;
+    }
+
+    .player-embed {
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /*tecnica 1/1*/
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 177.77%;
+        height: 100%;
+        transform: translate(-50%, -50%);
+    }
+
+    .overlay-layer-legendas {
+        position: absolute;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 11;
+        display: flex;
+        align-items: end;
+        justify-content: flex-start;
+        gap: 0;
+        padding: 0;
+        /* TESTE EM ANDAMENTO */
+        bottom: -1px;
+        height: 10%;
+        background: linear-gradient(360deg, #0f0d127d, transparent);
+    }
+
+    .overlay-buttons-left svg.icon {
+        color: var(--text-main);
+    }
+
+    .current-actions {
+        gap: 0;
+    }
+
+    .playlist-item {
+        padding: 0 12px;
+        margin-bottom: 5px;
+    }
+
+    .progress {
         display: flex;
         flex-direction: column;
         gap: 0rem;
@@ -3326,61 +3414,28 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         -webkit-user-select: none;
     }
 
-}
+    .block-controls {
+        z-index: 20;
+        gap: 0.5rem;
+    }
 
+    .progress-time-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: var(--font-sm);
+        font-weight: bold;
+        color: #b0b0c0;
+        padding: 0 var(--gap-md);
+        bottom: 25px;
+        width: 100%;
+        position: absolute;
+    }
 
-/* DOWNLOAD */
+    .sidebar-nav li a {
+        padding: clamp(0.7rem, 1.5vw, 1rem);
+    }
 
-:root {
-  --bg-dark: #121212;
-  --surface: #1e1e1e;
-  --text: #ffffff;
-}
-
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(5px);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-conteudo {
-  background: var(--surface);
-  padding: 2rem;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  border: 1px solid #333;
-  line-height: 2;
-}
-.modal-conteudo .btn-secondary{
-    display: flex;
-    margin: 0 auto;
-    background: var(--accent-roxo-dark);
-    margin-top: 20px;
-}
-.loader-bar {
-  height: 4px;
-  margin: 1.5rem 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.loader-bar::after {
-  content: "";
-  position: absolute;
-  left: 0; top: 0; height: 100%; width: 50%;
-  background: var(--primary);
-  animation: loading 2s infinite ease-in-out;
-}
-
-@keyframes loading {
-  0% { left: -50%; }
-  100% { left: 100%; }
+    .app-sidebar {
+        box-shadow: none;
+    }
 }
