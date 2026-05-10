@@ -462,7 +462,7 @@ button:active {
 /* =============================================================================
 5. LAYOUT PRINCIPAL (SIDEBAR, VIDEO-STAGE, PLAYLIST-ASIDE)
 ============================================================================= */
-.app-main-grid {
+..app-main-grid {
     width: 100vw;
     height: auto;
     box-sizing: border-box;
@@ -3023,15 +3023,13 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         top: 0;
         flex-direction: column;
         position: fixed;
-        top: 0;
         bottom: 0;
         left: 0;
         right: 0;
         width: 100vw;
-        height: auto;
+        height: 100vh;
         overflow: hidden;
         z-index: var(--main-z-index);
-        padding-bottom: var(--footer-height);
     }
 
     .playlist-aside {
