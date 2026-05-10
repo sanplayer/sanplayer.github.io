@@ -2943,7 +2943,18 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         width: 100%;
         z-index: 101;
     }
-    
+        .app-main-grid {
+        top: 0;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        position: fixed;
+        bottom: 0;
+        width: 100vw;
+        min-height: 100dvh;
+        overflow: hidden;
+        /*z-index: var(--main-z-index);*/
+    }
     .video-stage {
         display: flex;
         flex-direction: column;
@@ -2965,11 +2976,9 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         overflow: hidden;
         box-shadow: none;
         border-radius: 1.3rem;
-
         top: 0;
         left: 0;
     }
-
        .player-embed {
         display: flex;
         align-items: center;
@@ -2982,7 +2991,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         min-height: 71dvh;
         transform: translate(-50%, -50%);
     }
-
 
 .overlay-layer-legendas {
         position: absolute;
@@ -3000,9 +3008,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         height: 10%;
         background: linear-gradient(360deg, #0f0d127d, transparent);
     }
-
-
-
     .current-actions {
         gap: 0;
     }
@@ -3018,19 +3023,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         margin-bottom: 0.5rem;
         border-radius: 1.2rem;
         padding: clamp(0.7rem, 1.5vw, 1rem);
-    }
-
-    .app-main-grid {
-        top: 0;
-        flex-direction: column;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-        /*z-index: var(--main-z-index);*/
     }
 
     .playlist-aside {
