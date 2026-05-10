@@ -209,7 +209,7 @@ svg.icon {
     font-family: 'Exo 2', sans-serif;
     font-weight: 600;
     font-size: var(--font-xl);
-    color: var(--text-dim);
+    color: currentColor;
 }
 
 body.is-routing {
@@ -224,7 +224,6 @@ button {
     display: flex;
     align-items: center;
     border-radius: 50%;
-    color: inherit;
     transition: background 0.2s ease;
     aspect-ratio: 1 / 1;
     padding: 0;
@@ -430,7 +429,6 @@ button:active {
     position: relative;
     background: none;
     border: none;
-    color: var(--text-dim);
     cursor: pointer;
     padding: 8px;
     display: flex;
@@ -2936,7 +2934,9 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         width: 24px;
         height: 24px;
     }
-
+    .title-player {
+        color: rgba(255,255,255,0.3);
+    }
     .app-header {
         border-bottom: none;
         background: linear-gradient(180deg, #0f0d1261, transparent);
@@ -2955,7 +2955,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         justify-content: center;
         padding: 0px;
         width: 100%;
-        top:0;
+        top: 0;
     }
 
     .video-wrapper {
@@ -3168,7 +3168,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
 
     .btn-hamburger {
         display: flex;
-        color: var(--text-dim);
         font-size: clamp(1.3rem, 3vw, 1.8rem);
         background: none;
         transition: color 0.2s;
@@ -3180,7 +3179,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
     }
 
     .btn-hamburger:active {
-        color: var(--text-main);
+        color: curentColor;
     }
 
     .app-sidebar {
