@@ -3042,6 +3042,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         border-bottom: none;
         padding: 0 12px;
         margin-bottom: 5px;
+        overflow: auto;
     }
 
     .app-player-footer {
