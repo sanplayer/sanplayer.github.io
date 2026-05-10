@@ -2956,7 +2956,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         padding: 0px;
         width: 100%;
         top:0;
-        background: #000000;
     }
 
     .video-wrapper {
@@ -2970,7 +2969,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         overflow: hidden;
         box-shadow: none;
         border-radius: 1.3rem;
-        background: #000000;
         top: -40px;
     }
 
