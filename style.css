@@ -326,10 +326,6 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
-    /* Altura base + o tamanho da barra de status do Android */
-    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-    padding-top: env(safe-area-inset-top, 0px);
-
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2945,7 +2941,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         left: 0;
         width: 100%;
         z-index: 101;
-        height: auto;
     }
     
     .video-stage {
