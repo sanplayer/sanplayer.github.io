@@ -6,7 +6,7 @@
   "start_url": "/",
   "scope": "/",
   "display_override": [
-    "standalone"
+    "fullscreen"
   ],
   "display": "standalone",
   "orientation": "portrait",
