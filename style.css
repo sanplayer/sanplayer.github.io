@@ -97,7 +97,7 @@
 }
 
 :root {
-    --bg-main: #0f0d12;
+    --bg-main: #000000;
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --accent-roxo: #A238FF;
@@ -168,7 +168,7 @@
 
 html,
 body {
-    background: #000000;
+    background-color: #000000;
 }
 
 body {
@@ -209,7 +209,7 @@ svg.icon {
     font-family: 'Exo 2', sans-serif;
     font-weight: 600;
     font-size: var(--font-xl);
-    color: currentColor;
+    color: var(--text-dim);
 }
 
 body.is-routing {
@@ -224,6 +224,7 @@ button {
     display: flex;
     align-items: center;
     border-radius: 50%;
+    color: inherit;
     transition: background 0.2s ease;
     aspect-ratio: 1 / 1;
     padding: 0;
@@ -326,6 +327,10 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
+    /* Altura base + o tamanho da barra de status do Android */
+    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -425,6 +430,7 @@ button:active {
     position: relative;
     background: none;
     border: none;
+    color: var(--text-dim);
     cursor: pointer;
     padding: 8px;
     display: flex;
@@ -462,7 +468,7 @@ button:active {
 /* =============================================================================
 5. LAYOUT PRINCIPAL (SIDEBAR, VIDEO-STAGE, PLAYLIST-ASIDE)
 ============================================================================= */
-/*app-main-grid {
+.app-main-grid {
     width: 100vw;
     height: auto;
     box-sizing: border-box;
@@ -477,7 +483,6 @@ button:active {
     overflow-y: auto;
     padding-bottom: var(--footer-height);
 }
-*/
 
 .app-sidebar {
     padding: var(--gap-md);
@@ -526,13 +531,13 @@ button:active {
     width: 100%;
     height: 100%;
 }
-/*
+
 .video-wrapper img {
     width: 100%;
     height: 100%;
     filter: brightness(0.7);
 }
-*/
+
 .play-button-overlay {
     position: absolute;
     top: 50%;
@@ -2931,9 +2936,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         width: 24px;
         height: 24px;
     }
-    .title-player {
-        color: rgba(255,255,255,0.3);
-    }
+
     .app-header {
         border-bottom: none;
         background: linear-gradient(180deg, #0f0d1261, transparent);
@@ -2942,19 +2945,22 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         left: 0;
         width: 100%;
         z-index: 101;
+
     }
-        .app-main-grid {
-        top: 0;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        position: fixed;
-        bottom: 0;
-        width: 100vw;
-        min-height: 100dvh;
-        overflow: hidden;
-        z-index: var(--main-z-index);
-    }
+    .app-main-grid {
+    width: 100vw;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: var(--main-z-index);
+    overflow-y: auto;
+}
     .video-stage {
         display: flex;
         flex-direction: column;
@@ -2962,7 +2968,8 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         justify-content: center;
         padding: 0px;
         width: 100%;
-        top: 0;
+        top:0;
+        
     }
 
     .video-wrapper {
@@ -2976,9 +2983,9 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         overflow: hidden;
         box-shadow: none;
         border-radius: 1.3rem;
-        top: 0;
-        left: 0;
+        background: #000000;
     }
+
        .player-embed {
         display: flex;
         align-items: center;
@@ -2991,6 +2998,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         min-height: 71dvh;
         transform: translate(-50%, -50%);
     }
+
 
 .overlay-layer-legendas {
         position: absolute;
@@ -3008,6 +3016,9 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         height: 10%;
         background: linear-gradient(360deg, #0f0d127d, transparent);
     }
+
+
+
     .current-actions {
         gap: 0;
     }
@@ -3023,6 +3034,21 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         margin-bottom: 0.5rem;
         border-radius: 1.2rem;
         padding: clamp(0.7rem, 1.5vw, 1rem);
+    }
+
+    .app-main-grid {
+        top: 0;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        height: auto;
+        overflow: hidden;
+        z-index: var(--main-z-index);
+        padding-bottom: var(--footer-height);
     }
 
     .playlist-aside {
@@ -3042,7 +3068,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         border-bottom: none;
         padding: 0 12px;
         margin-bottom: 5px;
-        overflow: auto;
     }
 
     .app-player-footer {
@@ -3158,6 +3183,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
 
     .btn-hamburger {
         display: flex;
+        color: var(--text-dim);
         font-size: clamp(1.3rem, 3vw, 1.8rem);
         background: none;
         transition: color 0.2s;
@@ -3169,7 +3195,7 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
     }
 
     .btn-hamburger:active {
-        color: curentColor;
+        color: var(--text-main);
     }
 
     .app-sidebar {
@@ -3346,7 +3372,6 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
 }
 .loader-bar {
   height: 4px;
-  background: #333;
   margin: 1.5rem 0;
   position: relative;
   overflow: hidden;
