@@ -168,7 +168,7 @@
 
 html,
 body {
-    background-color: #000000;
+    background-color: #0f0d12;
 }
 
 body {
@@ -181,8 +181,6 @@ body {
     min-height: 100vh;
     min-height: 100dvh;
     transition: opacity 0.2s ease;
-    margin: 0;
-    padding: 0;
 }
 
 ul {
@@ -511,14 +509,14 @@ button:active {
     background: rgba(255, 255, 255, 0.05);
 }
 
-/*.video-stage {
+.video-stage {
     padding: var(--gap-fluid);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}*/
-
+}
+/*
 .video-wrapper {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -528,7 +526,7 @@ button:active {
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
-
+*/
 .player-embed {
     width: 100%;
     height: 100%;
@@ -2949,27 +2947,33 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         z-index: 101;
 
     }
+    
     .video-stage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         padding: 0px;
         width: 100%;
-        top: 0;
+        top:0;
         background: #000000;
     }
 
     .video-wrapper {
-        border-radius: 1rem;
-    }
-       .video-wrapper {
-        aspect-ratio: 1 / 1;
-        background: var(--bg-main);
-        padding: 0;
-        margin: 0;
         display: flex;
         justify-content: center;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        position: relative;
+        overflow: hidden;
+        box-shadow: none;
         border-radius: 1.3rem;
+        background: #000000;
     }
+
        .player-embed {
-        border-radius: 50px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2978,10 +2982,11 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         top: 50%;
         left: 50%;
         width: 177.77%;
-        height: 100%;
+        min-height: 71dvh;
         transform: translate(-50%, -50%);
     }
-/**/
+
+
 .overlay-layer-legendas {
         position: absolute;
         left: 0;
