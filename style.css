@@ -168,12 +168,12 @@
 
 html,
 body {
-    background-color: #0f0d12;
+    background: #000000;
 }
 
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(180deg, var(--gradient-top) 0%, var(--gradient-bottom) 100%);
+    /*background: linear-gradient(180deg, var(--gradient-top) 0%, var(--gradient-bottom) 100%);*/
     background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.4;
