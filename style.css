@@ -2977,8 +2977,8 @@ RESPONSIVIDADE MOBILE (@media max-width: 1023px)
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 177.77%;
-        min-height: 71dvh;
+        width: 270%;
+        min-height: 710dvh;
         transform: translate(-50%, -50%);
     }
 
