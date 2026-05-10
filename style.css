@@ -209,7 +209,7 @@ svg.icon {
     font-family: 'Exo 2', sans-serif;
     font-weight: 600;
     font-size: var(--font-xl);
-    color: var(--text-dim);
+    color: rgba(255,255,255,0.3);
 }
 
 body.is-routing {
@@ -327,10 +327,6 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
-    /* Altura base + o tamanho da barra de status do Android */
-    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-    padding-top: env(safe-area-inset-top, 0px);
-
     display: flex;
     align-items: center;
     justify-content: space-between;
