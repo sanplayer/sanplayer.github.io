@@ -3095,7 +3095,6 @@ animation: float 2s ease-in-out infinite;
 
     .btn-hamburger {
         display: flex;
-        color: var(--text-dim);
         font-size: clamp(1.3rem, 3vw, 1.8rem);
         background: none;
         transition: color 0.2s;
