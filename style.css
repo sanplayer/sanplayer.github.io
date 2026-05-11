@@ -413,6 +413,7 @@ button:active {
 
 .header-search svg.icon {
     color: var(--text-dim);
+    margin-right: 10px;
 }
 
 .header-actions {
@@ -1205,7 +1206,6 @@ button:active {
     outline: none;
     transition: background 0.2s, color 0.2s;
     flex: 1;
-    border-bottom: 2px solid var(--accent-roxo);
     padding-left: 10px;
 }
 
@@ -3054,7 +3054,6 @@ animation: float 2s ease-in-out infinite;
     .header-search input:focus {
         background: transparent;
         outline: none;
-        border-bottom: 2px solid var(--accent-roxo);
     }
 
     .btn-hamburger {
