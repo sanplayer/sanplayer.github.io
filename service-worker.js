@@ -8,10 +8,10 @@ const URLS_TO_CACHE = [
     '/style.css',
     '/app.js',
     '/manifest.json',
-    '/icons/favicon-96x96.webp',
+    '/icons/favicon-96x96.png',
     '/icons/favicon.svg',
-    '/icons/icon192.webp',
-    '/icons/icon512.webp',
+    '/icons/icon192.png',
+    '/icons/icon512.png',
     '/icons/package.svg'
 ];
 
