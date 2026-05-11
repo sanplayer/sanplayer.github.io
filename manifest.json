@@ -35,27 +35,27 @@
   ],
   "screenshots": [
     {
-      "src": "/screenshots/tela1.png",
+      "src": "/screenshots/tela1.jpg",
       "sizes": "1080x1920",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "/screenshots/tela2.png",
+      "src": "/screenshots/tela2.jpg",
       "sizes": "1080x1920",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "/screenshots/tela3.png",
+      "src": "/screenshots/tela3.jpg",
       "sizes": "1080x1920",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "/screenshots/screenshot-wide.png",
+      "src": "/screenshots/screenshot-wide.jpg",
       "sizes": "1920x1080",
-      "type": "image/png",
+      "type": "image/jpeg",
       "form_factor": "wide"
     }
   ],
