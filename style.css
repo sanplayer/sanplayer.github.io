@@ -3187,17 +3187,6 @@ animation: float 2s ease-in-out infinite;
         font-size: 1.05rem;
     }
 
-    .progress-time-labels {
-        display: flex;
-        justify-content: space-between;
-        font-size: var(--font-sm);
-        font-weight: bold;
-        color: #b0b0c0;
-        padding: 0 var(--gap-md);
-        bottom: 25px;
-        width: 100%;
-        position: absolute;
-    }
 }
 
 
@@ -3396,7 +3385,7 @@ animation: float 2s ease-in-out infinite;
         font-weight: bold;
         color: #b0b0c0;
         padding: 0 var(--gap-md);
-        bottom: 25px;
+        bottom: 18px;
         width: 100%;
         position: absolute;
     }
