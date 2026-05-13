@@ -131,7 +131,6 @@
 html,
 body {
     background-color: #000000;
-    border: 10px solid yellow;
 }
 
 body {
@@ -144,6 +143,16 @@ body {
     min-height: 100vh;
     min-height: 100dvh;
     transition: opacity 0.2s ease;
+     /* 
+       ESTE É O SEGREDO: 
+       Em muitos Androids, o Chrome aplica um padding automático. 
+       Nós forçamos o corpo a subir exatamente a altura da barra de status.
+    */
+    position: relative;
+    top: calc(env(safe-area-inset-top) * -1); 
+    /* Se o comando acima não funcionar sozinho, use este teste agressivo: */
+    /* margin-top: -30px; */ 
+    border: 10px solid yellow; /* Agora a borda deve subir */
 }
 
 ul {
