@@ -1,6 +1,8 @@
 /* =============================================================================
 1. VARIÃƒÂVEIS CSS E TIPOGRAFIA
 ============================================================================= */
+
+
 /* exo-2-regular - latin */
 @font-face {
     font-display: swap;
@@ -130,21 +132,19 @@
 
 html,
 body {
-    background-color: #000000;
+    background-color: #0f0d12;
 }
 
 body {
-    background-attachment: fixed;
     font-family: 'Inter', sans-serif;
+    background: var(--bg-main);
+    background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.4;
     overflow-x: hidden;
     min-height: 100vh;
     min-height: 100dvh;
     transition: opacity 0.2s ease;
-    position: relative;
-    top: calc(env(safe-area-inset-top) * -1); 
-    /*margin-top: -30px;*/
 }
 
 ul {
@@ -296,8 +296,8 @@ button:active {
 ============================================================================= */
 .app-header {
     /* Altura base + o tamanho da barra de status do Android */
-    /*height: calc(var(--header-height) + env(safe-area-inset-top, 0px));*/
-    /*padding-top: env(safe-area-inset-top, 0px);*/
+    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
 
     display: flex;
     align-items: center;
@@ -2903,13 +2903,15 @@ animation: float 2s ease-in-out infinite;
     .app-main-grid {
         flex-direction: column;
         position: fixed;
+        top: var(--header-height);
         bottom: 0;
         left: 0;
         right: 0;
         width: 100vw;
-        /*height: auto;*/
+        height: auto;
         overflow: hidden;
         z-index: var(--main-z-index);
+        padding-bottom: var(--footer-height);
     }
 
 
@@ -3154,57 +3156,92 @@ animation: float 2s ease-in-out infinite;
 
 
 /* =============================================================================
+11. RESPONSIVIDADE DESKTOP (@media min-width: 1024px)
+============================================================================= */
+@media (min-width: 1024px) {
+    .app-main-grid {
+        flex-direction: row;
+       
+    }
+
+    .app-sidebar {
+        flex: 0 0 clamp(220px, 18vw, 260px);
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .video-stage {
+        flex: 1 1 auto;
+        height: 100%;
+        overflow-y: auto;
+        max-width: 70%;
+    }
+
+    .playlist-aside {
+        flex: 0 0 clamp(260px, 28vw, 380px);
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .header-search {
+        display: flex;
+        flex: 1;
+        max-width: clamp(300px, 40vw, 600px);
+        margin: 0 var(--gap-md);
+    }
+
+    .header-search form {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 25px;
+    }
+
+    .header-actions .btn-search-mobile {
+        display: none;
+    }
+
+    .btn-hamburger {
+        display: none;
+    }
+
+    .app-sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        box-shadow: none;
+        display: block;
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: none;
+    }
+
+    .footer-content-wrapper {
+        flex-direction: row;
+    }
+
+    .pwa-install-content {
+        max-width: 450px;
+        border-radius: clamp(12px, 3vw, 16px);
+        margin-bottom: 2rem;
+    }
+}
+
+/* =============================================================================
 12. RESPONSIVIDADE MOBILE (@media max-width: 480px
 ============================================================================= */
 @media (max-width: 480px) {
-    
     .app-main-grid {
-        min-height: 100dvh;
-        padding-top: env(safe-area-inset-top);
         top: 0;
-        bottom: 0;
-        padding: 0;
-        left: 0;
-        right: 0;
-        width: 100vw;
-        height: auto;
-        box-sizing: border-box;
-        position: fixed;
-        display: flex;
-        justify-content: center;
-        overflow-y: auto;
-    }
-     .video-stage {
-        padding: 0;
-        width: 100%;
-    }
-
-    .video-wrapper {
-        aspect-ratio: 1 / 1;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        border-radius: 5%;
-        box-shadow: none;
-    }
-
-    .player-embed {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 177%;
-        height: 120%;
-        transform: translate(-50%, -50%);
+        background: none;
     }
         .playlist-aside {
         flex: 1 1 auto;
         width: 100vw;
         min-height: 0;
         overflow-y: auto;
+        background: var(--bg-surface);
         border-left: none;
         padding: 0;
         position: relative;
@@ -3212,10 +3249,6 @@ animation: float 2s ease-in-out infinite;
     }
 
     .app-header {
-         /* Altura base + o tamanho da barra de status do Android */
-    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-    /*padding-top: env(safe-area-inset-top, 0px);*/
-
         background: linear-gradient(180deg, #0f0d1261, transparent);
         position: absolute;
         left: 0;
@@ -3237,7 +3270,34 @@ animation: float 2s ease-in-out infinite;
         height: 24px;
     }
 
-   
+    .video-stage {
+        padding: 0;
+        width: 100%;
+    }
+
+    .video-wrapper {
+        aspect-ratio: 1 / 1;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        border-radius: 5%;
+        box-shadow: none;
+    }
+
+    .player-embed {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /*tecnica 1/1*/
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 215%;
+        height: 100%;
+        transform: translate(-50%, -50%);
+    }
+
     .overlay-layer-legendas {
         position: absolute;
         left: 0;
