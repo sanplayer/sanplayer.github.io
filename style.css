@@ -3327,7 +3327,7 @@ animation: float 2s ease-in-out infinite;
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 215%;
+        width: 230%;
         height: 100%;
         transform: translate(-50%, -50%);
     }
