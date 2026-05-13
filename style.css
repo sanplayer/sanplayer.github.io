@@ -3269,6 +3269,7 @@ animation: float 2s ease-in-out infinite;
     .app-main-grid {
         top: 0;
         background: none;
+        padding-top: env(titlebar-area-inset-top, -24px);
     }
         .playlist-aside {
         flex: 1 1 auto;
