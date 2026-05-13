@@ -150,7 +150,7 @@ body {
     position: relative;
     top: calc(env(safe-area-inset-top) * -1); 
     /* Se o comando acima não funcionar sozinho, use este teste agressivo: */
-    /* margin-top: -30px; */ 
+    margin-top: -30px;
     border: 10px solid yellow; /* Agora a borda deve subir */
 }
 
