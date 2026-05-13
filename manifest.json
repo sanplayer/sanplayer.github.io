@@ -12,7 +12,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
-  "theme_color": "#000000",
+  "theme_color": "#00000000",
   "categories": [
     "music",
     "multimedia"
