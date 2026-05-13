@@ -3212,6 +3212,10 @@ animation: float 2s ease-in-out infinite;
     }
 
     .app-header {
+         /* Altura base + o tamanho da barra de status do Android */
+    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    /*padding-top: env(safe-area-inset-top, 0px);*/
+
         background: linear-gradient(180deg, #0f0d1261, transparent);
         position: absolute;
         left: 0;
