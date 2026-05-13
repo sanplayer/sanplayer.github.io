@@ -3267,7 +3267,7 @@ animation: float 2s ease-in-out infinite;
 ============================================================================= */
 @media (max-width: 480px) {
     .app-main-grid {
-        top: 0;
+        top: -24px;
         background: none;
         padding-top: env(titlebar-area-inset-top, -24px);
     }
