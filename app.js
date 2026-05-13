@@ -1,4 +1,4 @@
-﻿
+
 /**
  * 🎵 SAN PLAYER - APP.JS
  * 
@@ -3844,7 +3844,7 @@ function openPlaylistsModal() {
                 subtitle: videoCount
             }, {
                 type: 'playlist',
-                shareData: playlistMeta.name
+                shareData: playlistMeta
             });
             
             // 🔒 NOVO: Usar closure para capturar o índice correto
@@ -3949,7 +3949,7 @@ function updatePlaylistCardsInModal() {
             subtitle: videoCount
         }, {
             type: 'playlist',
-            shareData: playlistMeta.name
+            shareData: playlistMeta
         });
         
         // 🔒 Usar closure para capturar índice correto
@@ -4201,13 +4201,14 @@ async function openArtistsModal() {
 
         artists.forEach(({ name: artist, count }) => {
             const artistCover = getArtistCoverUrl(artist);
+            const coverFileName = artistCover.replace('covers/artists/', '').replace('.jpg', '');
             const card = renderCard({
                 src: artistCover,
                 title: artist,
                 subtitle: `${count} músicas`
             }, {
                 type: 'artist',
-                shareData: artist
+                shareData: { name: artist, cover: coverFileName }
             });
             
             // 🔒 NOVO: Usar closure para capturar o nome do artista correto
@@ -4822,15 +4823,14 @@ function closeItemOptionsModal() {
  * Abre modal de compartilhamento para playlist
  * @param {String} playlistName - Nome da playlist
  */
-function openPlaylistShareModal(playlistName) {
+function openPlaylistShareModal(playlist) {
     const modal = document.getElementById('itemOptionsModal');
     const headerEl = modal.querySelector('.modal-header');
     
-    // Atualizar conteúdo do header existente
     headerEl.innerHTML = '';
     
     const title = document.createElement('h2');
-    title.textContent = playlistName;
+    title.textContent = playlist.title || playlist.name;
     
     const closeBtn = document.createElement('button');
     closeBtn.className = 'modal-close';
@@ -4846,19 +4846,17 @@ function openPlaylistShareModal(playlistName) {
     
     const fragment = document.createDocumentFragment();
     
-    // Botão: Compartilhar
     const shareRow = renderOptionRow({
         icon: 'share',
         text: 'Compartilhar',
         onClick: () => {
-            sharePlaylist(playlistName);
+            sharePlaylist(playlist);
             closeItemOptionsModal();
         }
     });
     fragment.appendChild(shareRow);
     fragment.appendChild(renderSeparator());
     
-    // Botão: Cancelar
     const cancelRow = renderOptionRow({
         icon: 'close',
         text: 'Cancelar',
@@ -4872,17 +4870,16 @@ function openPlaylistShareModal(playlistName) {
 
 /**
  * Abre modal de compartilhamento para artista
- * @param {String} artistName - Nome do artista
+ * @param {Object} artist - Objeto artist com { name, id, cover }
  */
-function openArtistShareModal(artistName) {
+function openArtistShareModal(artist) {
     const modal = document.getElementById('itemOptionsModal');
     const headerEl = modal.querySelector('.modal-header');
     
-    // Atualizar conteúdo do header existente
     headerEl.innerHTML = '';
     
     const title = document.createElement('h2');
-    title.textContent = artistName;
+    title.textContent = artist.name;
     
     const closeBtn = document.createElement('button');
     closeBtn.className = 'modal-close';
@@ -4898,19 +4895,17 @@ function openArtistShareModal(artistName) {
     
     const fragment = document.createDocumentFragment();
     
-    // Botão: Compartilhar
     const shareRow = renderOptionRow({
         icon: 'share',
         text: 'Compartilhar',
         onClick: () => {
-            shareArtist(artistName);
+            shareArtist(artist);
             closeItemOptionsModal();
         }
     });
     fragment.appendChild(shareRow);
     fragment.appendChild(renderSeparator());
     
-    // Botão: Cancelar
     const cancelRow = renderOptionRow({
         icon: 'close',
         text: 'Cancelar',
@@ -5210,56 +5205,57 @@ function shareItem(index) {
  * 
  * @param {String} playlistName - Nome da playlist (pode ter pontos)
  */
-function sharePlaylist(playlistName) {
-    const text = `Acompanhe a playlist: ${playlistName} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}?playlistId=${safeEncode(playlistName)}`;
-    
-    // 🔥 Usar função central nativeShare()
-    nativeShare({
-        title: 'SanPlayer',
-        text: text,
-        url: url
-    });
+/**
+ * 🌉 Bridge Híbrida Profissional - Retorna true se disparou o nativo
+ * Prioridade: Android Nativo → Web Share API → Clipboard
+ */
+async function sharedBridge(title, text, url, imageUrl) {
+    try {
+        if (window.Android && window.Android.share) {
+            window.Android.share(title, text, url, imageUrl);
+            return true;
+        }
+        if (navigator.share) {
+            try {
+                await navigator.share({ title, text, url });
+                return true;
+            } catch (err) {
+                console.warn('[sharedBridge] Cancelado:', err);
+                return false;
+            }
+        }
+        const shareText = `${text}\n${url}`;
+        await navigator.clipboard.writeText(shareText);
+        showToast('Link copiado!');
+        return true;
+    } catch (err) {
+        console.warn('[sharedBridge] ⚠️ Erro:', err);
+        return false;
+    }
 }
 
-/**
- * 🔒 Compartilha um artista com ENCODE SEGURO
- * 
- * ⚠️ CRÍTICO: Usa safeEncode() para garantir pontos em artistId
- * 
- * Casos de teste OBRIGATÓRIOS:
- * 1. "Fábio Jr." → "?artistId=F%C3%A1bio%20Jr%2E" ✅
- * 2. "A.B.C. Band" → "?artistId=A%2EB%2EC%20Band" ✅
- * 3. Nomes normais → funcionam (sem regressão) ✅
- * 
- * Fluxo:
- * - shareArtist("Fábio Jr.")
- *   ↓
- * - safeEncode("Fábio Jr.") = "F%C3%A1bio%20Jr%2E"
- *   ↓
- * - ?artistId=F%C3%A1bio%20Jr%2E (URL gerada)
- *   ↓
- * - params.get('artistId') [auto decode]
- * - = "Fábio Jr." (ponto RESTAURADO) ✅
- * 
- * REGRAS:
- * ❌ NUNCA: encodeURIComponent(artistName)
- * ✅ SEMPRE: safeEncode(artistName)
- * ❌ NUNCA: URL hardcoded
- * ✅ SEMPRE: window.location.origin + pathname
- * 
- * @param {String} artistName - Nome do artista (pode ter pontos finais)
- */
-function shareArtist(artistName) {
-    const text = `Ouça todas as músicas de: ${artistName} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}?artistId=${safeEncode(artistName)}`;
-    
-    // 🔥 Usar função central nativeShare()
-    nativeShare({
-        title: 'SanPlayer',
-        text: text,
-        url: url
-    });
+function sharePlaylist(playlist) {
+    if (!playlist || (!playlist.title && !playlist.name)) {
+        console.warn('[sharePlaylist] ❌ Inválido:', playlist);
+        return false;
+    }
+    const title = `Playlist: ${playlist.title || playlist.name}`;
+    const text = `Confira minha playlist ${playlist.title || playlist.name} no SanPlayer`;
+    const url = `${window.location.origin}${window.location.pathname}?playlistId=${safeEncode(playlist.title || playlist.name)}`;
+    const imageUrl = `${window.location.origin}/covers/playlists/${playlist.cover}`;
+    return sharedBridge(title, text, url, imageUrl);
+}
+
+function shareArtist(artist) {
+    if (!artist || !artist.name) {
+        console.warn('[shareArtist] ❌ Inválido:', artist);
+        return false;
+    }
+    const title = `Artista: ${artist.name}`;
+    const text = `Ouça as músicas de ${artist.name} no SanPlayer`;
+    const url = `${window.location.origin}${window.location.pathname}?artistId=${safeEncode(artist.name)}`;
+    const imageUrl = `${window.location.origin}/covers/artists/${artist.cover}`;
+    return sharedBridge(title, text, url, imageUrl);
 }
 
 /**
