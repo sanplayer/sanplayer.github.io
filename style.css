@@ -167,6 +167,10 @@
 html,
 body {
     background-color: #000000;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    width: 100vw;
 }
 
 body {
@@ -3266,10 +3270,21 @@ animation: float 2s ease-in-out infinite;
 12. RESPONSIVIDADE MOBILE (@media max-width: 480px
 ============================================================================= */
 @media (max-width: 480px) {
+    
     .app-main-grid {
-        top: -24px;
-        background: none;
-        padding-top: env(titlebar-area-inset-top, -24px);
+        top: 0;
+        bottom: 0;
+        padding: 0;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        height: 100vh;
+        box-sizing: border-box;
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        z-index: -1;
+        overflow-y: auto;
     }
         .playlist-aside {
         flex: 1 1 auto;
