@@ -3278,7 +3278,6 @@ animation: float 2s ease-in-out infinite;
         left: 0;
         right: 0;
         width: 100vw;
-        height: 100vh;
         box-sizing: border-box;
         position: fixed;
         display: flex;
