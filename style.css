@@ -3279,7 +3279,6 @@ animation: float 2s ease-in-out infinite;
         position: fixed;
         display: flex;
         justify-content: center;
-        z-index: -1;
         overflow-y: auto;
     }
         .playlist-aside {
