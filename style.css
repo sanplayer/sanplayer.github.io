@@ -135,14 +135,12 @@ body {
 
 body {
     font-family: 'Inter', sans-serif;
-    background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.4;
     overflow-x: hidden;
     min-height: 100vh;
     min-height: 100dvh;
     transition: opacity 0.2s ease;
-   
     position: relative;
     top: calc(env(safe-area-inset-top) * -1); 
     margin-top: -30px;
