@@ -2903,15 +2903,13 @@ animation: float 2s ease-in-out infinite;
     .app-main-grid {
         flex-direction: column;
         position: fixed;
-        top: var(--header-height);
         bottom: 0;
         left: 0;
         right: 0;
         width: 100vw;
-        height: auto;
+        /*height: auto;*/
         overflow: hidden;
         z-index: var(--main-z-index);
-        padding-bottom: var(--footer-height);
     }
 
 
@@ -3161,6 +3159,8 @@ animation: float 2s ease-in-out infinite;
 @media (max-width: 480px) {
     
     .app-main-grid {
+        min-height: 100dvh;
+        padding-top: env(safe-area-inset-top);
         top: 0;
         bottom: 0;
         padding: 0;
