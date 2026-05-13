@@ -144,7 +144,7 @@ body {
     transition: opacity 0.2s ease;
     position: relative;
     top: calc(env(safe-area-inset-top) * -1); 
-    margin-top: -30px;
+    /*margin-top: -30px;*/
 }
 
 ul {
