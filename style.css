@@ -167,15 +167,11 @@
 html,
 body {
     background-color: #000000;
-    top: 0;
-    bottom: 0;
-    height: 100vh;
-    width: 100vw;
 }
 
 body {
+    top: 0;
     font-family: 'Inter', sans-serif;
-    background: var(--bg-main);
     background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.4;
@@ -334,8 +330,8 @@ button:active {
 ============================================================================= */
 .app-header {
     /* Altura base + o tamanho da barra de status do Android */
-    height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-    padding-top: env(safe-area-inset-top, 0px);
+    /*height: calc(var(--header-height) + env(safe-area-inset-top, 0px));*/
+    /*padding-top: env(safe-area-inset-top, 0px);*/
 
     display: flex;
     align-items: center;
