@@ -5024,17 +5024,54 @@ function showToast(message) {
 }
 
 // ============================================================================
-// NOVA ARQUITETURA: COMPARTILHAMENTO DESACOPLADO
+// 🔥 FUNÇÃO CENTRAL DE COMPARTILHAMENTO
 // ============================================================================
-// Em vez de lógica duplicada em cada botão, centralizamos:
-// 1. shareVideo() → função única de compartilhamento
-// 2. resolveVideoContext() → resolver qual video/contexto compartilhar
-// 3. handleShare() → handler genérico reutilizável
+// Centraliza TODA a lógica de share:
+// - Android WebView (window.Android?.share)
+// - Web Share API (navigator.share)
+// - Fallback: Clipboard
 // ============================================================================
 
 /**
- * 🎯 FUNÇÃO CENTRAL DE COMPARTILHAMENTO
- * Responsável ÚNICA por compartilhar um vídeo usando navigator.share + fallback
+ * 🎯 FUNÇÃO ÚNICA E CENTRAL: Compartilhamento Nativo
+ * 
+ * Tenta compartilhar em ordem de prioridade:
+ * 1. Android WebView (SE aplicativo SanPlayer Android)
+ * 2. Web Share API (PWA/navegadores modernos)
+ * 3. Clipboard (fallback universal)
+ * 
+ * @param {Object} config - { title, text, url }
+ * @returns {Promise<Boolean>} true se navigator.share foi usado, false caso contrário
+ */
+async function nativeShare({ title = '', text = '', url = '' }) {
+    try {
+        // 📱 1️⃣ Android WebView Native (aplicativo Android SanPlayer)
+        if (window.Android?.share) {
+            window.Android.share(title, text, url);
+            return true;
+        }
+
+        // 🌐 2️⃣ Web Share API (PWA/navegadores modernos)
+        if (navigator.share) {
+            await navigator.share({ title, text, url });
+            return true;
+        }
+
+        // 📋 3️⃣ Fallback Universal: Clipboard
+        const shareText = `${text}\n${url}`;
+        await navigator.clipboard.writeText(shareText);
+        showToast('Link copiado!');
+        return false;
+
+    } catch (err) {
+        console.warn('[nativeShare] ⚠️ Erro ao compartilhar:', err);
+        return false;
+    }
+}
+
+/**
+ * 🎯 FUNÇÃO CENTRAL DE COMPARTILHAMENTO (VIDEO)
+ * Responsável ÚNICA por compartilhar um vídeo
  * 
  * @param {Object} video - Objeto vídeo { id, title, artist }
  * @param {Object} playlist - Objeto playlist opcional (para contexto apenas)
@@ -5051,25 +5088,12 @@ function shareVideo(video, playlist) {
     // 📝 Construir texto de compartilhamento
     const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
     
-    const shareData = {
+    // 🔥 Usar função central nativeShare()
+    nativeShare({
         title: 'SanPlayer',
         text: text,
         url: url
-    };
-    
-    // 📤 Tentar Web Share API
-    if (navigator.share) {
-        navigator.share(shareData).catch(() => {});
-    } else {
-        // 📋 Fallback: clipboard
-        const shareText = `${text}\n${url}`;
-        try { 
-            navigator.clipboard.writeText(shareText);
-            showToast('Link copiado para compartilhamento!');
-        } catch (e) {
-            console.warn('[Share] Erro ao copiar para clipboard:', e);
-        }
-    }
+    });
 }
 
 /**
@@ -5159,18 +5183,13 @@ function shareItem(index) {
     
     const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
     const url = `${window.location.origin}${window.location.pathname}?videoId=${video.id}`;
-    if (navigator.share) {
-        navigator.share({
-            title: 'SanPlayer',
-            text: text,
-            url: url,
-        }).catch(() => {});
-    } else {
-        // Fallback: copiar para clipboard
-        const shareText = `${text}\n${url}`;
-        try { navigator.clipboard.writeText(shareText); } catch (e) {}
-        alert('Música copiada para compartilhamento!');
-    }
+    
+    // 🔥 Usar função central nativeShare()
+    nativeShare({
+        title: 'SanPlayer',
+        text: text,
+        url: url
+    });
 }
 
 /**
@@ -5194,18 +5213,13 @@ function shareItem(index) {
 function sharePlaylist(playlistName) {
     const text = `Acompanhe a playlist: ${playlistName} no SanPlayer`;
     const url = `${window.location.origin}${window.location.pathname}?playlistId=${safeEncode(playlistName)}`;
-    if (navigator.share) {
-        navigator.share({
-            title: 'SanPlayer',
-            text: text,
-            url: url,
-        }).catch(() => {});
-    } else {
-        // Fallback: copiar para clipboard
-        const shareText = `${text}\n${url}`;
-        try { navigator.clipboard.writeText(shareText); } catch (e) {}
-        alert('Playlist copiada para compartilhamento!');
-    }
+    
+    // 🔥 Usar função central nativeShare()
+    nativeShare({
+        title: 'SanPlayer',
+        text: text,
+        url: url
+    });
 }
 
 /**
@@ -5239,18 +5253,13 @@ function sharePlaylist(playlistName) {
 function shareArtist(artistName) {
     const text = `Ouça todas as músicas de: ${artistName} no SanPlayer`;
     const url = `${window.location.origin}${window.location.pathname}?artistId=${safeEncode(artistName)}`;
-    if (navigator.share) {
-        navigator.share({
-            title: 'SanPlayer',
-            text: text,
-            url: url,
-        }).catch(() => {});
-    } else {
-        // Fallback: copiar para clipboard
-        const shareText = `${text}\n${url}`;
-        try { navigator.clipboard.writeText(shareText); } catch (e) {}
-        alert('Artista copiado para compartilhamento!');
-    }
+    
+    // 🔥 Usar função central nativeShare()
+    nativeShare({
+        title: 'SanPlayer',
+        text: text,
+        url: url
+    });
 }
 
 /**
