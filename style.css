@@ -130,9 +130,8 @@
 
 html,
 body {
-    /*background-color: #000000;*/
-    background-color: red !important;
-    margin-top: -50px !important; /* Teste agressivo */
+    background-color: #000000;
+    border: 10px solid yellow;
 }
 
 body {
