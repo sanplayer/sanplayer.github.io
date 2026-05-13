@@ -134,6 +134,7 @@ body {
 }
 
 body {
+    background-attachment: fixed;
     font-family: 'Inter', sans-serif;
     color: var(--text-main);
     line-height: 1.4;
