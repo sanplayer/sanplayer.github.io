@@ -80,7 +80,7 @@
     --footer-border: #23232b;
     --footer-accent: #9d00dd;
     --font-xs: clamp(0.75rem, 1.5vw, 0.9rem);
-    --font-sm: clamp(1rem, 2vw, 1.2rem);
+    --font-sm: clamp(0.9rem, 2vw, 1.2rem);
     --font-md: clamp(1rem, 2.5vw, 1.25rem);
     --font-mt: clamp(1.1rem, 2.5vw, 1.3rem);
     --font-lg: clamp(1.1rem, 3vw, 1.4rem);
@@ -3367,7 +3367,6 @@ animation: float 2s ease-in-out infinite;
         z-index: 20;
         gap: 0.4rem;
         margin-bottom: var(--nav-offset);
-        padding-bottom: var(--safe-area-bottom);  
     }
 
     .progress-time-labels {
@@ -3376,10 +3375,14 @@ animation: float 2s ease-in-out infinite;
         font-size: var(--font-sm);
         font-weight: bold;
         color: #b0b0c0;
-        padding: 0 var(--gap-md);
-        bottom: 1.5rem;
+        
+        
         width: 100%;
         position: absolute;
+        
+        margin-bottom: 25px;
+        bottom: 15px;
+        
     }
 
     .sidebar-nav li a {
