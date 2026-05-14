@@ -119,7 +119,7 @@
 
     /* Safe Area Setup */
     --safe-area-top: env(safe-area-inset-top, 0px);
-    --status-bar-offset: 20px;
+    --status-bar-offset: 10px;
 }
 
 /* =============================================================================
