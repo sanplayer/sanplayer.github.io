@@ -3260,6 +3260,14 @@ animation: float 2s ease-in-out infinite;
         position: absolute;
         z-index: 101;
         width: 100%;
+        .conteudo-seguro {
+  /* Adiciona padding apenas se houver notch/barra de navegação */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
     }
 
     .app-header .title-player {
