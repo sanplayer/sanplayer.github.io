@@ -3352,7 +3352,7 @@ animation: float 2s ease-in-out infinite;
     .block-controls {
         z-index: 20;
         gap: 0.5rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
     }
 
     .progress-time-labels {
