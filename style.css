@@ -3366,7 +3366,8 @@ animation: float 2s ease-in-out infinite;
     .block-controls {
         z-index: 20;
         gap: 0.4rem;
-        bottom: calc(var(--safe-area-bottom) + var(--nav-offset));        
+        margin-bottom: var(--nav-offset);
+        padding-bottom: var(--safe-area-bottom);  
     }
 
     .progress-time-labels {
