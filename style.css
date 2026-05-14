@@ -3260,7 +3260,7 @@ animation: float 2s ease-in-out infinite;
         position: absolute;
         z-index: 101;
         width: 100%;
-        padding-top: env(safe-area-inset-top, 20px);  
+        padding-top: env(safe-area-inset-top, 40px);  
 }
 
     }
