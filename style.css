@@ -3265,14 +3265,17 @@ animation: float 2s ease-in-out infinite;
 
     .app-header .title-player {
         color: rgba(255, 255, 255, 0.3);
+        display: none;
     }
 
     .app-header svg.icon {
         color: #fff;
     }
-
+    .header-logo{
+        gap: 0rem;
+    }
     .header-app-logo svg.icon {
-        fill: rgba(255, 255, 255, 0.3);
+        fill: var(--text-main);
         width: 24px;
         height: 24px;
     }
@@ -3349,7 +3352,7 @@ animation: float 2s ease-in-out infinite;
     .block-controls {
         z-index: 20;
         gap: 0.5rem;
-        padding-bottom: 0.2rem;
+        margin-bottom: 0.5rem;
     }
 
     .progress-time-labels {
