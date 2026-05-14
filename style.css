@@ -120,6 +120,9 @@
     /* Safe Area Setup */
     --safe-area-top: env(safe-area-inset-top, 0px);
     --status-bar-offset: 10px;
+
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --nav-offset: 16px;
 }
 
 /* =============================================================================
@@ -3359,11 +3362,11 @@ animation: float 2s ease-in-out infinite;
         user-select: none;
         -webkit-user-select: none;
     }
-
+    /* 480p */
     .block-controls {
         z-index: 20;
         gap: 0.4rem;
-        margin-bottom: 1rem;
+        bottom: calc(var(--safe-area-bottom) + var(--nav-offset));        
     }
 
     .progress-time-labels {
