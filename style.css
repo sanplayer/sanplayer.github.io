@@ -116,6 +116,9 @@
     --z-overlay-max: 5000;
     --keyboard-offset: 0px;
     --main-z-index: 10;
+
+    /* Safe Area Setup */
+    --safe-area-top: env(safe-area-inset-top, 0px);
 }
 
 /* =============================================================================
@@ -3264,7 +3267,7 @@ animation: float 2s ease-in-out infinite;
         position: absolute;
         z-index: 101;
         width: 100%;
-        padding-top: env(safe-area-inset-top, 40px);
+        padding-top: var(--safe-area-top);
     }
 
     .app-header .title-player {
