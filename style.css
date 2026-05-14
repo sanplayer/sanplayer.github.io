@@ -1,42 +1,6 @@
 /* =============================================================================
 1. VARIÃƒÂVEIS CSS E TIPOGRAFIA
 ============================================================================= */
-/* roboto-regular - latin */
-@font-face {
-    font-display: swap;
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    src: url('/fonts/roboto-v51-latin-regular.woff2') format('woff2');
-}
-
-/* roboto-500 - latin */
-@font-face {
-    font-display: swap;
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 500;
-    src: url('/fonts/roboto-v51-latin-500.woff2') format('woff2');
-}
-
-/* roboto-600 - latin */
-@font-face {
-    font-display: swap;
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 600;
-    src: url('/fonts/roboto-v51-latin-600.woff2') format('woff2');
-}
-
-/* roboto-700 - latin */
-@font-face {
-    font-display: swap;
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 700;
-    src: url('/fonts/roboto-v51-latin-700.woff2') format('woff2');
-}
-
 /* exo-2-regular - latin */
 @font-face {
     font-display: swap;
@@ -3284,7 +3248,6 @@ animation: float 2s ease-in-out infinite;
         width: 100vw;
         min-height: 0;
         overflow-y: auto;
-        /*background: var(--bg-surface);*/
         background: radial-gradient(circle,rgba(32, 7, 52, 1) 0%, rgba(7, 1, 11, 1) 100%);
 
         border-left: none;
@@ -3294,11 +3257,10 @@ animation: float 2s ease-in-out infinite;
     }
 
     .app-header {
-        background: linear-gradient(180deg, #0f0d1261, transparent);
         position: absolute;
-        left: 0;
-        width: 100%;
         z-index: 101;
+        width: 100%;
+        top: 24px;
     }
 
     .app-header .title-player {
@@ -3387,6 +3349,7 @@ animation: float 2s ease-in-out infinite;
     .block-controls {
         z-index: 20;
         gap: 0.5rem;
+        padding-bottom: 0.2rem;
     }
 
     .progress-time-labels {
