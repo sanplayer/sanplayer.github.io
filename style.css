@@ -3260,9 +3260,6 @@ animation: float 2s ease-in-out infinite;
         position: absolute;
         z-index: 101;
         width: 100%;
-       
-        height: calc(var(--header-height) + env(safe-area-inset-top));
-
     }
 
     .app-header .title-player {
