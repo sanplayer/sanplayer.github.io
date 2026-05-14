@@ -1,7 +1,41 @@
 /* =============================================================================
 1. VARIÃƒÂVEIS CSS E TIPOGRAFIA
 ============================================================================= */
+/* roboto-regular - latin */
+@font-face {
+    font-display: swap;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/fonts/roboto-v51-latin-regular.woff2') format('woff2');
+}
 
+/* roboto-500 - latin */
+@font-face {
+    font-display: swap;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/fonts/roboto-v51-latin-500.woff2') format('woff2');
+}
+
+/* roboto-600 - latin */
+@font-face {
+    font-display: swap;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 600;
+    src: url('/fonts/roboto-v51-latin-600.woff2') format('woff2');
+}
+
+/* roboto-700 - latin */
+@font-face {
+    font-display: swap;
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 700;
+    src: url('/fonts/roboto-v51-latin-700.woff2') format('woff2');
+}
 
 /* exo-2-regular - latin */
 @font-face {
@@ -67,10 +101,12 @@
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --accent-roxo: #A238FF;
+    --accent-gold: #E7CC7F;
     --accent-roxo-dark: #5c119e;
     --text-main: #EEF1F6;
     --text-dim: #C1C7CE;
     --border-rgba: rgba(255, 255, 255, 0.1);
+    --border-video: #1a1a1a;
     --gradient-top: #1f1f1f;
     --gradient-bottom: #070707;
     --bg-gradient-radial: radial-gradient(circle, rgba(28, 4, 48, 1) 0%, rgba(15, 13, 18, 1) 100%);
@@ -489,15 +525,22 @@ button:active {
 .video-wrapper {
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: 0.7rem;
+    border-radius: 30px;
     position: relative;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 5px solid var(--border-video);
 }
-
+/* DESKTOP  */
 .player-embed {
+    aspect-ratio: 16 / 9;
+    border-radius: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
     width: 100%;
-    height: 100%;
+    height: 135%;
+    transform: translate(-50%, -50%);
 }
 
 .video-wrapper img {
@@ -3241,7 +3284,9 @@ animation: float 2s ease-in-out infinite;
         width: 100vw;
         min-height: 0;
         overflow-y: auto;
-        background: var(--bg-surface);
+        /*background: var(--bg-surface);*/
+        background: radial-gradient(circle,rgba(32, 7, 52, 1) 0%, rgba(7, 1, 11, 1) 100%);
+
         border-left: none;
         padding: 0;
         position: relative;
@@ -3283,8 +3328,9 @@ animation: float 2s ease-in-out infinite;
         justify-content: center;
         border-radius: 5%;
         box-shadow: none;
+        border: none;
     }
-
+    /* 480PX */
     .player-embed {
         display: flex;
         align-items: center;
@@ -3293,8 +3339,8 @@ animation: float 2s ease-in-out infinite;
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 215%;
-        height: 100%;
+        width: 177%;
+        height: 120%;
         transform: translate(-50%, -50%);
     }
 
