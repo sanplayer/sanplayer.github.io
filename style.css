@@ -3318,7 +3318,9 @@ animation: float 2s ease-in-out infinite;
         height: 120%;
         transform: translate(-50%, -50%);
     }
-
+        .overlay-layer {
+        background: linear-gradient(18180deg,rgb(28 6 46 / 40%) 0%, rgb(0 0 0 / 0%) 20%, rgb(0 0 0 / 0%) 100%);
+    }
     .overlay-layer-legendas {
         position: absolute;
         left: 0;
