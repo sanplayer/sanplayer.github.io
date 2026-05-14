@@ -119,6 +119,7 @@
 
     /* Safe Area Setup */
     --safe-area-top: env(safe-area-inset-top, 0px);
+    --status-bar-offset: 40px;
 }
 
 /* =============================================================================
@@ -3268,6 +3269,7 @@ animation: float 2s ease-in-out infinite;
         z-index: 101;
         width: 100%;
         padding-top: var(--safe-area-top);
+        margin-top: var(--status-bar-offset);
     }
 
     .app-header .title-player {
