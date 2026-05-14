@@ -179,6 +179,7 @@ svg.icon {
 body.is-routing {
     opacity: 0.6;
 }
+
 /* class temp disable for donate text*/
 .button-donate {
     cursor: pointer;
@@ -495,6 +496,7 @@ button:active {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     border: 5px solid var(--border-video);
 }
+
 /* DESKTOP  */
 .player-embed {
     aspect-ratio: 16 / 9;
@@ -2245,7 +2247,7 @@ color: var(--accent-roxo);
     background: var(--bg-main);
     padding: 0 0.6rem;
     user-select: none;
-    
+
 }
 
 
@@ -2884,6 +2886,7 @@ animation: float 2s ease-in-out infinite;
     border-radius: 1.2rem;
 }
 
+
 /* =============================================================================
 10. RESPONSIVIDADE MOBILE (@media max-width: 1023px)
 ============================================================================= */
@@ -3168,7 +3171,7 @@ animation: float 2s ease-in-out infinite;
 @media (min-width: 1024px) {
     .app-main-grid {
         flex-direction: row;
-       
+
     }
 
     .app-sidebar {
@@ -3239,17 +3242,18 @@ animation: float 2s ease-in-out infinite;
 12. RESPONSIVIDADE MOBILE (@media max-width: 480px
 ============================================================================= */
 @media (max-width: 480px) {
+
     .app-main-grid {
         top: 0;
         background: none;
     }
-        .playlist-aside {
+
+    .playlist-aside {
         flex: 1 1 auto;
         width: 100vw;
         min-height: 0;
         overflow-y: auto;
-        background: radial-gradient(circle,rgba(32, 7, 52, 1) 0%, rgba(7, 1, 11, 1) 100%);
-
+        background: radial-gradient(circle, rgba(32, 7, 52, 1) 0%, rgba(7, 1, 11, 1) 100%);
         border-left: none;
         padding: 0;
         position: relative;
@@ -3260,9 +3264,7 @@ animation: float 2s ease-in-out infinite;
         position: absolute;
         z-index: 101;
         width: 100%;
-        padding-top: env(safe-area-inset-top, 40px);  
-}
-
+        padding-top: env(safe-area-inset-top, 20px);
     }
 
     .app-header .title-player {
@@ -3273,9 +3275,11 @@ animation: float 2s ease-in-out infinite;
     .app-header svg.icon {
         color: #fff;
     }
-    .header-logo{
+
+    .header-logo {
         gap: 0rem;
     }
+
     .header-app-logo svg.icon {
         fill: var(--text-main);
         width: 24px;
@@ -3297,12 +3301,11 @@ animation: float 2s ease-in-out infinite;
         box-shadow: none;
         border: none;
     }
-    /* 480PX */
+
     .player-embed {
         display: flex;
         align-items: center;
         justify-content: center;
-        /*tecnica 1/1*/
         position: absolute;
         top: 50%;
         left: 50%;
@@ -3322,7 +3325,6 @@ animation: float 2s ease-in-out infinite;
         justify-content: flex-start;
         gap: 0;
         padding: 0;
-        /* TESTE EM ANDAMENTO */
         bottom: -1px;
         height: 10%;
         background: linear-gradient(360deg, #0f0d127d, transparent);
@@ -3376,7 +3378,8 @@ animation: float 2s ease-in-out infinite;
     .app-sidebar {
         box-shadow: none;
     }
-        .app-player-footer {
-            background: var(--bg-main);
+
+    .app-player-footer {
+        background: var(--bg-main);
     }
 }
