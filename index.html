@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
    <head>
@@ -29,19 +30,19 @@
       <meta property="og:type" content="website">
       <meta property="og:title" content="SanPlayer">
       <meta property="og:description" content="Música para os seus ouvidos">
-      <meta property="og:image" content="https://sanplayer.github.io/og-image.webp">
+      <meta property="og:image" content="https://sanplayer.github.io/icons/og-image.webp">
       <!-- Twitter Meta Tags -->
       <meta name="twitter:card" content="summary_large_image">
       <meta property="twitter:domain" content="sanplayer.github.io">
       <meta property="twitter:url" content="https://sanplayer.github.io/">
       <meta name="twitter:title" content="SanPlayer">
       <meta name="twitter:description" content="Música para os seus ouvidos">
-      <meta name="twitter:image" content="https://sanplayer.github.io/og-image.webp">
+      <meta name="twitter:image" content="https://sanplayer.github.io/icons/og-image.webp">
    </head>
    <body>
       <header class="app-header">
          <div class="header-logo">
-            <button class="btn-hamburger" aria-label="Abrir menu">
+            <button title="menu" class="btn-hamburger" aria-label="Abrir menu">
                <svg class="icon">
                   <use href="/icons/package.svg#menu-case"></use>
                </svg>
@@ -81,7 +82,7 @@
          </div>
       </header>
       <div class="app-main-grid">
-         <nav class="app-sidebar app-sidebar-mobile">
+         <nav class="app-sidebar app-sidebar-mobile" title="app-sidebar">
             <div class="sidebar-overlay"></div>
             <div class="sidebar-content">
                <ul class="sidebar-nav">
@@ -797,6 +798,6 @@
       </div>
       <!-- OTHERS SCRIPTS -->
       <script src="https://www.youtube.com/iframe_api"></script>
-      <script src="/app.js"></script>
+      <script type="module" src="/app.js"></script>
    </body>
 </html>
