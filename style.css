@@ -1902,22 +1902,9 @@ button:active {
     justify-content: space-between;
 }
 
-.native-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--padding-app) !important;
-    height: var(--header-height-mobile);
-}
+/*.native-header {display:flex;align-items:center;justify-content:space-between;padding:var(--padding-app) !important;height:var(--header-height-mobile);}*/
 
-.native-header-title {
-    flex: 1;
-    text-align: center;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-    color: var(--text-main);
-}
+/*.native-header-title { flex:1;text-align:center;font-size: 1.1rem;font-weight: 600;margin: 0;color: var(--text-main);}*/
 
 .modal-back-btn {
     background: transparent !important;
