@@ -2928,7 +2928,8 @@ MOBILE SPECIFIC STYLES
 
 /* HEADER MOBILE */
     .app-header {
-        height: var(--header-height);
+
+        height: calc(var(--header-height-mobile) + var(--safe-area-top));
         width: 100%;
         /*padding: 0;*/
         border-bottom: none;
