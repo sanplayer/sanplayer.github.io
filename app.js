@@ -7371,7 +7371,7 @@ function onProgressChange(event) {
 //download
 function baixarAPK() {
   const link = document.createElement('a');
-  link.href = '/apk/SanPlayer_1.0.0.4.apk'; // URL ou caminho local do APK
-  link.download = 'Instalador SanPlayer_v1.0.0.4';         // Nome que aparecerá para o usuário
+  link.href = '/apk/SanPlayer_v1.0.1.9.apk'; // URL ou caminho local do APK
+  link.download = 'Instalador SanPlayer_v1.0.1.9';         // Nome que aparecerá para o usuário
   link.click();
 }
