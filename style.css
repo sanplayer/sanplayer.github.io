@@ -2937,7 +2937,7 @@ MOBILE SPECIFIC STYLES
         border-top-right-radius: var(--radius-lg);
         background-color: rgba(0, 0, 0, 0.1);
         border-top: 2px solid var(--accent-roxo);
-        align-items: bottom;
+        align-items: end;
     }
     .header-app-logo svg.icon {
     fill: rgba(255, 255, 255, .2);
