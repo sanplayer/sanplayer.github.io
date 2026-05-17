@@ -2931,14 +2931,13 @@ MOBILE SPECIFIC STYLES
 
         height: calc(var(--header-height-mobile) + var(--safe-area-top));
         width: 100%;
-        /*padding: 0;*/
         border-bottom: none;
         display: flex;
         border-top-left-radius: var(--radius-lg);
         border-top-right-radius: var(--radius-lg);
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: rgba(0, 0, 0, 0.1);
         border-top: 2px solid var(--accent-roxo);
-        align-items: center;
+        align-items: bottom;
     }
     .header-app-logo svg.icon {
     fill: rgba(255, 255, 255, .2);
