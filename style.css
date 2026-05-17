@@ -94,7 +94,7 @@
     --gap-lg: clamp(1rem, 3vw, 1.8rem);
     --padding-app: clamp(0.75rem, 2.5vw, 2rem);
     --header-height: clamp(50px, 10vh, 72px);
-    --header-height-mobile: clamp(40px, 10vh, 50px);
+    --header-height-mobile: clamp(30px, 10vh, 50px);
     --footer-height: clamp(60px, 12vh, 100px);
     --btn-size: clamp(36px, 8vw, 48px);
     --icon-size: clamp(1.25rem, 3vw, 1.8rem);
@@ -2928,7 +2928,6 @@ MOBILE SPECIFIC STYLES
 
 /* HEADER MOBILE */
     .app-header {
-
         height: calc(var(--header-height-mobile) + var(--safe-area-top));
         width: 100%;
         border-bottom: none;
