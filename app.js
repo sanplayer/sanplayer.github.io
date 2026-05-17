@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 🎵 SAN PLAYER - APP.JS
  * 
  * ⚠️ ARCHITECHT PROTECTION ATIVO ⚠️
@@ -41,6 +41,15 @@
  * 🔧 Para mudar, altere 'id' para valor existente em playlists.
  * 💾 VALIDE MANUALMENTE que o ID existe nos arquivos JSON!
  */
+
+// ============================================================================
+// IMPORTS - Módulos Autônomos
+// ============================================================================
+
+import { shareVideo, sharePlaylist, shareArtist, handleShare, shareMusic, shareItem } from './adapters/share.js';
+
+//
+
 const INITIAL_TRACK_FALLBACK = {
     id: "m21zfosnqls",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
     title: "Chill Out Mix 2023🍓 Chillout Lounge 117",
@@ -1695,16 +1704,6 @@ async function loadLastState() {
     }
 }
 
-/**
- * Carrega estado padrão (primeira playlist)
- * Fallback para quando não há histórico
- */
-async function loadDefaultState() {
-    if (player.playlistsIndex.length > 0) {
-        await selectPlaylistByIndex(0);
-    }
-}
-
 // ============================================================================
 // NOVA LÓGICA DE INICIALIZAÇÃO (Feature-flagged)
 // ============================================================================
@@ -2984,23 +2983,6 @@ function goBackToAboutModal(currentModalId) {
     }, 300);
 }
 
-// ============================================================================
-// Navegação entre Modals do About
-// ============================================================================
-// Quando o usuário está em Privacy/Terms/Author e clica em Voltar,
-// deve voltar para o modal About em vez de fechar tudo
-function goBackToAboutModal(currentModalId) {
-    const currentModal = document.getElementById(currentModalId);
-    if (currentModal) {
-        currentModal.classList.remove('show');
-    }
-    
-    // Aguardar animação de fechamento antes de abrir o About
-    setTimeout(() => {
-        openAboutModal();
-    }, 300);
-}
-
 function showPWAInstallPrompt() {
     if (!pwaInstallPrompt) return;
     
@@ -3164,7 +3146,10 @@ function initPlayerUI() {
     blockInfo.appendChild(currentActions);
     
     document.getElementById('favButton').addEventListener('click', toggleFavorite);
-    document.getElementById('shareButton').addEventListener('click', shareMusic);
+    document.getElementById('shareButton').addEventListener('click', () => {
+        const video = getCurrentPlayingVideo();
+        shareMusic(video);
+    });
 }
 
 // 🔍 Extrai parâmetros de rota de AMBOS query string e hash
@@ -4677,7 +4662,7 @@ function openItemOptionsModal(index) {
     const shareRow = renderOptionRow({
         icon: 'share',
         text: 'Compartilhar',
-        onClick: () => shareItem(currentKebabIndex)
+        onClick: () => shareItem(currentKebabIndex, getCurrentViewVideos)
     });
     fragment.appendChild(shareRow);
 
@@ -4795,7 +4780,7 @@ function openItemOptionsModalFromPlayer(video) {
     const shareRow = renderOptionRow({
         icon: 'share',
         text: 'Compartilhar',
-        onClick: () => shareItem(player.currentVideoIndex)
+        onClick: () => shareItem(player.currentVideoIndex, getCurrentViewVideos)
     });
     fragment.appendChild(shareRow);
 
@@ -5026,247 +5011,14 @@ function showToast(message) {
 // - Fallback: Clipboard
 // ============================================================================
 
-/**
- * 🎯 FUNÇÃO ÚNICA E CENTRAL: Compartilhamento Nativo
- * 
- * Tenta compartilhar em ordem de prioridade:
- * 1. Android WebView (SE aplicativo SanPlayer Android)
- * 2. Web Share API (PWA/navegadores modernos)
- * 3. Clipboard (fallback universal)
- * 
- * @param {Object} config - { title, text, url }
- * @returns {Promise<Boolean>} true se navigator.share foi usado, false caso contrário
- */
-async function nativeShare({ title = '', text = '', url = '' }) {
-    try {
-        // 📱 1️⃣ Android WebView Native (aplicativo Android SanPlayer)
-        if (window.Android?.share) {
-            window.Android.share(title, text, url);
-            return true;
-        }
 
-        // 🌐 2️⃣ Web Share API (PWA/navegadores modernos)
-        if (navigator.share) {
-            await navigator.share({ title, text, url });
-            return true;
-        }
 
-        // 📋 3️⃣ Fallback Universal: Clipboard
-        const shareText = `${text}\n${url}`;
-        await navigator.clipboard.writeText(shareText);
-        showToast('Link copiado!');
-        return false;
 
-    } catch (err) {
-        console.warn('[nativeShare] ⚠️ Erro ao compartilhar:', err);
-        return false;
-    }
-}
 
-/**
- * 🎯 FUNÇÃO CENTRAL DE COMPARTILHAMENTO (VIDEO)
- * Responsável ÚNICA por compartilhar um vídeo
- * 
- * @param {Object} video - Objeto vídeo { id, title, artist }
- * @param {Object} playlist - Objeto playlist opcional (para contexto apenas)
- */
-function shareVideo(video, playlist) {
-    if (!video || !video.id) {
-        console.warn('[Share] Vídeo inválido:', video);
-        return;
-    }
 
-    // 🌐 Construir URL de compartilhamento
-    const url = `${window.location.origin}${window.location.pathname}?videoId=${video.id}`;
-    
-    // 📝 Construir texto de compartilhamento
-    const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
-    
-    // 🔥 Usar função central nativeShare()
-    nativeShare({
-        title: 'SanPlayer',
-        text: text,
-        url: url
-    });
-}
 
-/**
- * 🧠 RESOLVER DE CONTEXTO
- * Determina qual vídeo/playlist compartilhar baseado na fonte (player, list, preview)
- * 
- * @param {String} source - Fonte de ação: 'player', 'list', 'preview'
- * @param {Object} extra - Dados extras { video, index, ...}
- * @returns {Object} { video, playlist }
- */
-function resolveVideoContext(source, extra = {}) {
-    const DEFAULT_CONTEXT = { video: null, playlist: null };
-    
-    switch (source) {
-        case 'player':
-            // 🎵 Contexto do player: música atual
-            if (!player.currentPlaylist || player.currentVideoIndex === undefined) {
-                return DEFAULT_CONTEXT;
-            }
-            return {
-                video: player.currentPlaylist.videos[player.currentVideoIndex],
-                playlist: player.currentPlaylist
-            };
-        
-        case 'list':
-            // 📃 Contexto da lista: item específico
-            if (extra.video) {
-                return {
-                    video: extra.video,
-                    playlist: player.currentPlaylist
-                };
-            }
-            return DEFAULT_CONTEXT;
-        
-        case 'preview':
-            // 🔥 Contexto de preview: vídeo na tela (pode não estar tocando)
-            if (player.previewVideo) {
-                return {
-                    video: player.previewVideo,
-                    playlist: null
-                };
-            }
-            return DEFAULT_CONTEXT;
-        
-        default:
-            console.warn('[Share] Contexto desconhecido:', source);
-            return DEFAULT_CONTEXT;
-    }
-}
 
-/**
- * 🔘 HANDLER GENÉRICO DE COMPARTILHAMENTO
- * Chamada por TODOS os botões de "compartilhar" de qualquer contexto
- * Resolve o contexto + chama shareVideo()
- * 
- * @param {String} source - Fonte: 'player', 'list', 'preview'
- * @param {Object} extra - Dados extras (ex: { video, index })
- */
-function handleShare(source, extra = {}) {
-    const context = resolveVideoContext(source, extra);
-    
-    if (!context.video) {
-        console.warn('[Share] Nenhum vídeo encontrado para compartilhar');
-        showToast('Impossível compartilhar: nenhum vídeo selecionado');
-        return;
-    }
-    
-    // Validar e mesclar dados extras — extra.video deve ter .id válido
-    const video = (extra?.video && extra.video.id) 
-        ? extra.video 
-        : context.video;
-    const playlist = context.playlist;
-    
-    shareVideo(video, playlist);
-}
 
-function shareItem(index) {
-    // 🔥 CRÍTICO: Usar getCurrentViewVideos() para pegar o vídeo CORRETO da view atual
-    // Se estamos em artista/favoritos, o índice é relativo àquela view, não ao playlist original
-    const viewVideos = getCurrentViewVideos();
-    const video = viewVideos[index];
-    
-    if (!video) {
-        console.error('[shareItem] ❌ Vídeo não encontrado no índice:', index, 'view videos:', viewVideos.length);
-        return;
-    }
-    
-    const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}?videoId=${video.id}`;
-    
-    // 🔥 Usar função central nativeShare()
-    nativeShare({
-        title: 'SanPlayer',
-        text: text,
-        url: url
-    });
-}
-
-/**
- * 🔒 Compartilha uma playlist com ENCODE SEGURO
- * 
- * ⚠️ CRÍTICO: Usa safeEncode() para garantir pontos em playlistId
- * 
- * Exemplo:
- * - Input: "A.B.C. Música"
- * - URL gerada: "?playlistId=A%2EB%2EC%20M%C3%BAsica"
- * - Recepção automática decodifica para: "A.B.C. Música"
- * 
- * REGRAS:
- * ❌ NUNCA: encodeURIComponent(playlistName)
- * ✅ SEMPRE: safeEncode(playlistName)
- * ❌ NUNCA: mudar window.location.origin + pathname
- * ✅ SEMPRE: manter ambos (dinâmicos)
- * 
- * @param {String} playlistName - Nome da playlist (pode ter pontos)
- */
-/**
- * 🌉 Bridge Híbrida Profissional - Retorna true se disparou o nativo
- * Prioridade: Android Nativo → Web Share API → Clipboard
- */
-async function sharedBridge(title, text, url, imageUrl) {
-    try {
-        if (window.Android && window.Android.share) {
-            window.Android.share(title, text, url, imageUrl);
-            return true;
-        }
-        if (navigator.share) {
-            try {
-                await navigator.share({ title, text, url });
-                return true;
-            } catch (err) {
-                console.warn('[sharedBridge] Cancelado:', err);
-                return false;
-            }
-        }
-        const shareText = `${text}\n${url}`;
-        await navigator.clipboard.writeText(shareText);
-        showToast('Link copiado!');
-        return true;
-    } catch (err) {
-        console.warn('[sharedBridge] ⚠️ Erro:', err);
-        return false;
-    }
-}
-
-function sharePlaylist(playlist) {
-    if (!playlist || (!playlist.title && !playlist.name)) {
-        console.warn('[sharePlaylist] ❌ Inválido:', playlist);
-        return false;
-    }
-    const title = `Playlist: ${playlist.title || playlist.name}`;
-    const text = `Confira minha playlist ${playlist.title || playlist.name} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}?playlistId=${safeEncode(playlist.title || playlist.name)}`;
-    const imageUrl = `${window.location.origin}/covers/playlists/${playlist.cover}`;
-    return sharedBridge(title, text, url, imageUrl);
-}
-
-function shareArtist(artist) {
-    if (!artist || !artist.name) {
-        console.warn('[shareArtist] ❌ Inválido:', artist);
-        return false;
-    }
-    const title = `Artista: ${artist.name}`;
-    const text = `Ouça as músicas de ${artist.name} no SanPlayer`;
-    const url = `${window.location.origin}${window.location.pathname}?artistId=${safeEncode(artist.name)}`;
-    const imageUrl = `${window.location.origin}/covers/artists/${artist.cover}`;
-    return sharedBridge(title, text, url, imageUrl);
-}
-
-/**
- * Compartilhar a música atual
- * Usa navigator.share (Web Share API) se disponível
- * Fallback: copia para clipboard
- * 
- * ✅ REFATORADO para usar nova arquitetura centralizada
- */
-function shareMusic() {
-    handleShare('player');
-}
 
 /**
  * 🔒 CONGELADO: Busca e carrega vídeos de um artista
@@ -6316,31 +6068,6 @@ function setFavoriteIcon(useElement, isFavorite) {
 }
 
 /**
- * 🔒 CENTRALIZADO: Atualiza ícone de favorito de forma profissional
- * 
- * ✅ CORRIGE:
- * - Mismatch entre href moderno vs xlink:href legado
- * - Sempre usa caminho absoluto consistente
- * - Elimina duplicação de lógica
- * 
- * @param {SVGUseElement} useElement - Elemento <use> do SVG
- * @param {Boolean} isFavorite - true = filled, false = outlined
- */
-function setFavoriteIcon(useElement, isFavorite) {
-    if (!useElement) return;
-    
-    const ICON_PATH = '/icons/package.svg';
-    const iconId = isFavorite ? 'favorite-filled-case' : 'favorite-outlined-case';
-    const href = `${ICON_PATH}#${iconId}`;
-    
-    // ✅ SEMPRE usar setAttribute (moderno) em vez de setAttributeNS (legado)
-    useElement.setAttribute('href', href);
-    
-    // ✅ Remover xlink:href para evitar comportamento híbrido em browsers antigos
-    useElement.removeAttribute('xlink:href');
-}
-
-/**
  * Sistema de Partículas Nativo - Explosão de Corações ao Favoritar
  * Microinteração de app nativo (Samsung/One UI)
  * 
@@ -7258,7 +6985,7 @@ function setupEventListeners() {
                     // Fallback: usar vídeo atual se preview não estiver definido
                     player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
                 }
-                handleShare('preview');
+                handleShare(player.previewVideo);
             });
         }
         
@@ -7371,7 +7098,7 @@ function onProgressChange(event) {
 //download
 function baixarAPK() {
   const link = document.createElement('a');
-  link.href = '/apk/SanPlayer_v1.0.1.9.apk'; // URL ou caminho local do APK
-  link.download = 'Instalador SanPlayer_v1.0.1.9';         // Nome que aparecerá para o usuário
+  link.href = '/apk/SanPlayer_v1.0.0.9.apk'; // URL ou caminho local do APK
+  link.download = 'Instalador SanPlayer_v1.0.0.1';         // Nome que aparecerá para o usuário
   link.click();
 }

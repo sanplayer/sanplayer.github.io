@@ -2,13 +2,13 @@
 // SERVICE WORKER - SanPlayer PWA
 // ============================================================================
 
-const CACHE_NAME = 'sanplayer-v1.0.1.6';
+const CACHE_NAME = 'sanplayer-v1.0.1.9';
 const URLS_TO_CACHE = [
     '/',
     '/style.css',
     '/app.js',
     '/manifest.json',
-    '/icons/favicon-96x96.png',
+    '/icons/favicon-96x96.webp',
     '/icons/favicon.svg',
     '/icons/icon192.png',
     '/icons/icon512.png',
