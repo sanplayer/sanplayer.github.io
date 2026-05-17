@@ -2935,6 +2935,7 @@ MOBILE SPECIFIC STYLES
         border-top-left-radius: var(--radius-lg);
         border-top-right-radius: var(--radius-lg);
         background-color: rgba(0, 0, 0, 0.2);
+        border-top: 2ps solid yellow;
         align-items: center;
     }
     .header-app-logo svg.icon {
