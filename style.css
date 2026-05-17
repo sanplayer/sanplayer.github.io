@@ -2930,7 +2930,7 @@ MOBILE SPECIFIC STYLES
     .app-header {
         height: var(--header-height-mobile);
         width: 100%;
-        padding: 0;
+        /*padding: 0;*/
         border-bottom: none;
         display: flex;
         border-top-left-radius: var(--radius-lg);
