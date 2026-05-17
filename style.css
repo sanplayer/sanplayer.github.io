@@ -2928,14 +2928,13 @@ MOBILE SPECIFIC STYLES
 
 /* HEADER MOBILE */
     .app-header {
-        position: absolute;
         width: 100%;
         border-bottom: none;
         display: flex;
         border-top-left-radius: var(--radius-lg);
         border-top-right-radius: var(--radius-lg);
         background-color: rgba(0, 0, 0, 0.2);
-        border-top: 2ps solid yellow;
+        border-top: 2px solid yellow;
         align-items: center;
     }
     .header-app-logo svg.icon {
