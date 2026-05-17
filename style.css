@@ -94,7 +94,7 @@
     --gap-lg: clamp(1rem, 3vw, 1.8rem);
     --padding-app: clamp(0.75rem, 2.5vw, 2rem);
     --header-height: clamp(50px, 10vh, 72px);
-    --header-height-mobile: clamp(30px, 10vh, 50px);
+    --header-height-mobile: clamp(30px, 10dvh, 40px);
     --footer-height: clamp(60px, 12vh, 100px);
     --btn-size: clamp(36px, 8vw, 48px);
     --icon-size: clamp(1.25rem, 3vw, 1.8rem);
@@ -2935,7 +2935,6 @@ MOBILE SPECIFIC STYLES
         border-top-left-radius: var(--radius-lg);
         border-top-right-radius: var(--radius-lg);
         background-color: rgba(0, 0, 0, 0.1);
-        border-top: 2px solid var(--accent-roxo);
         align-items: end;
     }
     .header-app-logo svg.icon {
