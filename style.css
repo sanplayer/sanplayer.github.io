@@ -846,6 +846,7 @@ button:active {
 .block-controls {
     justify-content: center;
     gap: clamp(1.5rem, 2vw, 2rem);
+    padding-bottom: var(--safe-area-bottom);
 }
 
 .shuffle-repeat {
