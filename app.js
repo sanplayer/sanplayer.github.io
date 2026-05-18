@@ -47,6 +47,7 @@
 // ============================================================================
 
 import { shareVideo, sharePlaylist, shareArtist, handleShare, shareMusic, shareItem } from './adapters/share.js';
+import MediaBridge from './media/MediaBridge.js';
 
 //
 
@@ -5308,6 +5309,15 @@ function loadVideo(video) {
     // Sincronizar estado favorito atual
     syncFavoriteState(video);
     
+    // Sincronizar o estado de mídia com MediaBridge
+    MediaBridge.setCurrentTrack({
+        id: video.id,
+        title: video.title || 'SanPlayer',
+        artist: video.artist || 'Desconhecido',
+        thumbnail: `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`,
+        duration: video.duration || 0
+    });
+    
     // Persist current state
     saveCurrentState();
     
@@ -5348,6 +5358,7 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     player.ytReady = true;
+    MediaBridge.attachPlayer(ytPlayer);
 
     // 🔥 REAPLICAR O VÍDEO CORRETO
     if (player.currentPlaylist) {
@@ -5376,6 +5387,7 @@ function onPlayerReady(event) {
 
         updateProgressBar();
         updatePlaylistDurations();
+        MediaBridge.updateProgress(currentTime, duration);
         
         // 💾 NEW: Persistência throttled - salvar estado a cada 3s
         const now = Date.now();
@@ -5435,6 +5447,8 @@ function onPlayerStateChange(event) {
         updateProgressBar();
         updateActivePlaylistItem();
         updatePlayingIndicatorAnimationState();
+        MediaBridge.setPlaybackState(true);
+        MediaBridge.updateProgress(player.currentTime, player.currentDuration);
         // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
         // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.PAUSED) {
@@ -5444,6 +5458,8 @@ function onPlayerStateChange(event) {
         updateProgressBar();
         updateActivePlaylistItem();
         updatePlayingIndicatorAnimationState();
+        MediaBridge.setPlaybackState(false);
+        MediaBridge.updateProgress(player.currentTime, player.currentDuration);
         // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
         // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.CUED) {
@@ -5468,11 +5484,15 @@ function onPlayerStateChange(event) {
             ytPlayer.playVideo();
             player.shouldPlayOnReady = false;
         }
+    } else if (state === YT.PlayerState.BUFFERING) {
+        MediaBridge.notifyBuffering();
     } else if (state === YT.PlayerState.ENDED) {
         player.isPlaying = false;
         updatePlayPauseButton();
         updateProgressBar();
         updatePlayingIndicatorAnimationState();
+        MediaBridge.setPlaybackState(false);
+        MediaBridge.notifyEnded();
 
         if (player.repeatMode === 2) {
             // Repetir a música atual
@@ -5506,7 +5526,7 @@ function playerPlay() {
     // ================================================================
     
     if (player.ytReady && ytPlayer) {
-        ytPlayer.playVideo();
+        MediaBridge.play();
     }
 }
 
@@ -5527,7 +5547,7 @@ function playerPause() {
     // ================================================================
     
     if (player.ytReady && ytPlayer) {
-        ytPlayer.pauseVideo();
+        MediaBridge.pause();
     }
     player.isPlaying = false;
     updatePlayPauseButton();
@@ -5809,6 +5829,35 @@ function togglePlayPause() {
         playerPause();
     } else {
         playerPlay();
+    }
+}
+
+function androidPlay() {
+    if (!player.isPlaying) {
+        playerPlay();
+    }
+}
+
+function androidPause() {
+    if (player.isPlaying) {
+        playerPause();
+    }
+}
+
+function androidNext() {
+    nextVideo();
+}
+
+function androidPrevious() {
+    previousVideo();
+}
+
+function androidSeekTo(seconds) {
+    if (player.ytReady && ytPlayer && typeof ytPlayer.seekTo === 'function') {
+        ytPlayer.seekTo(seconds);
+        player.currentTime = seconds;
+        updateProgressBar();
+        MediaBridge.updateProgress(seconds, player.currentDuration);
     }
 }
 
