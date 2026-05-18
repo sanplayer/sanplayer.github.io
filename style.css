@@ -2934,7 +2934,6 @@ MOBILE SPECIFIC STYLES
         display: flex;
         border-top-left-radius: var(--radius-lg);
         border-top-right-radius: var(--radius-lg);
-        background-color: rgba(0, 0, 0, 0.1);
         align-items: end;
     }
     .header-app-logo svg.icon {
