@@ -301,6 +301,8 @@ function getSafeTrack(possibleTrack) {
 // ============================================================================
 
 class MediaBridge {
+    static _androidSessionStarted = false;
+
     /**
      * 🎬 Obter track atualmente tocando
      * @returns {Object} { id, title, artist, ... }
@@ -328,7 +330,10 @@ class MediaBridge {
             mediaState.currentTime = 0;
             mediaState.duration = track.duration || mediaState.duration;
             mediaEvents.emit('trackChanged', track);
-            this.syncToAndroid();
+            this._updateWebMediaSession();
+            if (this._androidSessionStarted) {
+                this.syncToAndroid();
+            }
             
             // Persistir imediatamente quando muda de track
             this._persistState();
@@ -352,9 +357,14 @@ class MediaBridge {
             mediaState.isPlaying = playing;
             console.log('[MediaBridge] ▶️ Playback state:', playing ? 'PLAYING' : 'PAUSED');
             mediaEvents.emit('playbackStateChanged', { isPlaying: playing });
-            
-            // Sincronizar com Android
-            this.syncToAndroid();
+            this._updateWebMediaSession();
+
+            if (playing) {
+                this._androidSessionStarted = true;
+                this.syncToAndroid();
+            } else if (this._androidSessionStarted) {
+                this.syncToAndroid();
+            }
         }
     }
 
@@ -378,9 +388,11 @@ class MediaBridge {
                     duration: duration,
                     percentage: duration > 0 ? (time / duration) * 100 : 0
                 });
-                this._notifyAndroidProgress(time, duration);
-                if (durationChanged) {
-                    this.syncToAndroid();
+                if (this._androidSessionStarted) {
+                    this._notifyAndroidProgress(time, duration);
+                    if (durationChanged) {
+                        this.syncToAndroid();
+                    }
                 }
                 
                 this._progressThrottle = true;
@@ -397,7 +409,7 @@ class MediaBridge {
      * ⚠️ NÃO conhece: renderização, DOM
      * ✅ Sabe: estado de mídia, metadados, playback
      */
-    static syncToAndroid() {
+    static _updateWebMediaSession() {
         const track = this.getCurrentTrack();
 
         try {
@@ -425,16 +437,25 @@ class MediaBridge {
                     this._androidActionsSetup = true;
                 }
             }
-
-            this._syncToAndroidBridge();
-
-            console.log('[MediaBridge] 📡 Android sync completed:', {
-                title: track.title,
-                playbackState: mediaState.isPlaying ? 'playing' : 'paused'
-            });
         } catch (e) {
-            console.warn('[MediaBridge] ⚠️ Android sync error:', e.message);
+            console.warn('[MediaBridge] ⚠️ Web mediaSession update failed:', e.message);
         }
+    }
+
+    static syncToAndroid() {
+        if (!this._androidSessionStarted) {
+            console.log('[MediaBridge] ⚠️ Android sync skipped: session not started yet');
+            return;
+        }
+
+        this._updateWebMediaSession();
+        this._syncToAndroidBridge();
+
+        const track = this.getCurrentTrack();
+        console.log('[MediaBridge] 📡 Android sync completed:', {
+            title: track.title,
+            playbackState: mediaState.isPlaying ? 'playing' : 'paused'
+        });
     }
 
     static _hasAndroidBridge() {
@@ -466,12 +487,6 @@ class MediaBridge {
             } else {
                 window.Android.updatePlaybackState(mediaState.isPlaying, currentTime);
             }
-
-            if (mediaState.isPlaying && typeof window.Android.onPlay === 'function') {
-                window.Android.onPlay();
-            } else if (!mediaState.isPlaying && typeof window.Android.onPause === 'function') {
-                window.Android.onPause();
-            }
         } catch (e) {
             console.warn('[MediaBridge] ⚠️ Android bridge event failed:', e.message);
         }
@@ -489,7 +504,7 @@ class MediaBridge {
     }
 
     static _notifyAndroidBuffering() {
-        if (!this._hasAndroidBridge()) return;
+        if (!this._androidSessionStarted || !this._hasAndroidBridge()) return;
         try {
             if (typeof window.Android.onBuffering === 'function') {
                 window.Android.onBuffering();
@@ -500,7 +515,7 @@ class MediaBridge {
     }
 
     static _notifyAndroidEnded() {
-        if (!this._hasAndroidBridge()) return;
+        if (!this._androidSessionStarted || !this._hasAndroidBridge()) return;
         try {
             if (typeof window.Android.onEnded === 'function') {
                 window.Android.onEnded();
