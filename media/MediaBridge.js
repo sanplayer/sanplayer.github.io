@@ -331,7 +331,6 @@ class MediaBridge {
             mediaState.duration = track.duration || mediaState.duration;
             mediaEvents.emit('trackChanged', track);
             this._updateWebMediaSession();
-            this._syncTrackMetadataToAndroidBridge();
             if (this._androidSessionStarted) {
                 this.syncToAndroid();
             }
@@ -466,24 +465,6 @@ class MediaBridge {
             typeof window.Android.onPlay === 'function' ||
             typeof window.Android.onTrackChange === 'function'
         );
-    }
-
-    static _syncTrackMetadataToAndroidBridge() {
-        if (!this._hasAndroidBridge()) return;
-
-        const track = this.getCurrentTrack();
-        const duration = Math.round(mediaState.duration || 0);
-        const artworkUrl = this._getArtworkUrl(track);
-
-        try {
-            if (typeof window.Android.onTrackChange === 'function') {
-                window.Android.onTrackChange(track.id, track.title, track.artist, artworkUrl, duration);
-            } else {
-                window.Android.updateMetadata(track.title, track.artist, artworkUrl, duration);
-            }
-        } catch (e) {
-            console.warn('[MediaBridge] ⚠️ Android bridge track sync failed:', e.message);
-        }
     }
 
     static _syncToAndroidBridge() {
