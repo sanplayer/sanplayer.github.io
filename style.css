@@ -2412,6 +2412,10 @@ button:active {
     align-items: center;
 }
 
+.overlay-buttons-left button{
+    background: rgba(0,0,0,0.15);
+}
+
 .overlay-buttons-right {
     display: flex;
     gap: var(--gap-md);
