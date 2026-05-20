@@ -650,16 +650,16 @@ button:active {
 .app-player-footer {
     
     position: fixed;
-    bottom: 0;
+    bottom: var(--safe-area-bottom);
     left: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    padding-bottom: max(
+    /*padding-bottom: max(
         var(--safe-area-bottom),
         clamp(0.5rem, 1vw, 1rem)
-    );
+    );*/
 }
 
 .app-player-footer.keyboard-open {
