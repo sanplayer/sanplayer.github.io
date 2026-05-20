@@ -3143,7 +3143,11 @@ MOBILE SPECIFIC STYLES
     }
     .block-controls{
         justify-content: center;
-        gap: 0;
+        gap: 0.5rem;
+    }
+    .block-controls svg.icon{
+    width: 2rem;
+    height: 2rem;
     }
     .bottom-sheet-content {
     position: fixed;
