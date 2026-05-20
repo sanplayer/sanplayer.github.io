@@ -118,10 +118,12 @@
     --z-overlay-max: 5000;
     --keyboard-offset: 0px;
     --main-z-index: 10;
+    
     --safe-area-top: env(safe-area-inset-top, 0px);
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-left: env(safe-area-inset-left, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
+    --spacing-sm: 12px;
 
     /* Border Radius System */
     --radius-lg: clamp(20px, 5vw, 30px);
@@ -655,7 +657,7 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    padding-bottom: var(--safe-area-bottom);
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
 }
 
 .app-player-footer.keyboard-open {
@@ -3089,7 +3091,6 @@ MOBILE SPECIFIC STYLES
 
 
 .app-player-footer {
-  padding-bottom: 0;
   background: #000000;
   overflow: hidden;
     }
