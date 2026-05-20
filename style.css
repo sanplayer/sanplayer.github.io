@@ -655,7 +655,7 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    padding-bottom: var(--safe-area-bottom), clamp(0.3rem, 1vw, 0.5rem);
+    padding-bottom: var(--safe-area-bottom);
 }
 
 .app-player-footer.keyboard-open {
