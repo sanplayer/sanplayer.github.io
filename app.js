@@ -5313,9 +5313,7 @@ function loadVideo(video) {
     MediaBridge.setCurrentTrack({
         id: video.id,
         title: video.title || 'SanPlayer',
-        artist: video.artist || 'Desconhecido',
-        thumbnail: `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`,
-        duration: video.duration || 0
+        artist: video.artist || 'Desconhecido'
     });
     
     // Persist current state
@@ -5860,6 +5858,21 @@ function androidSeekTo(seconds) {
         MediaBridge.updateProgress(seconds, player.currentDuration);
     }
 }
+
+MediaBridge.registerRemoteControlHandlers({
+    next: nextVideo,
+    previous: previousVideo,
+    play: playerPlay,
+    pause: playerPause,
+    seekTo: (seconds) => {
+        if (player.ytReady && ytPlayer && typeof ytPlayer.seekTo === 'function') {
+            ytPlayer.seekTo(seconds);
+            player.currentTime = seconds;
+            updateProgressBar();
+            MediaBridge.updateProgress(seconds, player.currentDuration);
+        }
+    }
+});
 
 function nextVideo() {
     // 🔒 CONGELADO: Navegação para próximo vídeo
