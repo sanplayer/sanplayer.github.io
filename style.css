@@ -766,7 +766,7 @@ button:active {
     flex: 1;
     display: flex;
     align-items: center;
-    padding: 0px clamp(1rem, 2vw, 2.5rem) clamp(0.5rem, 1vw, 1.5rem);
+    padding: 0px clamp(0.5rem, 2vw, 2.5rem) clamp(0.5rem, 1vw, 1.5rem);
 }
 
 .block-info {
@@ -844,7 +844,7 @@ button:active {
 .block-controls {
     justify-content: center;
     gap: clamp(1.5rem, 2vw, 2rem);
-    padding-bottom: var(--safe-area-bottom);
+    
 }
 
 .shuffle-repeat {
