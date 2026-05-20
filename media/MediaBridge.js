@@ -802,9 +802,7 @@ window.androidSeekTo = function(seconds) {
         ytPlayer.seekTo(seconds);
     }
 };
-// Cria a URL direta da imagem do YouTube usando o ID do vídeo atual
-const youtubeId = track.youtubeId || track.id; // pega o identificador do vídeo
-const urlDaThumbnail = `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+
 // ============================================================================
 // EXPORTAR
 // ============================================================================
