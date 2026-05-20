@@ -744,9 +744,39 @@ class MediaBridge {
      * @private
      */
     static _getArtworkUrl(artist) {
-        // TODO: Implementar lógica real de artwork
-        // Por enquanto, retornar URL padrão
-        return `/covers/artists/${encodeURIComponent(artist)}.jpg`;
+        if (!artist) {
+            return '/covers/artists/default.jpg';
+        }
+
+        const normalized = artist
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-');
+
+        return `/covers/artists/${normalized}.jpg`;
+    }
+
+    static registerRemoteControlHandlers(handlers) {
+        this._remoteControlHandlers = {
+            ...(this._remoteControlHandlers || {}),
+            ...handlers
+        };
+    }
+
+    static nextTrack() {
+        if (this._remoteControlHandlers?.next) {
+            this._remoteControlHandlers.next();
+            return;
+        }
+        mediaEvents.emit('nextRequested', {});
+    }
+
+    static previousTrack() {
+        if (this._remoteControlHandlers?.previous) {
+            this._remoteControlHandlers.previous();
+            return;
+        }
+        mediaEvents.emit('previousRequested', {});
     }
 }
 
@@ -778,20 +808,12 @@ window.androidPause = function() {
 
 window.androidNext = function() {
     console.log("Android disparou: AVANÇAR");
-    if (typeof nextVideo === 'function') {
-        nextVideo();
-        return;
-    }
-    mediaEvents.emit('nextRequested', {});
+    MediaBridge.nextTrack();
 };
 
 window.androidPrevious = function() {
     console.log("Android disparou: VOLTAR");
-    if (typeof previousVideo === 'function') {
-        previousVideo();
-        return;
-    }
-    mediaEvents.emit('previousRequested', {});
+    MediaBridge.previousTrack();
 };
 
 window.androidSeekTo = function(seconds) {
@@ -802,6 +824,7 @@ window.androidSeekTo = function(seconds) {
         ytPlayer.seekTo(seconds);
     }
 };
+
 
 // ============================================================================
 // EXPORTAR
