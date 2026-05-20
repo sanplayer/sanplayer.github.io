@@ -650,7 +650,7 @@ button:active {
 .app-player-footer {
     
     position: fixed;
-    bottom: var(--safe-area-bottom);
+    bottom: var(--safe-area-bottom) -20px;
     left: 0;
     width: 100%;
     display: flex;
@@ -3143,7 +3143,7 @@ MOBILE SPECIFIC STYLES
     }
     .block-controls{
         justify-content: center;
-        gap: 0.5rem;
+        gap: 0.3rem;
     }
     .block-controls svg.icon{
     width: 2rem;
