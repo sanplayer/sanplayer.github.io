@@ -315,8 +315,6 @@ class MediaBridge {
      */
     static setCurrentTrack(track) {
         track = getSafeTrack(track);
-        track.thumbnail = track.thumbnail || this._getYoutubeThumbnailUrl(track.id);
-        track.duration = typeof track.duration === 'number' ? track.duration : mediaState.duration || 0;
         
         if (mediaState.currentTrack?.id !== track.id) {
             console.log('[MediaBridge] 🎬 Track changed:', {
@@ -325,8 +323,6 @@ class MediaBridge {
             });
             
             mediaState.currentTrack = track;
-            mediaState.currentTime = 0;
-            mediaState.duration = track.duration || mediaState.duration;
             mediaEvents.emit('trackChanged', track);
             this.syncToAndroid();
             
@@ -367,7 +363,6 @@ class MediaBridge {
         const hasChanged = (mediaState.currentTime !== time || mediaState.duration !== duration);
         
         if (hasChanged) {
-            const durationChanged = mediaState.duration !== duration;
             mediaState.currentTime = time;
             mediaState.duration = duration;
             
@@ -379,9 +374,6 @@ class MediaBridge {
                     percentage: duration > 0 ? (time / duration) * 100 : 0
                 });
                 this._notifyAndroidProgress(time, duration);
-                if (durationChanged) {
-                    this.syncToAndroid();
-                }
                 
                 this._progressThrottle = true;
                 setTimeout(() => {
@@ -438,12 +430,7 @@ class MediaBridge {
     }
 
     static _hasAndroidBridge() {
-        return typeof window !== 'undefined' && window.Android && (
-            typeof window.Android.updatePlaybackState === 'function' ||
-            typeof window.Android.onPlaybackState === 'function' ||
-            typeof window.Android.onPlay === 'function' ||
-            typeof window.Android.onTrackChange === 'function'
-        );
+        return typeof window !== 'undefined' && window.Android && typeof window.Android.updatePlaybackState === 'function';
     }
 
     static _syncToAndroidBridge() {
@@ -452,13 +439,12 @@ class MediaBridge {
         const track = this.getCurrentTrack();
         const currentTime = Math.round(mediaState.currentTime);
         const duration = Math.round(mediaState.duration || 0);
-        const artworkUrl = this._getArtworkUrl(track);
 
         try {
             if (typeof window.Android.onTrackChange === 'function') {
-                window.Android.onTrackChange(track.id, track.title, track.artist, artworkUrl, duration);
+                window.Android.onTrackChange(track.id, track.title, track.artist, this._getArtworkUrl(track.artist), duration);
             } else {
-                window.Android.updateMetadata(track.title, track.artist, artworkUrl, duration);
+                window.Android.updateMetadata(track.title, track.artist, this._getArtworkUrl(track.artist), duration);
             }
 
             if (typeof window.Android.onPlaybackState === 'function') {
@@ -757,21 +743,65 @@ class MediaBridge {
      * 🔧 HELPER: Obter URL de artwork
      * @private
      */
-    static _getArtworkUrl(track) {
-        if (track && typeof track.thumbnail === 'string' && track.thumbnail.trim()) {
-            return track.thumbnail;
-        }
-        if (track && typeof track.id === 'string' && track.id.trim()) {
-            return this._getYoutubeThumbnailUrl(track.id);
-        }
-        return `/covers/artists/${encodeURIComponent(track?.artist || 'unknown')}.jpg`;
-    }
-
-    static _getYoutubeThumbnailUrl(videoId) {
-        if (!videoId || typeof videoId !== 'string') return '';
-        return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    static _getArtworkUrl(artist) {
+        // TODO: Implementar lógica real de artwork
+        // Por enquanto, retornar URL padrão
+        return `/covers/artists/${encodeURIComponent(artist)}.jpg`;
     }
 }
+
+// ============================================================================
+// PONTE DE RECEPÇÃO ANDROID
+// ============================================================================
+
+window.androidPlay = function() {
+    console.log("Android disparou: PLAY");
+    if (typeof playerPlay === 'function') {
+        playerPlay();
+        return;
+    }
+    if (typeof MediaBridge.play === 'function') {
+        MediaBridge.play();
+    }
+};
+
+window.androidPause = function() {
+    console.log("Android disparou: PAUSE");
+    if (typeof playerPause === 'function') {
+        playerPause();
+        return;
+    }
+    if (typeof MediaBridge.pause === 'function') {
+        MediaBridge.pause();
+    }
+};
+
+window.androidNext = function() {
+    console.log("Android disparou: AVANÇAR");
+    if (typeof nextVideo === 'function') {
+        nextVideo();
+        return;
+    }
+    mediaEvents.emit('nextRequested', {});
+};
+
+window.androidPrevious = function() {
+    console.log("Android disparou: VOLTAR");
+    if (typeof previousVideo === 'function') {
+        previousVideo();
+        return;
+    }
+    mediaEvents.emit('previousRequested', {});
+};
+
+window.androidSeekTo = function(seconds) {
+    console.log("Android disparou: AVANÇAR PARA", seconds);
+    if (typeof MediaBridge.seek === 'function') {
+        MediaBridge.seek(seconds);
+    } else if (typeof ytPlayer !== 'undefined' && ytPlayer && typeof ytPlayer.seekTo === 'function') {
+        ytPlayer.seekTo(seconds);
+    }
+};
 
 // ============================================================================
 // EXPORTAR
