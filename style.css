@@ -2964,7 +2964,7 @@ MOBILE SPECIFIC STYLES
         max-width: none;
         margin: 0;
         gap: 0;
-        top: 0;
+        top: var(--safe-area-top);
     }
     
     .header-search.show-search form {
