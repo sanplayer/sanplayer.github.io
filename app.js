@@ -2320,6 +2320,7 @@ async function initApp() {
     // CRÍTICO para links compartilhados: handleHashNavigation() DEVE ser chamada
     // quando hay playlistId, artistId ou modal, INDEPENDENTE da nova lógica
     const params = getRoutingParams();
+    const hasVideoParam = params.has('videoId');
     const hasPlaylistParam = params.has('playlistId');
     const hasArtistParam = params.has('artistId');
     const hasModalParam = params.has('modal');
@@ -2342,9 +2343,9 @@ async function initApp() {
     updateNotificationIconState();  // Restaurar estado ao carregar
     setupNotificationButtonListener();  // Setup listener do botão
     
-    if (hasPlaylistParam || hasArtistParam || hasModalParam) {
+    if (hasVideoParam || hasPlaylistParam || hasArtistParam || hasModalParam) {
         console.log('[Init] 🔗 Parâmetros de navegação detectados, chamando handleHashNavigation()');
-        console.log('[Init] Params:', { playlistId: params.get('playlistId'), artistId: params.get('artistId'), modal: params.get('modal') });
+        console.log('[Init] Params:', { videoId: params.get('videoId'), playlistId: params.get('playlistId'), artistId: params.get('artistId'), modal: params.get('modal') });
         await handleHashNavigation();
     }
     
@@ -5859,6 +5860,11 @@ function androidSeekTo(seconds) {
     }
 }
 
+/* ==========================================================================
+ @lock - SECURE COMPONENT
+ DO NOT MODIFY: Fixed after cross-device testing (iOS/Android).
+ Refactoring this block will break the responsiveness of the mobile-first PWA.
+ ========================================================================== */
 MediaBridge.registerRemoteControlHandlers({
     next: nextVideo,
     previous: previousVideo,
