@@ -14,7 +14,7 @@ function buildShareText({
   const safeTitle = normalizeText(title);
   const safeArtist = normalizeText(artist);
 
-  return `${safeTitle}${safeArtist ? ` • ${safeArtist}` : ''}\n${url}`;
+  return `${safeTitle}${safeArtist ? ` • ${safeArtist}` : ''}`;
 }
 
 async function copyToClipboard(text) {
@@ -52,7 +52,7 @@ async function nativeShare({
     }
 
     // 📋 3️⃣ Fallback: Clipboard
-    const shareText = `${text}\n${url}`;
+    const shareText = url && !text.includes(url) ? `${text}\n\n${url}` : text;
     await copyToClipboard(shareText);
     return false;
 
@@ -74,11 +74,7 @@ function shareVideo(video, playlist) {
   }
 
   const url = `${window.location.origin}${window.location.pathname}?videoId=${video.id}`;
-  const text = buildShareText({
-    title: video.title,
-    artist: video.artist,
-    url: url
-  });
+  const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
 
   nativeShare({
     title: 'SanPlayer',
@@ -143,10 +139,7 @@ function sharePlaylist(playlist) {
 
   const playlistName = playlist.title || playlist.name;
   const url = `${window.location.origin}${window.location.pathname}?playlistId=${encodeURIComponent(playlistName)}`;
-  const text = buildShareText({
-    title: `Playlist: ${playlistName}`,
-    url: url
-  });
+  const text = `Playlist: ${playlistName}`;
 
   nativeShare({
     title: 'SanPlayer',
@@ -168,10 +161,7 @@ function shareArtist(artist) {
   }
 
   const url = `${window.location.origin}${window.location.pathname}?artistId=${encodeURIComponent(artist.name)}`;
-  const text = buildShareText({
-    title: `Artista: ${artist.name}`,
-    url: url
-  });
+  const text = `Artista: ${artist.name}`;
 
   nativeShare({
     title: 'SanPlayer',
