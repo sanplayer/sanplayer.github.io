@@ -82,7 +82,7 @@
     --footer-border: #23232b;
     --footer-accent: #9d00dd;
     --font-xs: clamp(0.75rem, 1.5vw, 0.9rem);
-     --font-mt: clamp(1rem, 2.5vw, 1.3rem);
+    --font-mt: clamp(.938rem, 2.5vw, 1.3rem);
     --font-sm: clamp(.875rem, 2vw, 1.2rem);
     --font-md: clamp(1rem, 2.5vw, 1.25rem);
     --font-lg: clamp(1.1rem, 3vw, 1.4rem);
@@ -2163,7 +2163,7 @@ button:active {
 
 .legal-content h3 {
     font-weight: 700;
-    color: var(--accent-roxo);
+    color: var(--text-main);
     margin-top: 1.2rem;
     margin-bottom: 0.75rem;
 }
@@ -2868,7 +2868,7 @@ animation: float 2s ease-in-out infinite;
 
 @keyframes bottomSheetBackdropClose {
     from {
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0);
     }
 
     to {
@@ -2901,7 +2901,7 @@ animation: float 2s ease-in-out infinite;
     top: 0;
     z-index: 21;
     display: flex;
-    justify-content: space-between;
+    justify-content: left;
     align-items: center;
     width: 100%;
     box-sizing: border-box;
@@ -3145,7 +3145,8 @@ MOBILE SPECIFIC STYLES
     }
     .block-controls{
         justify-content: center;
-        justify-content: space-around;
+        justify-content: center;
+        gap: clamp(.5rem, 2vw, 1rem);
     }
     .block-controls svg.icon{
     width: 2rem;
@@ -3167,4 +3168,16 @@ MOBILE SPECIFIC STYLES
     transform: translateY(var(--keyboard-offset, 0px));
     transition: transform 0.25s ease;
     }
+}
+.progress-time-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-sm);
+    font-weight: bold;
+    color: #b0b0c0;
+
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
 }
