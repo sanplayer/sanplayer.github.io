@@ -3062,6 +3062,18 @@ function initThemeColor() {
                 setThemeColor(THEME_COLOR);
                 refreshPlayerUI();
             }, 10);
+        } else {
+            // 🔒 CRÍTICO: App foi para background
+            // Garantir que o iframe do YouTube permanece visível para o motor de renderização
+            const playerEmbed = document.querySelector('.player-embed');
+            if (playerEmbed) {
+                playerEmbed.style.minWidth = '1px';
+                playerEmbed.style.minHeight = '1px';
+                playerEmbed.style.opacity = '0.01';
+                playerEmbed.style.visibility = 'visible';
+                playerEmbed.style.display = 'block';
+                console.log('[Background] Player iframe mantido visível para renderização');
+            }
         }
     });
     
