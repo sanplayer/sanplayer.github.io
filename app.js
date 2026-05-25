@@ -2324,6 +2324,12 @@ async function initApp() {
     const hasPlaylistParam = params.has('playlistId');
     const hasArtistParam = params.has('artistId');
     const hasModalParam = params.has('modal');
+
+    /* ==========================================================================
+     @lock - SAFE AREA COMPONENT
+     DO NOT MODIFY: This block protects shared-link routing for ?videoId.
+     Future edits here may break the app's ability to open shared videos.
+     ========================================================================== */
     
     // Sincronizar estado favorito atual
     // ORDEM OBRIGATÓRIA:
@@ -7048,12 +7054,9 @@ function setupEventListeners() {
             legendButtons[2].addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                // Garantir que player.previewVideo está definido
-                if (!player.previewVideo && player.currentPlaylist) {
-                    // Fallback: usar vídeo atual se preview não estiver definido
-                    player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
-                }
-                handleShare(player.previewVideo);
+                const currentVideo = getCurrentPlayingVideo();
+                if (!currentVideo) return;
+                handleShare(currentVideo);
             });
         }
         
