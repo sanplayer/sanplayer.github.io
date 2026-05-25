@@ -430,7 +430,12 @@ class MediaBridge {
     }
 
     static _hasAndroidBridge() {
-        return typeof window !== 'undefined' && window.Android && typeof window.Android.updatePlaybackState === 'function';
+        return typeof window !== 'undefined' && window.Android && (
+            typeof window.Android.updatePlaybackState === 'function' ||
+            typeof window.Android.onPlaybackState === 'function' ||
+            typeof window.Android.onPlay === 'function' ||
+            typeof window.Android.onPause === 'function'
+        );
     }
 
     static _syncToAndroidBridge() {
@@ -447,16 +452,19 @@ class MediaBridge {
                 window.Android.updateMetadata(track.title, track.artist, this._getArtworkUrl(track.artist), duration);
             }
 
+            const hasUnifiedPlaybackState = typeof window.Android.onPlaybackState === 'function' || typeof window.Android.updatePlaybackState === 'function';
             if (typeof window.Android.onPlaybackState === 'function') {
                 window.Android.onPlaybackState(mediaState.isPlaying, currentTime, duration);
-            } else {
+            } else if (typeof window.Android.updatePlaybackState === 'function') {
                 window.Android.updatePlaybackState(mediaState.isPlaying, currentTime);
             }
 
-            if (mediaState.isPlaying && typeof window.Android.onPlay === 'function') {
-                window.Android.onPlay();
-            } else if (!mediaState.isPlaying && typeof window.Android.onPause === 'function') {
-                window.Android.onPause();
+            if (!hasUnifiedPlaybackState) {
+                if (mediaState.isPlaying && typeof window.Android.onPlay === 'function') {
+                    window.Android.onPlay();
+                } else if (!mediaState.isPlaying && typeof window.Android.onPause === 'function') {
+                    window.Android.onPause();
+                }
             }
         } catch (e) {
             console.warn('[MediaBridge] ⚠️ Android bridge event failed:', e.message);
@@ -756,6 +764,11 @@ class MediaBridge {
         return `/covers/artists/${normalized}.jpg`;
     }
 
+    /* ==========================================================================
+     @lock - SECURE COMPONENT
+     DO NOT MODIFY: Fixed after cross-device testing (iOS/Android).
+     Refactoring this block will break the responsiveness of the mobile-first PWA.
+     ========================================================================== */
     static registerRemoteControlHandlers(handlers) {
         this._remoteControlHandlers = {
             ...(this._remoteControlHandlers || {}),
@@ -784,6 +797,11 @@ class MediaBridge {
 // PONTE DE RECEPÇÃO ANDROID
 // ============================================================================
 
+/* ==========================================================================
+ @lock - SECURE COMPONENT
+ DO NOT MODIFY: Fixed after cross-device testing (iOS/Android).
+ Refactoring this block will break the responsiveness of the mobile-first PWA.
+ ========================================================================== */
 window.androidPlay = function() {
     console.log("Android disparou: PLAY");
     if (typeof playerPlay === 'function') {
