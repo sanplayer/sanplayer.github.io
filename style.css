@@ -756,7 +756,7 @@ button:active {
     display: flex;
     justify-content: space-between;
     font-size: var(--font-sm);
-    font-weight: bold;
+    font-weight: normal;
     color: #b0b0c0;
     padding: 0 var(--gap-md);
 }
@@ -779,9 +779,6 @@ button:active {
     min-width: 0;
     margin: 0 0.6rem;
     width: 50%;
-    padding-top: var(--control-padding-v);
-    padding-bottom: var(--control-padding-v);
-
 }
 
 .current-thumb {
@@ -3169,12 +3166,11 @@ MOBILE SPECIFIC STYLES
     .block-info {
         margin: 0;
         width: 100%;
+        padding-bottom: .5rem;
     }
 
     .block-controls {
-        justify-content: center;
-        justify-content: center;
-        gap: clamp(.5rem, 2vw, 1rem);
+        gap: clamp(1rem, 2vw, 1rem);
          z-index: 3;
     }
 
@@ -3205,12 +3201,7 @@ MOBILE SPECIFIC STYLES
     display: flex;
     justify-content: space-between;
     font-size: var(--font-sm);
-    font-weight: bold;
-    color: #b0b0c0;
-    position: absolute;
+    font-weight: normal;
     width: 100%;
-    bottom: 0;
-    height: 42px;
-    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
     z-index: 2;
 }
