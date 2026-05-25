@@ -5539,14 +5539,23 @@ function restoreAudioChannelIfNeeded() {
     if (!player.ytReady || !ytPlayer) return;
 
     try {
-        if (typeof ytPlayer.mute === 'function' && typeof ytPlayer.unMute === 'function') {
+        if (typeof ytPlayer.mute === 'function') {
             ytPlayer.mute();
-            ytPlayer.unMute();
-        } else if (typeof ytPlayer.unMute === 'function') {
+        }
+    } catch (err) {
+        console.warn('[AudioChannel] Falha ao mutar antes do play:', err);
+    }
+}
+
+function finalizeAudioChannelAfterPlay() {
+    if (!player.ytReady || !ytPlayer) return;
+
+    try {
+        if (typeof ytPlayer.unMute === 'function') {
             ytPlayer.unMute();
         }
     } catch (err) {
-        console.warn('[AudioChannel] Falha ao reiniciar canal de áudio:', err);
+        console.warn('[AudioChannel] Falha ao desmutar após o play:', err);
     }
 }
 
@@ -5559,17 +5568,19 @@ function playerPlay() {
     // Isso garante sincronização entre UI e YouTube player.
     //
     // Fluxo correto:
-    // 1. ytPlayer.playVideo() ← chamado aqui
-    // 2. YouTube emite PLAYING event
-    // 3. onPlayerStateChange() define player.isPlaying = true
-    // 4. updatePlayPauseButton() renderiza "pause" icon
+    // 1. ytPlayer.mute() ← chamado aqui para destravar o canal
+    // 2. MediaBridge.play() ← chamado imediatamente após
+    // 3. setTimeout(unMute, 50) ← reativa áudio após o play
     //
-    // Se mudar esse fluxo, o botão ficará DESSINCRONIZADO do vídeo.
+    // Se mudar esse fluxo, o botão poderá não acordar o hardware em background.
     // ================================================================
     
     if (player.ytReady && ytPlayer) {
         restoreAudioChannelIfNeeded();
         MediaBridge.play();
+        setTimeout(() => {
+            finalizeAudioChannelAfterPlay();
+        }, 50);
     }
 }
 
