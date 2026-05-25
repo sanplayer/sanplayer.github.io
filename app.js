@@ -3053,11 +3053,33 @@ function initThemeColor() {
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
             // App voltou do background
+            console.log('[VisibilityChange] App retornou do background');
+            
+            // CRÍTICO: Restaurar integridade do YouTube player
+            validateAndRestorePlayer();
+            
             setTimeout(() => {
                 setThemeColor(THEME_COLOR);
+                refreshPlayerUI();
             }, 10);
         }
     });
+    
+    // Listener para resumir timers quando WebView sai do pause (background/lockscreen)
+    document.addEventListener('resume', () => {
+        console.log('[Resume] App resumindo, validando player');
+        validateAndRestorePlayer();
+    });
+    
+    // Listener para sincronizar quando a atividade retoma do backgroundActivity.onResume()
+    if (window.addEventListener) {
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                console.log('[PageShow] Página restaurada do bfcache, sincronizando player');
+                validateAndRestorePlayer();
+            }
+        });
+    }
     
     // Verificar se está em modo standalone (PWA instalado)
     if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -5513,6 +5535,21 @@ function onPlayerStateChange(event) {
     }
 }
 
+function restoreAudioChannelIfNeeded() {
+    if (!player.ytReady || !ytPlayer) return;
+
+    try {
+        if (typeof ytPlayer.mute === 'function' && typeof ytPlayer.unMute === 'function') {
+            ytPlayer.mute();
+            ytPlayer.unMute();
+        } else if (typeof ytPlayer.unMute === 'function') {
+            ytPlayer.unMute();
+        }
+    } catch (err) {
+        console.warn('[AudioChannel] Falha ao reiniciar canal de áudio:', err);
+    }
+}
+
 function playerPlay() {
     // 🔒 CONGELADO: Comando para YouTube player iniciar playback
     // Sincronizar estado favorito atual
@@ -5531,6 +5568,7 @@ function playerPlay() {
     // ================================================================
     
     if (player.ytReady && ytPlayer) {
+        restoreAudioChannelIfNeeded();
         MediaBridge.play();
     }
 }
@@ -5814,6 +5852,29 @@ function checkIfTitleNeedsTruncation(element) {
     element.dataset.truncationChecked = 'true';
 }
 
+function isYouTubePlayerValid() {
+    if (!ytPlayer) return false;
+    if (!player.ytReady) return false;
+    if (typeof ytPlayer.playVideo !== 'function') return false;
+    if (typeof ytPlayer.pauseVideo !== 'function') return false;
+    if (typeof ytPlayer.seekTo !== 'function') return false;
+    return true;
+}
+
+function validateAndRestorePlayer() {
+    console.log('[Background] Validando integridade do player...');
+    if (!isYouTubePlayerValid()) {
+        console.warn('[Background] Player destruido, reinicializando...');
+        ytPlayerInitialized = false;
+        onYouTubeIframeAPIReady();
+        return;
+    }
+    if (ytPlayer) {
+        MediaBridge.attachPlayer(ytPlayer);
+        console.log('[Background] Player re-sincronizado com MediaBridge');
+    }
+}
+
 function togglePlayPause() {
     // 🔒 CONGELADO: Função crítica que sincroniza UI com YouTube player
     // ⚠️ NÃO MODIFIQUE O COMPORTAMENTO
@@ -5838,32 +5899,56 @@ function togglePlayPause() {
 }
 
 function androidPlay() {
+    if (!isYouTubePlayerValid()) {
+        console.warn('[androidPlay] Player invalido, tentando restaurar');
+        validateAndRestorePlayer();
+        setTimeout(() => {
+            if (isYouTubePlayerValid() && !player.isPlaying) {
+                playerPlay();
+            }
+        }, 100);
+        return;
+    }
     if (!player.isPlaying) {
         playerPlay();
     }
 }
 
 function androidPause() {
+    if (!isYouTubePlayerValid()) {
+        console.warn('[androidPause] Player invalido');
+        return;
+    }
     if (player.isPlaying) {
         playerPause();
     }
 }
 
 function androidNext() {
+    if (!isYouTubePlayerValid()) {
+        console.warn('[androidNext] Player invalido');
+        return;
+    }
     nextVideo();
 }
 
 function androidPrevious() {
+    if (!isYouTubePlayerValid()) {
+        console.warn('[androidPrevious] Player invalido');
+        return;
+    }
     previousVideo();
 }
 
 function androidSeekTo(seconds) {
-    if (player.ytReady && ytPlayer && typeof ytPlayer.seekTo === 'function') {
-        ytPlayer.seekTo(seconds);
-        player.currentTime = seconds;
-        updateProgressBar();
-        MediaBridge.updateProgress(seconds, player.currentDuration);
+    if (!isYouTubePlayerValid()) {
+        console.warn('[androidSeekTo] Player invalido');
+        return;
     }
+    ytPlayer.seekTo(seconds);
+    player.currentTime = seconds;
+    updateProgressBar();
+    MediaBridge.updateProgress(seconds, player.currentDuration);
 }
 
 /* ==========================================================================
