@@ -5993,6 +5993,10 @@ function nextVideo() {
     loadVideo(video);
     updateActivePlaylistItem();
     
+    if (player.isPlaying) {
+        playerPlay();
+    }
+    
     // Se estiver em modo favoritos, atualizar o currentFavoriteId
     if (player.viewingFavorites && player.currentPlaylist.name === 'Favoritos') {
         const nextFavorite = player.favorites[player.currentVideoIndex];
@@ -6026,6 +6030,10 @@ function previousVideo() {
     const video = player.currentPlaylist.videos[player.currentVideoIndex];
     loadVideo(video);
     updateActivePlaylistItem();
+    
+    if (player.isPlaying) {
+        playerPlay();
+    }
     
     // Se estiver em modo favoritos, atualizar o currentFavoriteId
     if (player.viewingFavorites && player.currentPlaylist.name === 'Favoritos') {
