@@ -2946,12 +2946,13 @@ MOBILE SPECIFIC STYLES
 
     .header-app-logo svg.icon {
         fill: rgba(255, 255, 255, .2);
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
     }
 
     .app-header .title-player {
         color: rgba(255, 255, 255, 0.2);
+        font-size: var(--font-md);
     }
 
     /* BARRA DE BUSCA */
