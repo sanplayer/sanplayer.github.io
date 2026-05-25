@@ -3051,9 +3051,14 @@ function initThemeColor() {
     
     // Aplicar quando app entra em foco (voltando do background)
     document.addEventListener('visibilitychange', () => {
+        const playerEmbed = document.querySelector('.player-embed');
         if (!document.hidden) {
             // App voltou do background
             console.log('[VisibilityChange] App retornou do background');
+            
+            if (playerEmbed) {
+                playerEmbed.classList.remove('background-hidden');
+            }
             
             // CRÍTICO: Restaurar integridade do YouTube player
             validateAndRestorePlayer();
@@ -3064,14 +3069,9 @@ function initThemeColor() {
             }, 10);
         } else {
             // 🔒 CRÍTICO: App foi para background
-            // Garantir que o iframe do YouTube permanece visível para o motor de renderização
-            const playerEmbed = document.querySelector('.player-embed');
+            // Manter o iframe do YouTube ativo e não escondido com display:none ou 0x0
             if (playerEmbed) {
-                playerEmbed.style.minWidth = '1px';
-                playerEmbed.style.minHeight = '1px';
-                playerEmbed.style.opacity = '0.01';
-                playerEmbed.style.visibility = 'visible';
-                playerEmbed.style.display = 'block';
+                playerEmbed.classList.add('background-hidden');
                 console.log('[Background] Player iframe mantido visível para renderização');
             }
         }
