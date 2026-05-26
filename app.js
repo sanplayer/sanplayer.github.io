@@ -738,7 +738,8 @@ const playlistCache = new Map();    // Map<url, playlistData>
 
 let ytPlayer = null;
 let ytPlayerInitialized = false;
-let updateProgressInterval = null;
+let updateProgressUiInterval = null;
+let updateProgressSyncInterval = null;
 let progressDragging = false;
 let addingItemToPlaylist = false;   // Flag para indicar se estamos adicionando um item a uma playlist
 let previousPlaylistState = null;   // Guardar estado anterior de playlist
@@ -3063,6 +3064,10 @@ function initThemeColor() {
             // CRÍTICO: Restaurar integridade do YouTube player
             validateAndRestorePlayer();
             
+            if (player.ytReady) {
+                startProgressUiLoop();
+            }
+            
             setTimeout(() => {
                 setThemeColor(THEME_COLOR);
                 refreshPlayerUI();
@@ -3074,6 +3079,7 @@ function initThemeColor() {
                 playerEmbed.classList.add('background-hidden');
                 console.log('[Background] Player iframe mantido visível para renderização');
             }
+            stopProgressUiLoop();
         }
     });
     
@@ -5395,6 +5401,24 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
+function stopProgressUiLoop() {
+    if (updateProgressUiInterval) {
+        clearInterval(updateProgressUiInterval);
+        updateProgressUiInterval = null;
+    }
+}
+
+function startProgressUiLoop() {
+    stopProgressUiLoop();
+    updateProgressUiInterval = setInterval(() => {
+        if (!ytPlayer || !player.ytReady) return;
+
+        player.currentTime = ytPlayer.getCurrentTime();
+        updateProgressBar();
+        updatePlaylistDurations();
+    }, 1000);
+}
+
 function onPlayerReady(event) {
     player.ytReady = true;
     MediaBridge.attachPlayer(ytPlayer);
@@ -5411,22 +5435,27 @@ function onPlayerReady(event) {
         }
     }
 
-    if (updateProgressInterval) {
-        clearInterval(updateProgressInterval);
+    stopProgressUiLoop();
+    if (updateProgressSyncInterval) {
+        clearInterval(updateProgressSyncInterval);
     }
 
-    updateProgressInterval = setInterval(() => {
+    if (!document.hidden) {
+        startProgressUiLoop();
+    }
+
+    updateProgressSyncInterval = setInterval(() => {
         if (!ytPlayer || !player.ytReady) return;
 
-        const duration = ytPlayer.getDuration();
-        const currentTime = ytPlayer.getCurrentTime();
+        player.currentTime = ytPlayer.getCurrentTime();
+        if (!player.currentDuration || player.currentDuration <= 0) {
+            const duration = ytPlayer.getDuration();
+            if (duration > 0) {
+                player.currentDuration = duration;
+            }
+        }
 
-        player.currentDuration = duration;
-        player.currentTime = currentTime;
-
-        updateProgressBar();
-        updatePlaylistDurations();
-        MediaBridge.updateProgress(currentTime, duration);
+        MediaBridge.updateProgress(player.currentTime, player.currentDuration);
         
         // 💾 NEW: Persistência throttled - salvar estado a cada 3s
         const now = Date.now();
@@ -5434,27 +5463,29 @@ function onPlayerReady(event) {
             persistPlayerState();
             lastPersistTime = now;
         }
-    }, 250);
+    }, 10000);
 
     safeRender();
 }
 
 function updatePlaylistDurations() {
     if (!player.currentPlaylist) return;
-    
-    player.currentPlaylist.videos.forEach((video, index) => {
-        const durationElement = document.getElementById(`duration-${index}`);
-        // Apenas o vídeo atual pode ter sua duração obtida da API Iframe
-        // Outros vídeos permanecerão como '-' (limitação da API do YouTube)
-        if (durationElement && index === player.currentVideoIndex) {
-            if (player.ytReady && ytPlayer) {
-                const duration = ytPlayer.getDuration();
-                if (duration > 0) {
-                    durationElement.textContent = formatTime(duration);
-                }
-            }
+
+    const durationElement = document.getElementById(`duration-${player.currentVideoIndex}`);
+    if (!durationElement) return;
+
+    if (player.currentDuration > 0) {
+        durationElement.textContent = formatTime(player.currentDuration);
+        return;
+    }
+
+    if (player.ytReady && ytPlayer && typeof ytPlayer.getDuration === 'function') {
+        const duration = ytPlayer.getDuration();
+        if (duration > 0) {
+            player.currentDuration = duration;
+            durationElement.textContent = formatTime(duration);
         }
-    });
+    }
 }
 
 function onPlayerStateChange(event) {
