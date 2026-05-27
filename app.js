@@ -53,7 +53,7 @@ import MediaBridge from './media/MediaBridge.js';
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const STREAM_RESOLVER_ENDPOINT = isLocalhost 
     ? 'http://localhost:5500/api/resolveStream'
-    : 'https://sanplayer-stream-resolver.onrender.com/api/resolveStream';
+    : 'https://sanplayer-server.onrender.com/api/resolveStream';
 
 //
 
