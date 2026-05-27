@@ -3134,50 +3134,6 @@ MOBILE SPECIFIC STYLES
         animation: slideUpSidebarClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
     }
 
-    /* FOOTER MOBILE */
-
-
-    .app-player-footer {
-        background: #000000;
-        overflow: hidden;
-    }
-
-
-    .app-player-footer::before {
-
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle at 30% 30%, #8000ff 0%, transparent 40%),
-            radial-gradient(circle at 70% 60%, #000000 0%, transparent 45%),
-            radial-gradient(circle at 50% 80%, #8000ff 0%, transparent 50%);
-        filter: blur(40px);
-        pointer-events: none;
-        opacity: 0.3;
-        mix-blend-mode: screen;
-        animation: premium-glow 12s ease-in-out infinite alternate;
-        will-change: transform;
-    }
-
-    @keyframes premium-glow {
-        0% {
-            transform: translate(0, 0) rotate(0deg) scale(1);
-        }
-
-        50% {
-            transform: translate(-5%, 8%) rotate(90deg) scale(1.1);
-        }
-
-        100% {
-            transform: translate(8%, -5%) rotate(180deg) scale(0.95);
-        }
-    }
-
-    /*END FOOTER ANIMATION*/
-
 
     .footer-content-wrapper {
         display: flex;
