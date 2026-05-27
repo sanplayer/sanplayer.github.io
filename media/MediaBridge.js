@@ -943,6 +943,70 @@ window.androidSeekTo = function(seconds) {
 
 
 // ============================================================================
+// 💾 CACHE DE STREAMS - TTL 24 HORAS
+// ============================================================================
+const streamUrlCache = new Map();
+const STREAM_CACHE_TTL = 24 * 60 * 60 * 1000;
+const STREAM_RESOLVER_ENDPOINT = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) ? 'http://localhost:5500/api/resolveStream' : 'https://sanplayer-server.onrender.com/api/resolveStream';
+
+function getStreamFromCache(videoId) {
+    const cached = streamUrlCache.get(videoId);
+    if (!cached) return null;
+    if (Date.now() - cached.timestamp > STREAM_CACHE_TTL) {streamUrlCache.delete(videoId); return null;}
+    console.log(`[MediaBridge-CACHE-HIT] ✅ ${videoId}`);
+    return cached;
+}
+
+function setStreamInCache(videoId, data) {
+    if (!videoId || !data.url) return;
+    streamUrlCache.set(videoId, {url: data.url, title: data.title, artist: data.artist, duration: data.duration, timestamp: Date.now()});
+    console.log(`[MediaBridge-CACHE-SET] 💾 ${videoId} (24h)`);
+}
+
+async function resolveStreamUrl(videoId) {
+    if (!videoId) throw new Error('Missing videoId');
+    const cached = getStreamFromCache(videoId);
+    if (cached) return cached.url;
+    const endpoint = `${STREAM_RESOLVER_ENDPOINT}?videoId=${encodeURIComponent(videoId)}`;
+    try {
+        console.log(`[MediaBridge] 🌐 Resolvendo...`);
+        const response = await fetch(endpoint, {method: 'GET', headers: {'Accept': 'application/json'}, timeout: 15000});
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        const payload = await response.json();
+        if (!payload || !payload.streamUrl) throw new Error('Invalid');
+        setStreamInCache(videoId, {url: payload.streamUrl, title: payload.title, artist: payload.author, duration: payload.duration});
+        return payload.streamUrl;
+    } catch (serverError) {
+        console.warn(`[MediaBridge] ⚠️ Servidor falhou, fallback...`);
+        try {
+            const clientUrl = await resolveStreamClientSide(videoId);
+            if (clientUrl) {setStreamInCache(videoId, {url: clientUrl, title: 'YouTube', artist: 'Streaming', duration: 0}); return clientUrl;}
+        } catch (e) {console.error(`[MediaBridge] ❌ Fallback falhou`, e.message);}
+        throw new Error(`Failed to resolve`);
+    }
+}
+
+async function resolveStreamClientSide(videoId) {
+    if (!mediaState.ytPlayer || typeof mediaState.ytPlayer.getVideoData !== 'function') {console.warn('[MediaBridge] Player indisponível'); return null;}
+    try {
+        mediaState.ytPlayer.cueVideoById(videoId);
+        const startTime = Date.now();
+        while (Date.now() - startTime < 5000) {
+            const videoData = mediaState.ytPlayer.getVideoData();
+            if (videoData && videoData.video_id === videoId) {
+                const videoElement = document.querySelector('video');
+                if (videoElement && videoElement.currentSrc) return videoElement.currentSrc;
+                break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        return null;
+    } catch (error) {console.warn('[MediaBridge] Fallback error:', error.message); return null;}
+}
+
+MediaBridge.resolveStreamUrl = resolveStreamUrl;
+
+// ============================================================================
 // EXPORTAR
 // ============================================================================
 
