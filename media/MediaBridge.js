@@ -315,11 +315,19 @@ class MediaBridge {
      */
     static setCurrentTrack(track) {
         track = getSafeTrack(track);
+        const previousTrack = mediaState.currentTrack || {};
+        const hasTrackChanged = (
+            previousTrack.id !== track.id ||
+            previousTrack.title !== track.title ||
+            previousTrack.artist !== track.artist ||
+            previousTrack.streamUrl !== track.streamUrl
+        );
         
-        if (mediaState.currentTrack?.id !== track.id) {
+        if (hasTrackChanged) {
             console.log('[MediaBridge] 🎬 Track changed:', {
-                from: mediaState.currentTrack?.title,
-                to: track.title
+                from: previousTrack.title,
+                to: track.title,
+                streamUrlChanged: previousTrack.streamUrl !== track.streamUrl
             });
             
             mediaState.currentTrack = track;
@@ -328,6 +336,11 @@ class MediaBridge {
             
             // Persistir imediatamente quando muda de track
             this._persistState();
+        } else {
+            mediaState.currentTrack = {
+                ...previousTrack,
+                ...track
+            };
         }
     }
 
@@ -430,12 +443,28 @@ class MediaBridge {
     }
 
     static _hasAndroidBridge() {
-        return typeof window !== 'undefined' && window.Android && (
-            typeof window.Android.updatePlaybackState === 'function' ||
-            typeof window.Android.onPlaybackState === 'function' ||
-            typeof window.Android.onPlay === 'function' ||
-            typeof window.Android.onPause === 'function'
+        if (typeof window === 'undefined') return false;
+
+        const android = window.Android;
+        const androidBridge = window.AndroidBridge;
+
+        const androidReady = android && (
+            typeof android.updatePlaybackState === 'function' ||
+            typeof android.onPlaybackState === 'function' ||
+            typeof android.onPlay === 'function' ||
+            typeof android.onPause === 'function'
         );
+
+        const androidBridgeReady = androidBridge && (
+            typeof androidBridge.playYouTubeStream === 'function' ||
+            typeof androidBridge.pausePlayback === 'function' ||
+            typeof androidBridge.seekTo === 'function' ||
+            typeof androidBridge.onTrackChange === 'function' ||
+            typeof androidBridge.updateMetadata === 'function' ||
+            typeof androidBridge.updatePlaybackState === 'function'
+        );
+
+        return androidReady || androidBridgeReady;
     }
 
     static _syncToAndroidBridge() {
@@ -446,9 +475,25 @@ class MediaBridge {
         const duration = Math.round(mediaState.duration || 0);
 
         try {
+            if (window.AndroidBridge) {
+                if (typeof window.AndroidBridge.onTrackChange === 'function') {
+                    window.AndroidBridge.onTrackChange(track.id, track.title, track.artist, this._getArtworkUrl(track.artist), duration);
+                } else if (typeof window.AndroidBridge.updateMetadata === 'function') {
+                    window.AndroidBridge.updateMetadata(track.title, track.artist, this._getArtworkUrl(track.artist), duration);
+                }
+
+                if (typeof window.AndroidBridge.updatePlaybackState === 'function') {
+                    window.AndroidBridge.updatePlaybackState(mediaState.isPlaying, currentTime);
+                } else if (typeof window.AndroidBridge.onPlaybackState === 'function') {
+                    window.AndroidBridge.onPlaybackState(mediaState.isPlaying, currentTime, duration);
+                }
+
+                return;
+            }
+
             if (typeof window.Android.onTrackChange === 'function') {
                 window.Android.onTrackChange(track.id, track.title, track.artist, this._getArtworkUrl(track.artist), duration);
-            } else {
+            } else if (typeof window.Android.updateMetadata === 'function') {
                 window.Android.updateMetadata(track.title, track.artist, this._getArtworkUrl(track.artist), duration);
             }
 
@@ -474,6 +519,10 @@ class MediaBridge {
     static _notifyAndroidProgress(time, duration) {
         if (!this._hasAndroidBridge()) return;
         try {
+            if (window.AndroidBridge && typeof window.AndroidBridge.onProgress === 'function') {
+                window.AndroidBridge.onProgress(Math.round(time), Math.round(duration));
+                return;
+            }
             if (typeof window.Android.onProgress === 'function') {
                 window.Android.onProgress(Math.round(time), Math.round(duration));
             }
@@ -485,6 +534,10 @@ class MediaBridge {
     static _notifyAndroidBuffering() {
         if (!this._hasAndroidBridge()) return;
         try {
+            if (window.AndroidBridge && typeof window.AndroidBridge.onBuffering === 'function') {
+                window.AndroidBridge.onBuffering();
+                return;
+            }
             if (typeof window.Android.onBuffering === 'function') {
                 window.Android.onBuffering();
             }
@@ -496,6 +549,10 @@ class MediaBridge {
     static _notifyAndroidEnded() {
         if (!this._hasAndroidBridge()) return;
         try {
+            if (window.AndroidBridge && typeof window.AndroidBridge.onEnded === 'function') {
+                window.AndroidBridge.onEnded();
+                return;
+            }
             if (typeof window.Android.onEnded === 'function') {
                 window.Android.onEnded();
             }
@@ -609,6 +666,25 @@ class MediaBridge {
      * ▶️ Iniciar reprodução
      */
     static play() {
+        const track = this.getCurrentTrack();
+        const nativeUrl = track.streamUrl || track.audioUrl;
+
+        if (nativeUrl && typeof window.AndroidBridge?.playYouTubeStream === 'function') {
+            try {
+                window.AndroidBridge.playYouTubeStream(
+                    nativeUrl,
+                    track.title,
+                    track.artist,
+                    this._getArtworkUrl(track.artist)
+                );
+                console.log('[MediaBridge] ▶️ Play delegated to Android native service');
+                this.setPlaybackState(true);
+                return;
+            } catch (e) {
+                console.warn('[MediaBridge] ⚠️ AndroidBridge play failed:', e.message);
+            }
+        }
+
         if (mediaState.ytPlayer && typeof mediaState.ytPlayer.playVideo === 'function') {
             mediaState.ytPlayer.playVideo();
             console.log('[MediaBridge] ▶️ Play command sent to YouTube');
@@ -619,6 +695,17 @@ class MediaBridge {
      * ⏸️ Pausar reprodução
      */
     static pause() {
+        if (typeof window.AndroidBridge?.pausePlayback === 'function') {
+            try {
+                window.AndroidBridge.pausePlayback();
+                this.setPlaybackState(false);
+                console.log('[MediaBridge] ⏸️ Pause delegated to Android native service');
+                return;
+            } catch (e) {
+                console.warn('[MediaBridge] ⚠️ AndroidBridge pause failed:', e.message);
+            }
+        }
+
         if (mediaState.ytPlayer && typeof mediaState.ytPlayer.pauseVideo === 'function') {
             mediaState.ytPlayer.pauseVideo();
             this.setPlaybackState(false);
@@ -631,6 +718,17 @@ class MediaBridge {
      * @param {Number} time - Tempo em segundos
      */
     static seek(time) {
+        if (typeof window.AndroidBridge?.seekTo === 'function') {
+            try {
+                window.AndroidBridge.seekTo(time);
+                mediaState.currentTime = time;
+                console.log('[MediaBridge] ⏩ Seek delegated to Android native service:', time);
+                return;
+            } catch (e) {
+                console.warn('[MediaBridge] ⚠️ AndroidBridge seek failed:', e.message);
+            }
+        }
+
         if (mediaState.ytPlayer && typeof mediaState.ytPlayer.seekTo === 'function') {
             mediaState.ytPlayer.seekTo(time);
             mediaState.currentTime = time;
