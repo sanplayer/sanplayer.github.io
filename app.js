@@ -49,6 +49,12 @@
 import { shareVideo, sharePlaylist, shareArtist, handleShare, shareMusic, shareItem } from './adapters/share.js';
 import MediaBridge from './media/MediaBridge.js';
 
+// 🔍 Detectar ambiente e usar endpoint apropriado
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const STREAM_RESOLVER_ENDPOINT = isLocalhost 
+    ? 'http://localhost:5500/api/resolveStream'
+    : 'https://sanplayer-stream-resolver.onrender.com/api/resolveStream';
+
 //
 
 const INITIAL_TRACK_FALLBACK = {
@@ -160,6 +166,8 @@ const player = {
     isLoadingPlaylist: false,       // Flag para indicar carregamento
     previewVideo: null,             // 🎬 Rastreia qual vídeo está em preview na tela (pode não estar tocando)
 };
+
+const streamUrlCache = new Map();
 
 // ============================================================================
 // � AVISO IMPORTANTE: PROTOCOLO DE PROTEÇÃO ATIVO
@@ -1323,6 +1331,53 @@ async function findVideoById(videoId) {
     return null;
 }
 
+async function resolveTrackStream(video) {
+    if (!video || !video.id) return null;
+    if (video.streamUrl) return video.streamUrl;
+    if (streamUrlCache.has(video.id)) {
+        return streamUrlCache.get(video.id);
+    }
+
+    try {
+        const resolvedUrl = await resolveYouTubeStreamUrl(video.id);
+        if (resolvedUrl) {
+            video.streamUrl = resolvedUrl;
+            streamUrlCache.set(video.id, resolvedUrl);
+            console.log('[Init] ✅ resolveTrackStream: streamUrl attached for', video.id);
+            return resolvedUrl;
+        }
+        console.warn('[Init] ⚠️ resolveTrackStream: Nenhum streamUrl encontrado para', video.id);
+    } catch (error) {
+        console.warn('[Init] ⚠️ resolveTrackStream falhou para', video.id, error);
+    }
+    return null;
+}
+
+async function resolveYouTubeStreamUrl(videoId) {
+    if (!videoId) {
+        throw new Error('Missing videoId');
+    }
+
+    const endpoint = `${STREAM_RESOLVER_ENDPOINT}?videoId=${encodeURIComponent(videoId)}`;
+    const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Stream resolver failed with status ${response.status}`);
+    }
+
+    const payload = await response.json();
+    if (!payload || typeof payload.streamUrl !== 'string' || payload.streamUrl.trim() === '') {
+        throw new Error('Stream resolver returned invalid payload');
+    }
+
+    return payload.streamUrl;
+}
+
 // ============================================================================
 // FUNÇÕES DE RENDER REUTILIZÁVEIS
 // ============================================================================
@@ -2033,6 +2088,8 @@ async function playTrackById(trackId) {
             // Recursivamente tentar com o fallback
             return await playTrackById(safeVideo.id);
         }
+
+        await resolveTrackStream(video);
         
         // [PASSO 3] Configurar estado do player
         player.currentPlaylist = playlist;
@@ -5360,7 +5417,8 @@ function loadVideo(video) {
     MediaBridge.setCurrentTrack({
         id: video.id,
         title: video.title || 'SanPlayer',
-        artist: video.artist || 'Desconhecido'
+        artist: video.artist || 'Desconhecido',
+        streamUrl: video.streamUrl || undefined
     });
     
     // Persist current state
