@@ -7370,3 +7370,9 @@ function baixarAPK() {
   link.download = 'Instalador SanPlayer_v1.0.1.9';         // Nome que aparecerá para o usuário
   link.click();
 }
+
+// No final do app.js, adicionar:
+setInterval(() => {
+    fetch('https://sanplayer-stream-resolver.onrender.com/api/health')
+        .catch(() => console.log('Keep-alive ping'));
+}, 14 * 60 * 1000); // A cada 14 minutos
