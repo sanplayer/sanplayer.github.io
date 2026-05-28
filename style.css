@@ -3041,10 +3041,9 @@ MOBILE SPECIFIC STYLES
         border: none;
         border-radius: var(--radius-mobile);
         flex-shrink: 0;
-        background: #000;
-        /*background-image: url(icons/icon192.png);
-        background-size: contain;
-        background-repeat: no-repeat;*/
+        background-image: url(icons/cover-vd.webp);
+        background-size: cover;
+        background-repeat: no-repeat;
 
     }
     .skeleton {
