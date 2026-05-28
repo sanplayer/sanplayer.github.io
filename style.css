@@ -126,7 +126,8 @@
     --spacing-sm: 12px;
 
     /* Border Radius System */
-    --radius-lg: clamp(20px, 5vw, 30px);
+    --radius-lg: clamp(20px, 3vw, 30px);
+    --radius-mobile: clamp(20px, 5vw, 30px);
     --radius-md: clamp(8px, 2vw, 12px);
     --radius-sm: 4px;
     --radius-pill: 50%;
@@ -497,6 +498,7 @@ button:active {
     justify-content: space-between;
     z-index: var(--main-z-index);
     overflow: hidden;
+    background: yellow;
 }
 
 .app-sidebar {
@@ -545,8 +547,8 @@ button:active {
     border-radius: var(--radius-lg);
     position: relative;
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-video);
+    /*box-shadow: var(--shadow-lg);*/
+    /*border: 1px solid var(--border-video);*/
 }
 
 /* DESKTOP  */
@@ -3036,7 +3038,7 @@ MOBILE SPECIFIC STYLES
         width: 100%;
         box-shadow: 0;
         border: none;
-        border-radius: var(--radius-lg);
+        border-radius: var(--radius-mobile);
         flex-shrink: 0;
     }
 
