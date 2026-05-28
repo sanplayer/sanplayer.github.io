@@ -3146,7 +3146,14 @@ MOBILE SPECIFIC STYLES
     .app-sidebar.show.closing {
         animation: slideUpSidebarClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
     }
+    .app-player-footer {
+        background: radial-gradient(circle,rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
 
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-position: bottom center;
+
+    }
 
     .footer-content-wrapper {
         display: flex;
