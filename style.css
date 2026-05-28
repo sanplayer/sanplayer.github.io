@@ -3041,7 +3041,9 @@ MOBILE SPECIFIC STYLES
         border: none;
         border-radius: var(--radius-mobile);
         flex-shrink: 0;
-        background: red;
+        background-image: url(icons/icon512.png);
+        background-size: cover;
+        background-repeat: no-repeat;
 
     }
 
