@@ -3041,6 +3041,8 @@ MOBILE SPECIFIC STYLES
         border: none;
         border-radius: var(--radius-mobile);
         flex-shrink: 0;
+        background: red;
+
     }
 
     .player-embed {
