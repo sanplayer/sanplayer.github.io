@@ -16,7 +16,6 @@
  * - Eventos de mídia
  * - Persistência de estado
  * - Sincronização com Android (gateway)
- * - Proteção de ambiente (Wake Lock, desbloqueio de áudio)
  * 
  * ❌ O QUE NÃO PERTENCE AQUI:
  * - DOM visual, renderização (→ app.js)
@@ -117,61 +116,6 @@ const INITIAL_TRACK_FALLBACK = {
  * - playlistsIndex (→ app.js)
  * - estados de UX/navegação (→ app.js)
  */
-// ============================================================================
-// [ PROTEÇÃO DE AMBIENTE ] WAKE LOCK + DESBLOQUEIO DE ÁUDIO
-// ============================================================================
-/**
- * 🔒 Inicialização de proteções para execução em background no Android
- * - Wake Lock: Evita throttling do Chrome/WebView
- * - Desbloqueio de Áudio: Garante permissão para tocar áudio mesmo minimizado
- */
-(function setupEnvironmentProtection() {
-    // Wake Lock para manter JS ativo em background
-    if ('wakeLock' in navigator) {
-        let wakeLock = null;
-        async function requestWakeLock() {
-            try { 
-                wakeLock = await navigator.wakeLock.request('screen'); 
-                console.log('[MediaBridge] 🔒 Wake Lock ativo');
-            } catch (e) { 
-                console.warn('[MediaBridge] ⚠️ Wake Lock falhou:', e.message);
-            }
-        }
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') requestWakeLock();
-        });
-        requestWakeLock();
-    }
-
-    // Monitorar visibilidade da página
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            console.log('[MediaBridge] 📱 App em background');
-        } else {
-            console.log('[MediaBridge] 📱 App em foreground');
-        }
-    });
-
-    // Desbloqueio de áudio (primeira interação do usuário)
-    function unlockAudioContext() {
-        try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const source = ctx.createBufferSource();
-            source.buffer = ctx.createBuffer(1, 1, 22050);
-            source.connect(ctx.destination);
-            source.start(0);
-            setTimeout(() => ctx.close(), 500);
-            console.log('[MediaBridge] 🔊 Contexto de áudio desbloqueado');
-        } catch (e) { 
-            console.warn('[MediaBridge] ⚠️ Audio unlock falhou:', e.message);
-        }
-    }
-    document.body.addEventListener('touchstart', unlockAudioContext, { once: true });
-})();
-
-// ============================================================================
-// [ STATE ] NÚCLEO DE DADOS - APENAS PLAYBACK + METADATA
-// ============================================================================
 let mediaState = {
     // 🎬 TRACK ATUAL
     currentTrack: INITIAL_TRACK_FALLBACK,
@@ -371,19 +315,11 @@ class MediaBridge {
      */
     static setCurrentTrack(track) {
         track = getSafeTrack(track);
-        const previousTrack = mediaState.currentTrack || {};
-        const hasTrackChanged = (
-            previousTrack.id !== track.id ||
-            previousTrack.title !== track.title ||
-            previousTrack.artist !== track.artist ||
-            previousTrack.streamUrl !== track.streamUrl
-        );
         
-        if (hasTrackChanged) {
+        if (mediaState.currentTrack?.id !== track.id) {
             console.log('[MediaBridge] 🎬 Track changed:', {
-                from: previousTrack.title,
-                to: track.title,
-                streamUrlChanged: previousTrack.streamUrl !== track.streamUrl
+                from: mediaState.currentTrack?.title,
+                to: track.title
             });
             
             mediaState.currentTrack = track;
@@ -392,11 +328,6 @@ class MediaBridge {
             
             // Persistir imediatamente quando muda de track
             this._persistState();
-        } else {
-            mediaState.currentTrack = {
-                ...previousTrack,
-                ...track
-            };
         }
     }
 
@@ -499,28 +430,7 @@ class MediaBridge {
     }
 
     static _hasAndroidBridge() {
-        if (typeof window === 'undefined') return false;
-
-        const android = window.Android;
-        const androidBridge = window.AndroidBridge;
-
-        const androidReady = android && (
-            typeof android.updatePlaybackState === 'function' ||
-            typeof android.onPlaybackState === 'function' ||
-            typeof android.onPlay === 'function' ||
-            typeof android.onPause === 'function'
-        );
-
-        const androidBridgeReady = androidBridge && (
-            typeof androidBridge.playYouTubeStream === 'function' ||
-            typeof androidBridge.pausePlayback === 'function' ||
-            typeof androidBridge.seekTo === 'function' ||
-            typeof androidBridge.onTrackChange === 'function' ||
-            typeof androidBridge.updateMetadata === 'function' ||
-            typeof androidBridge.updatePlaybackState === 'function'
-        );
-
-        return androidReady || androidBridgeReady;
+        return typeof window !== 'undefined' && window.Android && typeof window.Android.updatePlaybackState === 'function';
     }
 
     static _syncToAndroidBridge() {
@@ -531,41 +441,22 @@ class MediaBridge {
         const duration = Math.round(mediaState.duration || 0);
 
         try {
-            if (window.AndroidBridge) {
-                if (typeof window.AndroidBridge.onTrackChange === 'function') {
-                    window.AndroidBridge.onTrackChange(track.id, track.title, track.artist, this._getArtworkUrl(track.artist), duration);
-                } else if (typeof window.AndroidBridge.updateMetadata === 'function') {
-                    window.AndroidBridge.updateMetadata(track.title, track.artist, this._getArtworkUrl(track.artist), duration);
-                }
-
-                if (typeof window.AndroidBridge.updatePlaybackState === 'function') {
-                    window.AndroidBridge.updatePlaybackState(mediaState.isPlaying, currentTime);
-                } else if (typeof window.AndroidBridge.onPlaybackState === 'function') {
-                    window.AndroidBridge.onPlaybackState(mediaState.isPlaying, currentTime, duration);
-                }
-
-                return;
-            }
-
             if (typeof window.Android.onTrackChange === 'function') {
                 window.Android.onTrackChange(track.id, track.title, track.artist, this._getArtworkUrl(track.artist), duration);
-            } else if (typeof window.Android.updateMetadata === 'function') {
+            } else {
                 window.Android.updateMetadata(track.title, track.artist, this._getArtworkUrl(track.artist), duration);
             }
 
-            const hasUnifiedPlaybackState = typeof window.Android.onPlaybackState === 'function' || typeof window.Android.updatePlaybackState === 'function';
             if (typeof window.Android.onPlaybackState === 'function') {
                 window.Android.onPlaybackState(mediaState.isPlaying, currentTime, duration);
-            } else if (typeof window.Android.updatePlaybackState === 'function') {
+            } else {
                 window.Android.updatePlaybackState(mediaState.isPlaying, currentTime);
             }
 
-            if (!hasUnifiedPlaybackState) {
-                if (mediaState.isPlaying && typeof window.Android.onPlay === 'function') {
-                    window.Android.onPlay();
-                } else if (!mediaState.isPlaying && typeof window.Android.onPause === 'function') {
-                    window.Android.onPause();
-                }
+            if (mediaState.isPlaying && typeof window.Android.onPlay === 'function') {
+                window.Android.onPlay();
+            } else if (!mediaState.isPlaying && typeof window.Android.onPause === 'function') {
+                window.Android.onPause();
             }
         } catch (e) {
             console.warn('[MediaBridge] ⚠️ Android bridge event failed:', e.message);
@@ -575,10 +466,6 @@ class MediaBridge {
     static _notifyAndroidProgress(time, duration) {
         if (!this._hasAndroidBridge()) return;
         try {
-            if (window.AndroidBridge && typeof window.AndroidBridge.onProgress === 'function') {
-                window.AndroidBridge.onProgress(Math.round(time), Math.round(duration));
-                return;
-            }
             if (typeof window.Android.onProgress === 'function') {
                 window.Android.onProgress(Math.round(time), Math.round(duration));
             }
@@ -590,10 +477,6 @@ class MediaBridge {
     static _notifyAndroidBuffering() {
         if (!this._hasAndroidBridge()) return;
         try {
-            if (window.AndroidBridge && typeof window.AndroidBridge.onBuffering === 'function') {
-                window.AndroidBridge.onBuffering();
-                return;
-            }
             if (typeof window.Android.onBuffering === 'function') {
                 window.Android.onBuffering();
             }
@@ -605,10 +488,6 @@ class MediaBridge {
     static _notifyAndroidEnded() {
         if (!this._hasAndroidBridge()) return;
         try {
-            if (window.AndroidBridge && typeof window.AndroidBridge.onEnded === 'function') {
-                window.AndroidBridge.onEnded();
-                return;
-            }
             if (typeof window.Android.onEnded === 'function') {
                 window.Android.onEnded();
             }
@@ -722,25 +601,6 @@ class MediaBridge {
      * ▶️ Iniciar reprodução
      */
     static play() {
-        const track = this.getCurrentTrack();
-        const nativeUrl = track.streamUrl || track.audioUrl;
-
-        if (nativeUrl && typeof window.AndroidBridge?.playYouTubeStream === 'function') {
-            try {
-                window.AndroidBridge.playYouTubeStream(
-                    nativeUrl,
-                    track.title,
-                    track.artist,
-                    this._getArtworkUrl(track.artist)
-                );
-                console.log('[MediaBridge] ▶️ Play delegated to Android native service');
-                this.setPlaybackState(true);
-                return;
-            } catch (e) {
-                console.warn('[MediaBridge] ⚠️ AndroidBridge play failed:', e.message);
-            }
-        }
-
         if (mediaState.ytPlayer && typeof mediaState.ytPlayer.playVideo === 'function') {
             mediaState.ytPlayer.playVideo();
             console.log('[MediaBridge] ▶️ Play command sent to YouTube');
@@ -751,17 +611,6 @@ class MediaBridge {
      * ⏸️ Pausar reprodução
      */
     static pause() {
-        if (typeof window.AndroidBridge?.pausePlayback === 'function') {
-            try {
-                window.AndroidBridge.pausePlayback();
-                this.setPlaybackState(false);
-                console.log('[MediaBridge] ⏸️ Pause delegated to Android native service');
-                return;
-            } catch (e) {
-                console.warn('[MediaBridge] ⚠️ AndroidBridge pause failed:', e.message);
-            }
-        }
-
         if (mediaState.ytPlayer && typeof mediaState.ytPlayer.pauseVideo === 'function') {
             mediaState.ytPlayer.pauseVideo();
             this.setPlaybackState(false);
@@ -774,17 +623,6 @@ class MediaBridge {
      * @param {Number} time - Tempo em segundos
      */
     static seek(time) {
-        if (typeof window.AndroidBridge?.seekTo === 'function') {
-            try {
-                window.AndroidBridge.seekTo(time);
-                mediaState.currentTime = time;
-                console.log('[MediaBridge] ⏩ Seek delegated to Android native service:', time);
-                return;
-            } catch (e) {
-                console.warn('[MediaBridge] ⚠️ AndroidBridge seek failed:', e.message);
-            }
-        }
-
         if (mediaState.ytPlayer && typeof mediaState.ytPlayer.seekTo === 'function') {
             mediaState.ytPlayer.seekTo(time);
             mediaState.currentTime = time;
@@ -997,147 +835,6 @@ window.androidSeekTo = function(seconds) {
     }
 };
 
-
-// ============================================================================
-// 💾 CACHE DE STREAMS - TTL 24 HORAS
-// ============================================================================
-const streamUrlCache = new Map();
-const STREAM_CACHE_TTL = 24 * 60 * 60 * 1000;
-const STREAM_RESOLVER_ENDPOINT = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) ? 'http://localhost:5500/api/resolveStream' : 'https://sanplayer-server.onrender.com/api/resolveStream';
-
-function getStreamFromCache(videoId) {
-    const cached = streamUrlCache.get(videoId);
-    if (!cached) return null;
-    if (Date.now() - cached.timestamp > STREAM_CACHE_TTL) {streamUrlCache.delete(videoId); return null;}
-    console.log(`[MediaBridge-CACHE-HIT] ✅ ${videoId}`);
-    return cached;
-}
-
-function setStreamInCache(videoId, data) {
-    if (!videoId || !data.url) return;
-    streamUrlCache.set(videoId, {url: data.url, title: data.title, artist: data.artist, duration: data.duration, timestamp: Date.now()});
-    console.log(`[MediaBridge-CACHE-SET] 💾 ${videoId} (24h)`);
-}
-
-async function resolveStreamUrl(videoId) {
-    if (!videoId) throw new Error('Missing videoId');
-    
-    // Step 1: CACHE PRIMEIRO
-    const cached = getStreamFromCache(videoId);
-    if (cached) {
-        console.log('[MediaBridge] ✅ Cache hit');
-        return cached.url;
-    }
-    
-    // Step 2: TENTAR SERVIDOR (pode estar com YouTube bloqueado)
-    const endpoint = `${STREAM_RESOLVER_ENDPOINT}?videoId=${encodeURIComponent(videoId)}`;
-    let serverError = null;
-    try {
-        console.log(`[MediaBridge] 🌐 Tentando servidor...`);
-        const response = await fetch(endpoint, {method: 'GET', headers: {'Accept': 'application/json'}, timeout: 15000});
-        
-        // Tratar erros específicos do Circuit Breaker
-        if (response.status === 503) {
-            serverError = 'CIRCUIT_BREAKER_OPEN: YouTube temporariamente bloqueado';
-            throw new Error(serverError);
-        }
-        if (response.status === 504) {
-            serverError = 'YOUTUBE_TIMEOUT: YouTube não respondeu';
-            throw new Error(serverError);
-        }
-        if (response.status === 429) {
-            serverError = 'YOUTUBE_RATE_LIMITED: YouTube limitando taxa';
-            throw new Error(serverError);
-        }
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const payload = await response.json();
-        if (!payload || !payload.streamUrl) throw new Error('Stream inválido');
-        
-        setStreamInCache(videoId, {url: payload.streamUrl, title: payload.title, artist: payload.author, duration: payload.duration});
-        console.log('[MediaBridge] ✅ Servidor: sucesso');
-        return payload.streamUrl;
-    } catch (error) {
-        serverError = error.message;
-        console.warn(`[MediaBridge] ⚠️ Servidor falhou: ${serverError}`);
-    }
-    
-    // Step 3: FALLBACK CLIENT-SIDE (Android WebView consegue resolver!)
-    console.log('[MediaBridge] 💡 Tentando resolver NO CLIENTE (Android WebView)...');
-    try {
-        const clientUrl = await resolveStreamClientSide(videoId);
-        if (clientUrl) {
-            setStreamInCache(videoId, {url: clientUrl, title: 'YouTube', artist: 'Streaming', duration: 0});
-            console.log('[MediaBridge] ✅ Cliente: sucesso! Stream extraído do YouTube IFrame');
-            return clientUrl;
-        }
-    } catch (e) {
-        console.error(`[MediaBridge] ❌ Fallback client falhou:`, e.message);
-    }
-    
-    // Step 4: FALHA TOTAL
-    throw new Error(`Falha ao resolver: Server=${serverError} | Client=indisponível`);
-}
-
-async function resolveStreamClientSide(videoId) {
-    if (!mediaState.ytPlayer || typeof mediaState.ytPlayer.getVideoData !== 'function') {
-        console.warn('[MediaBridge] Player indisponível ou não inicializado');
-        return null;
-    }
-    
-    try {
-        console.log(`[MediaBridge-Client] 🎬 Carregando vídeo: ${videoId}`);
-        
-        // Carregar vídeo no player
-        mediaState.ytPlayer.cueVideoById(videoId);
-        
-        // Aguardar player estar pronto (máx 8 segundos)
-        const startTime = Date.now();
-        while (Date.now() - startTime < 8000) {
-            // Verificar se player carregou o vídeo
-            const videoData = mediaState.ytPlayer.getVideoData();
-            if (videoData && videoData.video_id === videoId) {
-                console.log(`[MediaBridge-Client] ✅ Vídeo carregado no player`);
-                
-                // Tentar obter URL do elemento <video> (disponível em WebView Android)
-                const videoElement = document.querySelector('video');
-                if (videoElement && videoElement.currentSrc) {
-                    const streamUrl = videoElement.currentSrc;
-                    console.log(`[MediaBridge-Client] ✅ Stream URL extraída do elemento video`);
-                    return streamUrl;
-                }
-                
-                // Fallback: tentar obter do player object
-                if (typeof mediaState.ytPlayer.getVideoUrl === 'function') {
-                    try {
-                        const url = mediaState.ytPlayer.getVideoUrl();
-                        if (url) {
-                            console.log(`[MediaBridge-Client] ✅ Stream URL obtida do player`);
-                            return url;
-                        }
-                    } catch (e) {
-                        console.warn('[MediaBridge-Client] getVideoUrl não disponível:', e.message);
-                    }
-                }
-                
-                // Se chegou aqui, player carregou mas URL não extraída
-                console.warn('[MediaBridge-Client] ⚠️ Player carregado mas URL não extraída');
-                break;
-            }
-            
-            // Aguardar um pouco antes de verificar novamente
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
-        
-        console.warn('[MediaBridge-Client] ⏱️ Timeout aguardando player');
-        return null;
-    } catch (error) {
-        console.error('[MediaBridge-Client] ❌ Erro:', error.message);
-        return null;
-    }
-}
-
-MediaBridge.resolveStreamUrl = resolveStreamUrl;
 
 // ============================================================================
 // EXPORTAR

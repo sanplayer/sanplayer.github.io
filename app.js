@@ -49,15 +49,10 @@
 import { shareVideo, sharePlaylist, shareArtist, handleShare, shareMusic, shareItem } from './adapters/share.js';
 import MediaBridge from './media/MediaBridge.js';
 
-// 🔍 Detectar ambiente e usar endpoint apropriado
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const STREAM_RESOLVER_ENDPOINT = isLocalhost 
-    ? 'http://localhost:5500/api/resolveStream'
-    : 'https://sanplayer-server.onrender.com/api/resolveStream';
+//
 
-//SAFE AREA - NAO ALTERAR ESSE INITIAL_TRACK_FALLBACK
 const INITIAL_TRACK_FALLBACK = {
-    id: "m21zfosnqls",
+    id: "m21zfosnqls",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
     title: "Chill Out Mix 2023🍓 Chillout Lounge 117",
     artist: "Helios Deep",
     _description: "Infraestrutura: fallback de integridade do player"
@@ -165,8 +160,6 @@ const player = {
     isLoadingPlaylist: false,       // Flag para indicar carregamento
     previewVideo: null,             // 🎬 Rastreia qual vídeo está em preview na tela (pode não estar tocando)
 };
-
-const streamUrlCache = new Map();
 
 // ============================================================================
 // � AVISO IMPORTANTE: PROTOCOLO DE PROTEÇÃO ATIVO
@@ -738,136 +731,6 @@ async function restorePlayerState() {
 }
 
 // ============================================================================
-// INTEGRAÇÃO ANDROID - MEDIASESSION & FOREGROUND SERVICE
-// ============================================================================
-
-/**
- * 📱 DETECTOR: Verifica se app está rodando como Android TWA
- * @returns {Boolean} true se window.SanPlayerAndroidBridge existe
- */
-function isAndroidApp() {
-    return typeof window.SanPlayerAndroidBridge !== 'undefined';
-}
-
-/**
- * 📱 SINCRONIZA PLAYBACK COM ANDROID NATIVO
- * 
- * Quando um vídeo é tocado:
- * 1. Resolve o stream URL via servidor
- * 2. Sincroniza metadados com MediaSession Android
- * 3. Ativa ForegroundService para background playback
- * 4. Habilita controles de mídia nas notificações
- * 
- * ⚠️ CRÍTICO: Deve ser chamado APÓS resolveTrackStream()
- * Senão stream URL será undefined
- * 
- * @param {Object} video - {id, title, artist, streamUrl}
- */
-async function syncAndroidMediaSession(video) {
-    // Se não é Android, pular
-    if (!isAndroidApp()) {
-        return;
-    }
-    
-    if (!video || !video.id) {
-        console.warn('[Android] ❌ syncAndroidMediaSession: video inválido');
-        return;
-    }
-    
-    try {
-        let streamUrl = video.streamUrl;
-        if (!streamUrl) {
-            console.log('[Android] 🔄 Resolvendo stream...');
-            try {
-                streamUrl = await MediaBridge.resolveStreamUrl(video.id);
-            } catch (resolveError) {
-                const errorMsg = resolveError.message || 'Falha desconhecida';
-                
-                // Mensagem amigável para usuário
-                if (errorMsg.includes('CIRCUIT_BREAKER_OPEN')) {
-                    console.warn('[Android] ⏳ YouTube temporariamente bloqueado, tente novamente em alguns minutos');
-                    showNotification('⏳ YouTube indisponível. Tentaremos novamente em poucos minutos.', 'warning');
-                } else if (errorMsg.includes('YOUTUBE_TIMEOUT') || errorMsg.includes('YOUTUBE_RATE_LIMITED')) {
-                    console.warn('[Android] 🚫 YouTube bloqueado. Tente em alguns minutos.');
-                    showNotification('🚫 YouTube está bloqueando requisições. Tente em alguns minutos.', 'warning');
-                } else {
-                    console.warn('[Android] ❌ Erro ao resolver:', errorMsg);
-                    showNotification('❌ Não foi possível resolver a faixa. Tente novamente.', 'error');
-                }
-                return;
-            }
-            
-            if (!streamUrl) {
-                console.warn('[Android] ❌ Stream URL vazia após resolver');
-                showNotification('❌ Stream não disponível', 'error');
-                return;
-            }
-        }
-        
-        // Obter capa do artista para thumbnail
-        const artUrl = getArtistCoverUrl(video.artist);
-        
-        // 🎯 Chamar Android para sincronizar
-        const bridge = window.SanPlayerAndroidBridge;
-        if (bridge && typeof bridge.playYouTubeStream === 'function') {
-            console.log('[Android] 📡 Passando stream para ExoPlayer:', {
-                videoId: video.id,
-                title: video.title,
-                artist: video.artist
-            });
-            
-            bridge.playYouTubeStream(
-                streamUrl,
-                video.title || 'SanPlayer',
-                video.artist || 'Desconhecido',
-                artUrl
-            );
-            
-            showNotification('▶️ Reproduzindo em background', 'success');
-        } else {
-            console.warn('[Android] ⚠️ Android bridge não disponível');
-        }
-    } catch (error) {
-        console.error('[Android] ❌ Erro crítico ao sincronizar:', error);
-        showNotification('❌ Erro crítico: ' + (error.message || 'desconhecido'), 'error');
-    }
-}
-
-/**
- * 📢 Mostrar notificação amigável ao usuário
- */
-function showNotification(message, type = 'info') {
-    console.log(`[NOTIFY-${type.toUpperCase()}] ${message}`);
-    // TODO: Implementar UI de notificação visual se necessário
-}
-
-/**
- * 📱 SINCRONIZA ESTADO DE PAUSE COM ANDROID
- */
-function syncAndroidPause() {
-    if (!isAndroidApp()) return;
-    
-    const bridge = window.SanPlayerAndroidBridge;
-    if (bridge && typeof bridge.onPause === 'function') {
-        console.log('[Android] ⏸️ Sincronizando PAUSE');
-        bridge.onPause();
-    }
-}
-
-/**
- * 📱 SINCRONIZA ESTADO DE PLAY COM ANDROID
- */
-function syncAndroidPlay() {
-    if (!isAndroidApp()) return;
-    
-    const bridge = window.SanPlayerAndroidBridge;
-    if (bridge && typeof bridge.onPlay === 'function') {
-        console.log('[Android] ▶️ Sincronizando PLAY');
-        bridge.onPlay();
-    }
-}
-
-// ============================================================================
 // CACHE E ESTADO DE REQUISIÇÕES
 // ============================================================================
 
@@ -875,8 +738,7 @@ const playlistCache = new Map();    // Map<url, playlistData>
 
 let ytPlayer = null;
 let ytPlayerInitialized = false;
-let updateProgressUiInterval = null;
-let updateProgressSyncInterval = null;
+let updateProgressInterval = null;
 let progressDragging = false;
 let addingItemToPlaylist = false;   // Flag para indicar se estamos adicionando um item a uma playlist
 let previousPlaylistState = null;   // Guardar estado anterior de playlist
@@ -1459,31 +1321,6 @@ async function findVideoById(videoId) {
 
     return null;
 }
-
-async function resolveTrackStream(video) {
-    if (!video || !video.id) return null;
-    if (video.streamUrl) return video.streamUrl;
-    if (streamUrlCache.has(video.id)) {
-        return streamUrlCache.get(video.id);
-    }
-
-    try {
-        const resolvedUrl = await MediaBridge.resolveStreamUrl(video.id);
-        if (resolvedUrl) {
-            video.streamUrl = resolvedUrl;
-            streamUrlCache.set(video.id, resolvedUrl);
-            console.log('[Init] ✅ resolveTrackStream: streamUrl attached for', video.id);
-            return resolvedUrl;
-        }
-        console.warn('[Init] ⚠️ resolveTrackStream: Nenhum streamUrl encontrado para', video.id);
-    } catch (error) {
-        console.warn('[Init] ⚠️ resolveTrackStream falhou para', video.id, error);
-    }
-    return null;
-}
-
-// 📡 Resolver stream é responsabilidade de MediaBridge
-// App.js chama: await MediaBridge.resolveStreamUrl(videoId)
 
 // ============================================================================
 // FUNÇÕES DE RENDER REUTILIZÁVEIS
@@ -2195,8 +2032,6 @@ async function playTrackById(trackId) {
             // Recursivamente tentar com o fallback
             return await playTrackById(safeVideo.id);
         }
-
-        await resolveTrackStream(video);
         
         // [PASSO 3] Configurar estado do player
         player.currentPlaylist = playlist;
@@ -3216,52 +3051,13 @@ function initThemeColor() {
     
     // Aplicar quando app entra em foco (voltando do background)
     document.addEventListener('visibilitychange', () => {
-        const playerEmbed = document.querySelector('.player-embed');
         if (!document.hidden) {
             // App voltou do background
-            console.log('[VisibilityChange] App retornou do background');
-            
-            if (playerEmbed) {
-                playerEmbed.classList.remove('background-hidden');
-            }
-            
-            // CRÍTICO: Restaurar integridade do YouTube player
-            validateAndRestorePlayer();
-            
-            if (player.ytReady) {
-                startProgressUiLoop();
-            }
-            
             setTimeout(() => {
                 setThemeColor(THEME_COLOR);
-                refreshPlayerUI();
             }, 10);
-        } else {
-            // 🔒 CRÍTICO: App foi para background
-            // Manter o iframe do YouTube ativo e não escondido com display:none ou 0x0
-            if (playerEmbed) {
-                playerEmbed.classList.add('background-hidden');
-                console.log('[Background] Player iframe mantido visível para renderização');
-            }
-            stopProgressUiLoop();
         }
     });
-    
-    // Listener para resumir timers quando WebView sai do pause (background/lockscreen)
-    document.addEventListener('resume', () => {
-        console.log('[Resume] App resumindo, validando player');
-        validateAndRestorePlayer();
-    });
-    
-    // Listener para sincronizar quando a atividade retoma do backgroundActivity.onResume()
-    if (window.addEventListener) {
-        window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                console.log('[PageShow] Página restaurada do bfcache, sincronizando player');
-                validateAndRestorePlayer();
-            }
-        });
-    }
     
     // Verificar se está em modo standalone (PWA instalado)
     if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -5524,13 +5320,8 @@ function loadVideo(video) {
     MediaBridge.setCurrentTrack({
         id: video.id,
         title: video.title || 'SanPlayer',
-        artist: video.artist || 'Desconhecido',
-        streamUrl: video.streamUrl || undefined
+        artist: video.artist || 'Desconhecido'
     });
-    
-    // 📱 NOVO: Sincronizar com Android MediaSession (ForegroundService)
-    // Isso ativa os controles de mídia nas notificações
-    syncAndroidMediaSession(video);
     
     // Persist current state
     saveCurrentState();
@@ -5570,24 +5361,6 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-function stopProgressUiLoop() {
-    if (updateProgressUiInterval) {
-        clearInterval(updateProgressUiInterval);
-        updateProgressUiInterval = null;
-    }
-}
-
-function startProgressUiLoop() {
-    stopProgressUiLoop();
-    updateProgressUiInterval = setInterval(() => {
-        if (!ytPlayer || !player.ytReady) return;
-
-        player.currentTime = ytPlayer.getCurrentTime();
-        updateProgressBar();
-        updatePlaylistDurations();
-    }, 1000);
-}
-
 function onPlayerReady(event) {
     player.ytReady = true;
     MediaBridge.attachPlayer(ytPlayer);
@@ -5604,27 +5377,22 @@ function onPlayerReady(event) {
         }
     }
 
-    stopProgressUiLoop();
-    if (updateProgressSyncInterval) {
-        clearInterval(updateProgressSyncInterval);
+    if (updateProgressInterval) {
+        clearInterval(updateProgressInterval);
     }
 
-    if (!document.hidden) {
-        startProgressUiLoop();
-    }
-
-    updateProgressSyncInterval = setInterval(() => {
+    updateProgressInterval = setInterval(() => {
         if (!ytPlayer || !player.ytReady) return;
 
-        player.currentTime = ytPlayer.getCurrentTime();
-        if (!player.currentDuration || player.currentDuration <= 0) {
-            const duration = ytPlayer.getDuration();
-            if (duration > 0) {
-                player.currentDuration = duration;
-            }
-        }
+        const duration = ytPlayer.getDuration();
+        const currentTime = ytPlayer.getCurrentTime();
 
-        MediaBridge.updateProgress(player.currentTime, player.currentDuration);
+        player.currentDuration = duration;
+        player.currentTime = currentTime;
+
+        updateProgressBar();
+        updatePlaylistDurations();
+        MediaBridge.updateProgress(currentTime, duration);
         
         // 💾 NEW: Persistência throttled - salvar estado a cada 3s
         const now = Date.now();
@@ -5632,29 +5400,27 @@ function onPlayerReady(event) {
             persistPlayerState();
             lastPersistTime = now;
         }
-    }, 10000);
+    }, 250);
 
     safeRender();
 }
 
 function updatePlaylistDurations() {
     if (!player.currentPlaylist) return;
-
-    const durationElement = document.getElementById(`duration-${player.currentVideoIndex}`);
-    if (!durationElement) return;
-
-    if (player.currentDuration > 0) {
-        durationElement.textContent = formatTime(player.currentDuration);
-        return;
-    }
-
-    if (player.ytReady && ytPlayer && typeof ytPlayer.getDuration === 'function') {
-        const duration = ytPlayer.getDuration();
-        if (duration > 0) {
-            player.currentDuration = duration;
-            durationElement.textContent = formatTime(duration);
+    
+    player.currentPlaylist.videos.forEach((video, index) => {
+        const durationElement = document.getElementById(`duration-${index}`);
+        // Apenas o vídeo atual pode ter sua duração obtida da API Iframe
+        // Outros vídeos permanecerão como '-' (limitação da API do YouTube)
+        if (durationElement && index === player.currentVideoIndex) {
+            if (player.ytReady && ytPlayer) {
+                const duration = ytPlayer.getDuration();
+                if (duration > 0) {
+                    durationElement.textContent = formatTime(duration);
+                }
+            }
         }
-    }
+    });
 }
 
 function onPlayerStateChange(event) {
@@ -5688,7 +5454,6 @@ function onPlayerStateChange(event) {
         updatePlayingIndicatorAnimationState();
         MediaBridge.setPlaybackState(true);
         MediaBridge.updateProgress(player.currentTime, player.currentDuration);
-        syncAndroidPlay();  // 📱 NOVO: Sincronizar com Android quando YouTube emite PLAYING
         // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
         // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.PAUSED) {
@@ -5700,7 +5465,6 @@ function onPlayerStateChange(event) {
         updatePlayingIndicatorAnimationState();
         MediaBridge.setPlaybackState(false);
         MediaBridge.updateProgress(player.currentTime, player.currentDuration);
-        syncAndroidPause();  // 📱 NOVO: Sincronizar com Android quando YouTube emite PAUSED
         // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
         // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.CUED) {
@@ -5734,7 +5498,6 @@ function onPlayerStateChange(event) {
         updatePlayingIndicatorAnimationState();
         MediaBridge.setPlaybackState(false);
         MediaBridge.notifyEnded();
-        syncAndroidPause();  // 📱 NOVO: Sincronizar com Android quando vídeo ENDED
 
         if (player.repeatMode === 2) {
             // Repetir a música atual
@@ -5750,30 +5513,6 @@ function onPlayerStateChange(event) {
     }
 }
 
-function restoreAudioChannelIfNeeded() {
-    if (!player.ytReady || !ytPlayer) return;
-
-    try {
-        if (typeof ytPlayer.mute === 'function') {
-            ytPlayer.mute();
-        }
-    } catch (err) {
-        console.warn('[AudioChannel] Falha ao mutar antes do play:', err);
-    }
-}
-
-function finalizeAudioChannelAfterPlay() {
-    if (!player.ytReady || !ytPlayer) return;
-
-    try {
-        if (typeof ytPlayer.unMute === 'function') {
-            ytPlayer.unMute();
-        }
-    } catch (err) {
-        console.warn('[AudioChannel] Falha ao desmutar após o play:', err);
-    }
-}
-
 function playerPlay() {
     // 🔒 CONGELADO: Comando para YouTube player iniciar playback
     // Sincronizar estado favorito atual
@@ -5783,20 +5522,16 @@ function playerPlay() {
     // Isso garante sincronização entre UI e YouTube player.
     //
     // Fluxo correto:
-    // 1. ytPlayer.mute() ← chamado aqui para destravar o canal
-    // 2. MediaBridge.play() ← chamado imediatamente após
-    // 3. setTimeout(unMute, 50) ← reativa áudio após o play
+    // 1. ytPlayer.playVideo() ← chamado aqui
+    // 2. YouTube emite PLAYING event
+    // 3. onPlayerStateChange() define player.isPlaying = true
+    // 4. updatePlayPauseButton() renderiza "pause" icon
     //
-    // Se mudar esse fluxo, o botão poderá não acordar o hardware em background.
+    // Se mudar esse fluxo, o botão ficará DESSINCRONIZADO do vídeo.
     // ================================================================
     
     if (player.ytReady && ytPlayer) {
-        restoreAudioChannelIfNeeded();
         MediaBridge.play();
-        syncAndroidPlay();  // 📱 NOVO: Sincronizar com Android
-        setTimeout(() => {
-            finalizeAudioChannelAfterPlay();
-        }, 50);
     }
 }
 
@@ -5818,7 +5553,6 @@ function playerPause() {
     
     if (player.ytReady && ytPlayer) {
         MediaBridge.pause();
-        syncAndroidPause();  // 📱 NOVO: Sincronizar com Android
     }
     player.isPlaying = false;
     updatePlayPauseButton();
@@ -6080,29 +5814,6 @@ function checkIfTitleNeedsTruncation(element) {
     element.dataset.truncationChecked = 'true';
 }
 
-function isYouTubePlayerValid() {
-    if (!ytPlayer) return false;
-    if (!player.ytReady) return false;
-    if (typeof ytPlayer.playVideo !== 'function') return false;
-    if (typeof ytPlayer.pauseVideo !== 'function') return false;
-    if (typeof ytPlayer.seekTo !== 'function') return false;
-    return true;
-}
-
-function validateAndRestorePlayer() {
-    console.log('[Background] Validando integridade do player...');
-    if (!isYouTubePlayerValid()) {
-        console.warn('[Background] Player destruido, reinicializando...');
-        ytPlayerInitialized = false;
-        onYouTubeIframeAPIReady();
-        return;
-    }
-    if (ytPlayer) {
-        MediaBridge.attachPlayer(ytPlayer);
-        console.log('[Background] Player re-sincronizado com MediaBridge');
-    }
-}
-
 function togglePlayPause() {
     // 🔒 CONGELADO: Função crítica que sincroniza UI com YouTube player
     // ⚠️ NÃO MODIFIQUE O COMPORTAMENTO
@@ -6127,89 +5838,32 @@ function togglePlayPause() {
 }
 
 function androidPlay() {
-    // ✅ CORRIGIDO: Parar o audio NATIVO PRIMEIRO (não depende de ytPlayer)
-    console.log('[androidPlay] Comando recebido do Android MediaService');
-    
-    // Step 1: Sincronizar estado nativo (SEMPRE, mesmo se YouTube player inválido)
-    if (isAndroidApp()) {
-        const bridge = window.SanPlayerAndroidBridge;
-        if (bridge && typeof bridge.onPlay === 'function') {
-            console.log('[androidPlay] 📱 Sincronizando com ExoPlayer');
-            // NÃO chamar onPlay aqui - já foi chamado pelo serviço
-        }
-    }
-    
-    // Step 2: Tentar sincronizar YouTube player se estiver válido
-    if (!isYouTubePlayerValid()) {
-        console.warn('[androidPlay] YouTube player inválido (app em background), apenas sync nativo');
-        // AudioPlayer nativo já foi acionado pelo MediaService, tudo OK
-        return;
-    }
-    
-    // Step 3: Se player for válido, sincronizar com YouTube também
     if (!player.isPlaying) {
-        console.log('[androidPlay] Player válido, sincronizando YouTube play');
         playerPlay();
     }
 }
 
 function androidPause() {
-    // ✅ CORRIGIDO: Parar o audio NATIVO PRIMEIRO (não depende de ytPlayer)
-    console.log('[androidPause] Comando recebido do Android MediaService');
-    
-    // Step 1: Sincronizar estado nativo (SEMPRE, mesmo se YouTube player inválido)
-    if (isAndroidApp()) {
-        const bridge = window.SanPlayerAndroidBridge;
-        if (bridge && typeof bridge.onPause === 'function') {
-            console.log('[androidPause] 📱 Sincronizando com ExoPlayer');
-            // NÃO chamar onPause aqui - já foi chamado pelo serviço
-        }
-    }
-    
-    // Step 2: Tentar sincronizar YouTube player se estiver válido
-    if (!isYouTubePlayerValid()) {
-        console.warn('[androidPause] YouTube player inválido (app em background), apenas sync nativo');
-        // AudioPlayer nativo já foi acionado pelo MediaService, tudo OK
-        player.isPlaying = false;
-        return;
-    }
-    
-    // Step 3: Se player for válido, sincronizar com YouTube também
     if (player.isPlaying) {
-        console.log('[androidPause] Player válido, sincronizando YouTube pause');
         playerPause();
-    } else {
-        // Apenas atualizar UI
-        updatePlayPauseButton();
-        updateProgressBar();
     }
 }
 
 function androidNext() {
-    if (!isYouTubePlayerValid()) {
-        console.warn('[androidNext] Player invalido');
-        return;
-    }
     nextVideo();
 }
 
 function androidPrevious() {
-    if (!isYouTubePlayerValid()) {
-        console.warn('[androidPrevious] Player invalido');
-        return;
-    }
     previousVideo();
 }
 
 function androidSeekTo(seconds) {
-    if (!isYouTubePlayerValid()) {
-        console.warn('[androidSeekTo] Player invalido');
-        return;
+    if (player.ytReady && ytPlayer && typeof ytPlayer.seekTo === 'function') {
+        ytPlayer.seekTo(seconds);
+        player.currentTime = seconds;
+        updateProgressBar();
+        MediaBridge.updateProgress(seconds, player.currentDuration);
     }
-    ytPlayer.seekTo(seconds);
-    player.currentTime = seconds;
-    updateProgressBar();
-    MediaBridge.updateProgress(seconds, player.currentDuration);
 }
 
 /* ==========================================================================
@@ -7519,9 +7173,3 @@ function baixarAPK() {
   link.download = 'Instalador SanPlayer_v1.0.1.9';         // Nome que aparecerá para o usuário
   link.click();
 }
-
-// No final do app.js, adicionar:
-setInterval(() => {
-    fetch('https://sanplayer-stream-resolver.onrender.com/api/health')
-        .catch(() => console.log('Keep-alive ping'));
-}, 14 * 60 * 1000); // A cada 14 minutos
