@@ -1,4 +1,18 @@
 // ============================================================================
+// HACK DE ÁUDIO SILENCIOSO (DESBLOQUEIO DE CONTEXTO DE MÍDIA)
+// ============================================================================
+function unlockAudioContext() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = ctx.createBufferSource();
+        source.buffer = ctx.createBuffer(1, 1, 22050);
+        source.connect(ctx.destination);
+        source.start(0);
+        setTimeout(() => ctx.close(), 500);
+    } catch (e) { /* Ignorar erro */ }
+}
+document.body.addEventListener('touchstart', unlockAudioContext, { once: true });
+// ============================================================================
 // PROTEÇÃO WAKE LOCK E VISIBILIDADE (ANTI-THROTTLING)
 // ============================================================================
 (function setupWakeLockAndVisibility() {
