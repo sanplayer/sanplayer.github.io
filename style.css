@@ -126,7 +126,7 @@
     --spacing-sm: 12px;
 
     /* Border Radius System */
-    --radius-lg: clamp(20px, 3vw, 30px);
+    --radius-lg: clamp(20px, 2vw, 30px);
     --radius-mobile: clamp(20px, 5vw, 30px);
     --radius-md: clamp(8px, 2vw, 12px);
     --radius-sm: 4px;
@@ -498,7 +498,7 @@ button:active {
     justify-content: space-between;
     z-index: var(--main-z-index);
     overflow: hidden;
-    background: yellow;
+    background: var(--bg-surface);
 }
 
 .app-sidebar {
@@ -554,7 +554,7 @@ button:active {
 /* DESKTOP  */
 .player-embed {
     aspect-ratio: 16 / 9;
-    border-radius: var(--radius-lg);
+    /*border-radius: var(--radius-lg);*/
     position: absolute;
     top: 50%;
     left: 50%;
@@ -563,7 +563,7 @@ button:active {
     transform: translate(-50%, -50%);
 }
 
-@media (max-width: 768px) {
+/*@media (max-width: 768px) {
     .player-embed.background-hidden {
         position: fixed !important;
         top: 0 !important;
@@ -579,7 +579,7 @@ button:active {
         transform: none !important;
         z-index: -1 !important;
     }
-}
+}*/
 
 .video-wrapper img {
     width: 100%;
@@ -3018,6 +3018,7 @@ MOBILE SPECIFIC STYLES
         flex-direction: column;
         top: 0;
         padding: 0;
+        background: var(--bg-main);
     }
 
     .video-stage {
