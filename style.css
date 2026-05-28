@@ -3041,10 +3041,16 @@ MOBILE SPECIFIC STYLES
         border: none;
         border-radius: var(--radius-mobile);
         flex-shrink: 0;
-        background-image: url(icons/icon512.png);
-        background-size: cover;
-        background-repeat: no-repeat;
+        background: #000;
+        /*background-image: url(icons/icon192.png);
+        background-size: contain;
+        background-repeat: no-repeat;*/
 
+    }
+    .skeleton {
+    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
     }
 
     .player-embed {
