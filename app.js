@@ -1,3 +1,29 @@
+// ============================================================================
+// PROTEÇÃO WAKE LOCK E VISIBILIDADE (ANTI-THROTTLING)
+// ============================================================================
+(function setupWakeLockAndVisibility() {
+    // Protege a execução do JS contra throttling do Chrome/WebView
+    if ('wakeLock' in navigator) {
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* Ignorar erro */ }
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') requestWakeLock();
+        });
+        requestWakeLock();
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            // Pausar animações/polls não essenciais se necessário
+            // Exemplo: stopPolling();
+        } else {
+            // Retomar animações/polls se necessário
+            // Exemplo: startPolling();
+        }
+    });
+})();
 /**
  * 🎵 SAN PLAYER - APP.JS
  * 
