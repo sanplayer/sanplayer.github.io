@@ -542,7 +542,7 @@ button:active {
 .video-wrapper {
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-lg);
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-lg);
@@ -3036,7 +3036,7 @@ MOBILE SPECIFIC STYLES
         width: 100%;
         box-shadow: 0;
         border: none;
-        border-radius: 20px;
+        border-radius: var(--radius-lg);
         flex-shrink: 0;
     }
 
