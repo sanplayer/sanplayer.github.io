@@ -6,9 +6,11 @@
       <!-- IMPORTANT-->
       <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
       
-      <title>SanPlayer v1.0.1.9</title>
+      <title>SanPlayer v1.0.2.1</title>
       <meta name="description" content="Música para os seus ouvidos">
-      <link rel="stylesheet" href="/style.css">
+      <!-- CONTENT SECURITY POLICY - Permite conexões ao servidor de streams -->
+      <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://sanplayer-server.onrender.com http://localhost:5500 ws: wss: https://www.youtube.com; script-src 'self' https://www.youtube.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; frame-src https://www.youtube.com; img-src 'self' data: https:;">
+      <link rel="stylesheet" href="./style.css">
       <!-- ICONES -->
       <link rel="icon" type="image/svg+xml" href="icons/favicon.svg" />
       <link rel="icon" type="image/webp" href="icons/favicon-96x96.webp" sizes="96x96" />
@@ -220,8 +222,8 @@
                   <use href="/icons/package.svg#music-case"></use>
                </svg>
                <div class="current-details">
-                  <span class="c-title">SanPlayer App</span>
-                  <span class="c-artist">Músicas para os ouvidos</span>
+                  <span class="c-title">SanPlayer</span>
+                  <span class="c-artist">Músicas para os seus ouvidos</span>
                </div>
                <div class="current-actions">
                   <button alt="favoritar" title="favoritar">
@@ -229,7 +231,7 @@
                         <use href="/icons/package.svg#favorite-outlined-case"></use>
                      </svg>
                   </button>
-                  <button alt="compartilhar" title="compartilhar">
+                  <button alt="compartilhar" title="Compartilhar Item">
                      <svg class="icon">
                         <use href="/icons/package.svg#share-case"></use>
                      </svg>
@@ -533,7 +535,7 @@
                   </div>
                   <h3>SanPlayer</h3>
                   <p class="about-subtitle">Music & Video Player PWA</p>
-                  <p class="about-version" id="aboutVersion">v1.0.0</p>
+                  <p class="about-version" id="aboutVersion">v1.0.2.1</p>
                </div>
                <div class="about-section">
                   <p class="about-description">Descubra uma experiência de mídia contínua e poderosa em todos os seus
@@ -726,7 +728,7 @@
                </div>
             </div>
             <div class="modal-footer">
-               <p class="copyright-text">Última atualização: Abril de 2026</p>
+               <p class="copyright-text">Última atualização: Maio de 2026</p>
             </div>
          </div>
       </div>
