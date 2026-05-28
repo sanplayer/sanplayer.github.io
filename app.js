@@ -777,9 +777,29 @@ async function syncAndroidMediaSession(video) {
     try {
         let streamUrl = video.streamUrl;
         if (!streamUrl) {
-            streamUrl = await MediaBridge.resolveStreamUrl(video.id);
+            console.log('[Android] 🔄 Resolvendo stream...');
+            try {
+                streamUrl = await MediaBridge.resolveStreamUrl(video.id);
+            } catch (resolveError) {
+                const errorMsg = resolveError.message || 'Falha desconhecida';
+                
+                // Mensagem amigável para usuário
+                if (errorMsg.includes('CIRCUIT_BREAKER_OPEN')) {
+                    console.warn('[Android] ⏳ YouTube temporariamente bloqueado, tente novamente em alguns minutos');
+                    showNotification('⏳ YouTube indisponível. Tentaremos novamente em poucos minutos.', 'warning');
+                } else if (errorMsg.includes('YOUTUBE_TIMEOUT') || errorMsg.includes('YOUTUBE_RATE_LIMITED')) {
+                    console.warn('[Android] 🚫 YouTube bloqueado. Tente em alguns minutos.');
+                    showNotification('🚫 YouTube está bloqueando requisições. Tente em alguns minutos.', 'warning');
+                } else {
+                    console.warn('[Android] ❌ Erro ao resolver:', errorMsg);
+                    showNotification('❌ Não foi possível resolver a faixa. Tente novamente.', 'error');
+                }
+                return;
+            }
+            
             if (!streamUrl) {
-                console.warn('[Android] ❌ Falha ao resolver stream para:', video.id);
+                console.warn('[Android] ❌ Stream URL vazia após resolver');
+                showNotification('❌ Stream não disponível', 'error');
                 return;
             }
         }
@@ -790,11 +810,10 @@ async function syncAndroidMediaSession(video) {
         // 🎯 Chamar Android para sincronizar
         const bridge = window.SanPlayerAndroidBridge;
         if (bridge && typeof bridge.playYouTubeStream === 'function') {
-            console.log('[Android] 📡 Sincronizando com MediaSession:', {
+            console.log('[Android] 📡 Passando stream para ExoPlayer:', {
                 videoId: video.id,
                 title: video.title,
-                artist: video.artist,
-                streamUrl: streamUrl ? '✅ Resolvido' : '❌ Vazio'
+                artist: video.artist
             });
             
             bridge.playYouTubeStream(
@@ -803,10 +822,23 @@ async function syncAndroidMediaSession(video) {
                 video.artist || 'Desconhecido',
                 artUrl
             );
+            
+            showNotification('▶️ Reproduzindo em background', 'success');
+        } else {
+            console.warn('[Android] ⚠️ Android bridge não disponível');
         }
     } catch (error) {
-        console.error('[Android] ❌ Erro ao sincronizar:', error);
+        console.error('[Android] ❌ Erro crítico ao sincronizar:', error);
+        showNotification('❌ Erro crítico: ' + (error.message || 'desconhecido'), 'error');
     }
+}
+
+/**
+ * 📢 Mostrar notificação amigável ao usuário
+ */
+function showNotification(message, type = 'info') {
+    console.log(`[NOTIFY-${type.toUpperCase()}] ${message}`);
+    // TODO: Implementar UI de notificação visual se necessário
 }
 
 /**
