@@ -3060,7 +3060,6 @@ MOBILE SPECIFIC STYLES
         height: 122%;
         /* size default = 0 */
         transform: translate(-50%, -50%);
-        background: #0f0f0f;
     }
 
     .playlist-aside {
