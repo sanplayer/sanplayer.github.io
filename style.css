@@ -3193,12 +3193,3 @@ MOBILE SPECIFIC STYLES
         transition: transform 0.25s ease;
     }
 }
-
-.progress-time-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: var(--font-sm);
-    width: 100%;
-    pointer-events: none;
-    user-select: none;
-}
