@@ -2,6 +2,21 @@ function normalizeText(value = '') {
   return String(value).trim();
 }
 
+const CANONICAL_SHARE_HOST = 'https://sanplayer.github.io';
+
+function getShareBaseUrl() {
+  if (typeof window === 'undefined') {
+    return CANONICAL_SHARE_HOST;
+  }
+
+  const origin = window.location.origin;
+  if (/^(http:\/\/localhost|http:\/\/127\.0\.0\.1|file:)/.test(origin)) {
+    return CANONICAL_SHARE_HOST;
+  }
+
+  return origin;
+}
+
 function buildShareUrl(videoId = '') {
   return `https://youtu.be/${videoId}`;
 }
@@ -67,13 +82,18 @@ async function nativeShare({
  * @param {Object} video - {id, title, artist}
  * @param {Object} playlist - Playlist (contexto opcional)
  */
+/* ==========================================================================
+ @lock - SAFE AREA COMPONENT
+ DO NOT MODIFY: Sharing URL generation and video share text are critical.
+ Future edits here may reintroduce duplicate links or broken shared video routing.
+ ========================================================================== */
 function shareVideo(video, playlist) {
   if (!video || !video.id) {
     console.warn('[shareVideo] Vídeo inválido:', video);
     return;
   }
 
-  const url = `${window.location.origin}${window.location.pathname}?videoId=${video.id}`;
+  const url = `${getShareBaseUrl()}/index.html?videoId=${video.id}`;
   const text = `Escutando: ${video.title} - ${video.artist} no SanPlayer`;
 
   nativeShare({
@@ -138,7 +158,7 @@ function sharePlaylist(playlist) {
   }
 
   const playlistName = playlist.title || playlist.name;
-  const url = `${window.location.origin}${window.location.pathname}?playlistId=${encodeURIComponent(playlistName)}`;
+  const url = `${getShareBaseUrl()}/index.html?playlistId=${encodeURIComponent(playlistName)}`;
   const text = `Playlist: ${playlistName}`;
 
   nativeShare({
@@ -160,7 +180,7 @@ function shareArtist(artist) {
     return false;
   }
 
-  const url = `${window.location.origin}${window.location.pathname}?artistId=${encodeURIComponent(artist.name)}`;
+  const url = `${getShareBaseUrl()}/index.html?artistId=${encodeURIComponent(artist.name)}`;
   const text = `Artista: ${artist.name}`;
 
   nativeShare({
