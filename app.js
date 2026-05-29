@@ -7039,19 +7039,46 @@ function setupEventListeners() {
     // 🎬 BOTÕES DO OVERLAY-LAYER-LEGENDAS (Vídeo em Preview)
     // ============================================================================
     // Listeners para os botões que ficam sobre o vídeo:
-    // 1️⃣ queue_music (adicionar à playlist)
-    // 2️⃣ add (nova playlist)
-    // 3️⃣ share (NOVO: compartilhar vídeo em preview)
-    // 4️⃣ more_vert (opções do item)
+    // 1️⃣ artist (ver artistas)
+    // 2️⃣ queue_music (adicionar à playlist)
+    // 3️⃣ add (nova playlist)
+    // 4️⃣ share (compartilhar vídeo em preview)
+    // 5️⃣ more_vert (opções do item)
     // ============================================================================
     const overlayLegendas = document.querySelector('.overlay-layer-legendas');
     if (overlayLegendas) {
         const legendButtons = overlayLegendas.querySelectorAll('button');
         
-        // Botão 3: Compartilhar vídeo em preview
-        // Usa o novo sistema centralizado de compartilhamento
+        // Botão 1: Ver artistas
+        if (legendButtons[0]) {
+            legendButtons[0].addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openArtistsModal();
+            });
+        }
+        
+        // Botão 2: Ver playlists (abre modal de playlists)
+        if (legendButtons[1]) {
+            legendButtons[1].addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openPlaylistsModal();
+            });
+        }
+        
+        // Botão 3: Criar nova playlist
         if (legendButtons[2]) {
             legendButtons[2].addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openCreatePlaylistModal();
+            });
+        }
+        
+        // Botão 4: Compartilhar vídeo em preview
+        if (legendButtons[3]) {
+            legendButtons[3].addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const currentVideo = getCurrentPlayingVideo();
@@ -7060,35 +7087,9 @@ function setupEventListeners() {
             });
         }
         
-        // Botão 1: Abrir modal de playlists (adicionar item)
-        if (legendButtons[0]) {
-            legendButtons[0].addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Definir vídeo em preview para contexto
-                if (player.currentPlaylist) {
-                    player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
-                }
-                openPlaylistsModal();
-            });
-        }
-        
-        // Botão 2: Criar nova playlist (a partir do vídeo em preview)
-        if (legendButtons[1]) {
-            legendButtons[1].addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Definir vídeo em preview para contexto
-                if (player.currentPlaylist) {
-                    player.previewVideo = player.currentPlaylist.videos[player.currentVideoIndex];
-                }
-                openCreatePlaylistModal();
-            });
-        }
-        
-        // Botão 4: Opções do item (mais_vert)
-        if (legendButtons[3]) {
-            legendButtons[3].addEventListener('click', (e) => {
+        // Botão 5: Opções do item (mais_vert)
+        if (legendButtons[4]) {
+            legendButtons[4].addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 
