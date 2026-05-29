@@ -758,7 +758,7 @@ button:active {
 
 .progress-bar::-webkit-slider-runnable-track {
     width: 100%;
-    height: 20px;
+    height: 30px;
     background: transparent;
     border: none;
     outline: none;
@@ -3163,7 +3163,7 @@ MOBILE SPECIFIC STYLES
     .block-info {
         margin: 0;
         width: 100%;
-        padding-bottom: .5rem;
+        padding: 0 .5rem .3rem .5rem;
     }
 
     .block-controls {
