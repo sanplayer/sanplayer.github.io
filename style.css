@@ -3199,4 +3199,6 @@ MOBILE SPECIFIC STYLES
     justify-content: space-between;
     font-size: var(--font-sm);
     width: 100%;
+    pointer-events: none;
+    user-select: none;
 }
