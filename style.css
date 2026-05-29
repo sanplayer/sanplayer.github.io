@@ -584,7 +584,7 @@ button:active {
 .video-wrapper img {
     width: 100%;
     height: 100%;
-    filter: brightness(0.7);
+    /*filter: brightness(0.7);*/
 }
 
 .play-button-overlay {
@@ -3060,6 +3060,7 @@ MOBILE SPECIFIC STYLES
         height: 122%;
         /* size default = 0 */
         transform: translate(-50%, -50%);
+        background: #0f0f0f;
     }
 
     .playlist-aside {
