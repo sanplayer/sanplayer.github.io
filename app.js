@@ -52,9 +52,9 @@ import MediaBridge from './media/MediaBridge.js';
 //
 
 const INITIAL_TRACK_FALLBACK = {
-    id: "m21zfosnqls",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
-    title: "Chill Out Mix 2023🍓 Chillout Lounge 117",
-    artist: "Helios Deep",
+    id: "Moiw36LB6oE",              // ⭐ ID ÚNICO - MUDE AQUI PARA OUTRA MÚSICA
+    title: "Stefre Roland - You and Me",
+    artist: "Rezilienza",
     _description: "Infraestrutura: fallback de integridade do player"
 };
 
