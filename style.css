@@ -2131,7 +2131,7 @@ button:active {
 .author-avatar img {
     width: 105px;
     height: 105px;
-    border-radius: 50%;
+    border-radius: 20%;
     object-fit: cover;
     border: 3px solid var(--accent-roxo);
     padding: 5px;
@@ -3163,7 +3163,7 @@ MOBILE SPECIFIC STYLES
     .block-info {
         margin: 0;
         width: 100%;
-        padding: 0 1rem .3rem .5rem;
+        padding: 0 .5rem .3rem .5rem;
     }
 
     .block-controls {
