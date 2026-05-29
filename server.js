@@ -46,6 +46,134 @@ function isCacheExpired(timestamp) {
     return Date.now() - timestamp > cache.CACHE_TTL;
 }
 
+// ============================================================================
+// DETECÇÃO DE CRAWLER vs NAVEGADOR HUMANO (FASE 1)
+// ============================================================================
+
+/**
+ * Detecta se a requisição é de um crawler ou navegador humano
+ * Retorna: { type: 'crawler'|'browser'|'unknown', name: 'string', isBot: boolean }
+ */
+function detectClient(userAgent) {
+    if (!userAgent) {
+        return { type: 'unknown', name: 'No User-Agent', isBot: null };
+    }
+
+    const ua = userAgent.toLowerCase();
+
+    // 🤖 CRAWLERS DE REDES SOCIAIS
+    const socialCrawlers = {
+        'facebookexternalhit': 'Facebook Bot',
+        'twitterbot': 'Twitter Bot',
+        'telegrambot': 'Telegram Bot',
+        'discordbot': 'Discord Bot',
+        'whatsapp': 'WhatsApp',
+        'linkedinbot': 'LinkedIn Bot',
+        'pinterestbot': 'Pinterest Bot',
+        'slurp': 'Yahoo Slurp',
+    };
+
+    // 🤖 SEARCH ENGINE CRAWLERS
+    const searchCrawlers = {
+        'googlebot': 'Google Bot',
+        'bingbot': 'Bing Bot',
+        'yandexbot': 'Yandex Bot',
+        'baiduspider': 'Baidu Spider',
+        'duckduckbot': 'DuckDuckGo Bot',
+    };
+
+    // 🤖 OUTRAS BOTS
+    const otherBots = {
+        'curl': 'cURL',
+        'wget': 'Wget',
+        'scrapy': 'Scrapy',
+        'python': 'Python',
+        'bot': 'Generic Bot',
+        'spider': 'Generic Spider',
+        'crawl': 'Generic Crawler',
+    };
+
+    // Verificar crawlers de redes sociais
+    for (const [pattern, name] of Object.entries(socialCrawlers)) {
+        if (ua.includes(pattern)) {
+            return { type: 'crawler', name, isBot: true, category: 'social' };
+        }
+    }
+
+    // Verificar search engine crawlers
+    for (const [pattern, name] of Object.entries(searchCrawlers)) {
+        if (ua.includes(pattern)) {
+            return { type: 'crawler', name, isBot: true, category: 'search' };
+        }
+    }
+
+    // Verificar outras bots
+    for (const [pattern, name] of Object.entries(otherBots)) {
+        if (ua.includes(pattern)) {
+            return { type: 'crawler', name, isBot: true, category: 'other' };
+        }
+    }
+
+    // 🌐 NAVEGADORES HUMANOS
+    const browsers = {
+        'chrome': 'Chrome',
+        'firefox': 'Firefox',
+        'safari': 'Safari',
+        'edge': 'Edge',
+        'opera': 'Opera',
+        'mobile': 'Mobile Browser',
+        'iphone': 'iPhone',
+        'android': 'Android',
+    };
+
+    for (const [pattern, name] of Object.entries(browsers)) {
+        if (ua.includes(pattern)) {
+            return { type: 'browser', name, isBot: false, category: 'human' };
+        }
+    }
+
+    // Fallback: se tem "Mozilla" provavelmente é navegador
+    if (ua.includes('mozilla')) {
+        return { type: 'browser', name: 'Mozilla-based Browser', isBot: false, category: 'human' };
+    }
+
+    return { type: 'unknown', name: userAgent.substring(0, 60), isBot: null, category: 'unknown' };
+}
+
+/**
+ * Log estruturado de acesso (FASE 1: apenas logging, sem redirect)
+ */
+function logAccess(req, clientInfo) {
+    const timestamp = new Date().toISOString();
+    const method = req.method;
+    const path = req.path;
+    const queryString = req.url.split('?')[1] || '';
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    
+    // Extrair query params interessantes
+    const params = new URLSearchParams(queryString);
+    const videoId = params.get('videoId') || '-';
+    const playlistId = params.get('playlistId') || '-';
+    const artistId = params.get('artistId') || '-';
+
+    const emoji = clientInfo.isBot === true ? '🤖' : clientInfo.isBot === false ? '👤' : '❓';
+    const category = clientInfo.category || 'unknown';
+
+    console.log(`
+╔════════════════════════════════════════════════════════════════╗
+║  ${emoji} ACESSO DETECTADO                                            ║
+╚════════════════════════════════════════════════════════════════╝
+[TIMESTAMP] ${timestamp}
+[CLIENT]    ${clientInfo.type.toUpperCase()} (${clientInfo.name})
+[CATEGORY]  ${category}
+[METHOD]    ${method}
+[PATH]      ${path}
+[IP]        ${ip}
+[PARAMS]    videoId=${videoId} | playlistId=${playlistId} | artistId=${artistId}
+[USER-AGENT] ${req.get('user-agent')?.substring(0, 80)}
+    `);
+}
+
 /**
  * Carrega index.json com cache
  */
@@ -343,6 +471,14 @@ function escapeHtml(text) {
 // 🔥 ROTA PRINCIPAL: GET /index.html com OG dinâmica
 app.get(['/', '/index.html', '/index.htm'], (req, res) => {
     try {
+        // ============================================================
+        // FASE 1: DETECÇÃO E LOGGING (sem redirect ainda)
+        // ============================================================
+        const userAgent = req.get('user-agent') || '';
+        const clientInfo = detectClient(userAgent);
+        logAccess(req, clientInfo);
+        
+        // ============================================================
         // Extrair query params
         const videoId = req.query.videoId || null;
         const playlistId = req.query.playlistId || null;
