@@ -5,16 +5,10 @@ function normalizeText(value = '') {
 const CANONICAL_SHARE_HOST = 'https://sanplayer-server.onrender.com';
 
 function getShareBaseUrl() {
-  if (typeof window === 'undefined') {
-    return CANONICAL_SHARE_HOST;
-  }
-
-  const origin = window.location.origin;
-  if (/^(http:\/\/localhost|http:\/\/127\.0\.0\.1|file:)/.test(origin)) {
-    return CANONICAL_SHARE_HOST;
-  }
-
-  return origin;
+  // 🔗 SEMPRE usar domínio canônico para compartilhamento
+  // Mesmo quando navegando em sanplayer.github.io, links compartilhados
+  // apontam para sanplayer-server.onrender.com (que redireciona usuarios)
+  return CANONICAL_SHARE_HOST;
 }
 
 function buildShareUrl(videoId = '') {
