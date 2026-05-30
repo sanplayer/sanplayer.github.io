@@ -141,9 +141,9 @@ function detectClient(userAgent) {
 }
 
 /**
- * Log estruturado de acesso (FASE 1: apenas logging, sem redirect)
+ * Log estruturado de acesso (FASE 2: com ação de redirect/serving)
  */
-function logAccess(req, clientInfo) {
+function logAccess(req, clientInfo, action = 'UNKNOWN') {
     const timestamp = new Date().toISOString();
     const method = req.method;
     const path = req.path;
@@ -166,6 +166,7 @@ function logAccess(req, clientInfo) {
 [TIMESTAMP] ${timestamp}
 [CLIENT]    ${clientInfo.type.toUpperCase()} (${clientInfo.name})
 [CATEGORY]  ${category}
+[ACTION]    ${action}
 [METHOD]    ${method}
 [PATH]      ${path}
 [IP]        ${ip}
@@ -468,15 +469,27 @@ function escapeHtml(text) {
 // EXPRESS ROUTES
 // ============================================================================
 
-// 🔥 ROTA PRINCIPAL: GET /index.html com OG dinâmica
+// 🔥 ROTA PRINCIPAL: GET /index.html com OG dinâmica + Redirect Inteligente
 app.get(['/', '/index.html', '/index.htm'], (req, res) => {
     try {
         // ============================================================
-        // FASE 1: DETECÇÃO E LOGGING (sem redirect ainda)
+        // FASE 2: DETECÇÃO + REDIRECT INTELIGENTE
         // ============================================================
         const userAgent = req.get('user-agent') || '';
         const clientInfo = detectClient(userAgent);
-        logAccess(req, clientInfo);
+        
+        // 🚀 NOVA LÓGICA FASE 2: Redirect para navegadores humanos
+        // Crawlers e clientes desconhecidos recebem OG dinâmica
+        if (clientInfo.type === 'browser') {
+            // Redirecionador inteligente: preserva TODOS os query params
+            const redirectUrl = `https://sanplayer.github.io${req.originalUrl}`;
+            logAccess(req, clientInfo, 'REDIRECTING');
+            console.log(`[Redirect] ${req.originalUrl} → ${redirectUrl}`);
+            return res.redirect(302, redirectUrl);
+        }
+        
+        // Crawlers e Unknown: servir OG dinâmica (favor à segurança)
+        logAccess(req, clientInfo, 'SERVING_OG');
         
         // ============================================================
         // Extrair query params
