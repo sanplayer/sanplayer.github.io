@@ -335,10 +335,41 @@ function getYouTubeThumbnail(videoId) {
 }
 
 /**
- * Build artist cover URL (fallback se houver)
+ * Build artist cover URL
+ * Procura arquivo em /covers/artists/{artistName}.{jpg|png|webp}
  */
 function getArtistCoverUrl(artistName) {
-    // Por enquanto, usar default
+    if (!artistName) {
+        return 'https://sanplayer.github.io/icons/og-image.webp';
+    }
+
+    // Normalizar nome do artista para procurar arquivo
+    // Converter para lowercase e substituir espaços por hífens
+    const normalizedName = artistName.toLowerCase().replace(/\s+/g, '-');
+    
+    // Tentar encontrar arquivo de cover
+    let coversPath = path.resolve('./covers/artists');
+    if (!fs.existsSync(coversPath)) {
+        coversPath = path.resolve(__dirname, 'covers/artists');
+    }
+    
+    if (!fs.existsSync(coversPath)) {
+        console.warn(`[Artist] Diretório ${coversPath} não encontrado`);
+        return 'https://sanplayer.github.io/icons/og-image.webp';
+    }
+    
+    // Tentar extensões comuns
+    const extensions = ['jpg', 'png', 'webp'];
+    for (const ext of extensions) {
+        const filePath = path.join(coversPath, `${normalizedName}.${ext}`);
+        if (fs.existsSync(filePath)) {
+            console.log(`[Artist] Cover encontrado: ${normalizedName}.${ext}`);
+            return `https://sanplayer.github.io/covers/artists/${normalizedName}.${ext}`;
+        }
+    }
+    
+    // Fallback para imagem padrão
+    console.warn(`[Artist] Cover não encontrado para: ${artistName} (normalizado: ${normalizedName})`);
     return 'https://sanplayer.github.io/icons/og-image.webp';
 }
 
