@@ -606,7 +606,7 @@ button:active {
 
 .playlist-aside h2 {
     margin-bottom: 1rem;
-    font-size: var(--font-lg);
+    font-size: var(--font-mt);
 }
 
 .playlist-item {
@@ -2290,7 +2290,6 @@ button:active {
 }
 
 .title-pl {
-    font-size: var(--font-lg);
     margin-bottom: 1.4rem;
     margin-left: 0.5rem;
     color: var(--text-dim);
@@ -2432,6 +2431,7 @@ button:active {
 .overlay-buttons-left {
     display: flex;
     align-items: center;
+    gap: .3rem;
 }
 
 .overlay-buttons-left button {
