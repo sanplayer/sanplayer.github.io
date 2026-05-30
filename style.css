@@ -607,6 +607,7 @@ button:active {
 .playlist-aside h2 {
     margin-bottom: 1rem;
     font-size: var(--font-mt);
+    opacity: 0.8;
 }
 
 .playlist-item {
