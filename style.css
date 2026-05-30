@@ -597,7 +597,7 @@ button:active {
 }
 
 .playlist-aside {
-    /*padding: 0 0.25rem;*/
+    padding: 0 0.25rem;
     border-left: 1px solid var(--border-rgba);
     flex: 0 0 clamp(260px, 28vw, 380px);
     height: 100%;
