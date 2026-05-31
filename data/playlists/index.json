@@ -77,6 +77,13 @@
     "url": "./data/playlists/deep-heaven.json"
   },
   {
+    "id": "deep-saiyara",
+    "title": "Deep Saiyara",
+    "name": "Deep Saiyara",
+    "cover": "deep-saiyara.jpg",
+    "url": "./data/playlists/deep-saiyara.json"
+  },
+  {
     "id": "deepchill-melody",
     "title": "DeepChill Melody",
     "name": "DeepChill Melody",
