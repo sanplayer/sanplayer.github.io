@@ -3199,7 +3199,7 @@ MOBILE SPECIFIC STYLES
  MOBILE LANDSCAPE CONFIG
 ============================================================================= */
 
-@media (orientation: landscape) and (min-width: 768px) {
+@media (orientation: landscape) and (max-width: 1024px) {
     .app-sidebar{
         display: none;
     }
@@ -3217,5 +3217,11 @@ MOBILE SPECIFIC STYLES
     }
     .playlist-item{
     padding: .2rem;
+    }
+    .progress-time-labels{
+        font-size: .875rem;
+    }
+    .current-details .c-title{
+        font-size: 1rem;
     }
 }    
