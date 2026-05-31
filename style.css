@@ -3217,6 +3217,7 @@ MOBILE SPECIFIC STYLES
     }
     .playlist-item{
     padding: .2rem;
+    gap: 10px;
     }
     .progress-time-labels{
         font-size: .875rem;
@@ -3229,5 +3230,12 @@ MOBILE SPECIFIC STYLES
     }
     .playlist-info .m-title{
         font-size: 1rem;
+    }
+    .sidebar-header .title-pl{
+        font-size: .9rem;
+    }
+    .thumb-mini{
+    width: clamp(2rem, 5vw, 3.5rem);
+
     }
 }    
