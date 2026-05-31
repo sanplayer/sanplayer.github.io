@@ -3227,4 +3227,7 @@ MOBILE SPECIFIC STYLES
     .current-details .c-artist{
         font-size: .875rem;
     }
+    .playlist-info .m-title{
+        font-size: 1rem;
+    }
 }    
