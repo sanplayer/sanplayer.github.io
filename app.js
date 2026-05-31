@@ -2467,6 +2467,11 @@ function setLayoutVars() {
     if (footer) root.style.setProperty('--footer-height', `${footerHeight}px`);
     if (header) root.style.setProperty('--header-height', `${headerHeight}px`);
 
+    // Calcula altura real do viewport (corrige bug 100dvh em Android 10)
+    const vv = window.visualViewport;
+    const viewportHeight = vv && vv.height ? `${Math.round(vv.height)}px` : '100dvh';
+    root.style.setProperty('--viewport-height', viewportHeight);
+
     // Usar ResizeObserver apenas para footer (header não muda de altura dinamicamente)
     if (typeof ResizeObserver !== 'undefined' && footer && !footer.__observing) {
         try {
@@ -2507,6 +2512,9 @@ function updateKeyboardOffset() {
             '--keyboard-offset',
             `${validOffset}px`
         );
+        
+        // Sincroniza altura do viewport quando teclado abre/fecha
+        setLayoutVars();
     }
 }
 
