@@ -3224,4 +3224,7 @@ MOBILE SPECIFIC STYLES
     .current-details .c-title{
         font-size: 1rem;
     }
+    .current-details .c-artist{
+        font-size: .875rem;
+    }
 }    
