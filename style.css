@@ -342,7 +342,7 @@ button:active {
     height: calc(var(--header-height) + var(--safe-area-top));
     /*padding-top: var(--safe-area-top);*/
     /*padding-top: clamp(12px, env(safe-area-inset-top), 60px);*/
-    display: NONE;
+    display: flex;
     align-items: center;
     justify-content: space-between;
     padding-left: var(--padding-app);
@@ -499,7 +499,6 @@ button:active {
     z-index: var(--main-z-index);
     overflow: hidden;
     background: var(--bg-surface);
-    top: 0;
 }
 
 .app-sidebar {
@@ -508,7 +507,6 @@ button:active {
     flex: 0 0 clamp(220px, 18vw, 260px);
     height: 100%;
     overflow-y: auto;
-    DISPLAY: NONE;
 }
 
 .sidebar-nav li a {
@@ -3196,3 +3194,28 @@ MOBILE SPECIFIC STYLES
         transition: transform 0.25s ease;
     }
 }
+
+/* =============================================================================
+ MOBILE LANDSCAPE CONFIG
+============================================================================= */
+
+@media (orientation: landscape) and (max-width: 1024px) {
+    .app-sidebar{
+        display: none;
+    }
+
+    .app-header{
+        display: none;
+    }
+    .app-main-grid{
+        top: 0;
+        padding: 0;
+    }
+
+    .video-stage{
+        padding: 0 0 5px 0;
+    }
+    .playlist-item{
+    padding: .2rem;
+    }
+}    
