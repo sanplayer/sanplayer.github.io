@@ -2371,11 +2371,26 @@ async function initApp() {
         updateKeyboardOffset();
         if (window.visualViewport) {
             window.visualViewport.addEventListener('resize', updateKeyboardOffset);
+            window.visualViewport.addEventListener('resize', handleViewportChangeForInput);
             window.visualViewport.addEventListener('scroll', updateKeyboardOffset);
             // Detectar zoom
             window.visualViewport.addEventListener('resize', detectZoomChange);
         }
     }, 100);
+
+    // Setup de listeners para inputs/textareas em modais
+    // Detecta quando um input ganha/perde foco para controlar scroll
+    document.addEventListener('focus', (e) => {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+            ensureInputVisible();
+        }
+    }, true);
+    
+    document.addEventListener('blur', (e) => {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+            clearActiveInput();
+        }
+    }, true);
 
     // Inicializar detecção de zoom
     initZoomDetection();
@@ -2578,6 +2593,72 @@ function closeZoomAlert() {
     if (typeof lastKeyboardOffset !== 'undefined') {
         lastKeyboardOffset = 0;
     }
+}
+
+// ============================================================================
+// 📱 KEYBOARD INPUT HANDLING (PROFISSIONAL)
+// Garante que inputs ficam visíveis acima do teclado virtual
+// ============================================================================
+
+let activeInputElement = null;
+let inputScrollTimeout = null;
+
+/**
+ * Força o input/textarea a ficar visível acima do teclado
+ * Técnica profissional: scroll suave para centro da área visível
+ */
+function ensureInputVisible() {
+    const activeElement = document.activeElement;
+    
+    // Verifica se é um input ou textarea
+    if (!activeElement || (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA')) {
+        return;
+    }
+    
+    activeInputElement = activeElement;
+    
+    // Limpar timeout anterior para evitar scrolls conflitantes
+    if (inputScrollTimeout) clearTimeout(inputScrollTimeout);
+    
+    // Delay para garantir que o teclado virtual abriu completamente
+    inputScrollTimeout = setTimeout(() => {
+        if (activeInputElement && activeInputElement.offsetParent !== null) {
+            // ScrollIntoView com comportamento suave e centralizado
+            activeInputElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+            
+            // Extra safety: focar novamente para garantir que o input está ativo
+            activeInputElement.focus();
+        }
+        inputScrollTimeout = null;
+    }, 300);
+}
+
+/**
+ * Monitora mudanças no viewport (abertura/fechamento do teclado)
+ * Refaz o scroll se necessário
+ */
+function handleViewportChangeForInput() {
+    // Se há um input ativo, garantir que ele continua visível
+    if (activeInputElement && activeInputElement.offsetParent !== null) {
+        // Usar requestAnimationFrame para não bloquear a thread de render
+        requestAnimationFrame(() => {
+            activeInputElement.scrollIntoView({
+                behavior: 'auto',
+                block: 'center'
+            });
+        });
+    }
+}
+
+/**
+ * Reseta o rastreamento de input
+ */
+function clearActiveInput() {
+    activeInputElement = null;
+    if (inputScrollTimeout) clearTimeout(inputScrollTimeout);
 }
 
 // ============================================================================
@@ -4244,7 +4325,11 @@ function closeArtistsModal() {
 
 function openCreatePlaylistModal() {
     document.getElementById('createPlaylistModal').classList.add('show');
-    document.getElementById('newPlaylistName').focus();
+    const input = document.getElementById('newPlaylistName');
+    input.focus();
+    
+    // Garantir que o input fica visível acima do teclado
+    ensureInputVisible();
 }
 
 function closeCreatePlaylistModal() {
@@ -4338,6 +4423,9 @@ function openEditPlaylistModal(idx, currentName) {
     inputEl.value = currentName;
     inputEl.focus();
     inputEl.select();
+    
+    // Garantir que o input fica visível acima do teclado
+    ensureInputVisible();
     
     // Limpar listeners anteriores
     const newSaveBtn = saveBtn.cloneNode(true);
