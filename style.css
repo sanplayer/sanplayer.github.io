@@ -2845,41 +2845,46 @@ animation: float 2s ease-in-out infinite;
 .modal {
     display: none;
     position: fixed;
-    top: var(--header-height);
     left: 0;
     width: 100%;
     height: auto;
-    z-index: 5000;
-    align-items: flex-end;
-    justify-content: center;
+    z-index: 10000;
 }
 
 /* Variante: Fullscreen (listas, conteúdo grande) */
 .modal.modal-fullscreen {
+    top: var(--header-height);
     max-height: calc(100dvh - var(--header-height));
     height: 100%;
 }
 
 /* Variante: Bottom Sheet (ações, input) */
 .modal.modal-bottom-sheet {
+    bottom: 0;
     max-height: 90dvh;
     height: auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
 }
 
 .modal.show {
     display: flex;
 }
 
+.modal.modal-fullscreen.show {
+    display: flex;
+    flex-direction: column;
+}
+
 .modal-content {
     background: var(--bg-modal);
     width: 100%;
-    min-width: 100vw;
     height: auto;
     max-height: 100%;
     padding-bottom: var(--header-height-mobile);
     overflow-y: auto;
     animation: bottomSheetContentOpen 0.8s ease-out forwards;
-    position: absolute;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
 }
@@ -3100,8 +3105,8 @@ MOBILE SPECIFIC STYLES
         overflow-y: auto;
     }
 
-    .modal {
-        top: var(--header-height-mobile)
+    .modal.modal-fullscreen {
+        top: var(--header-height-mobile);
     }
 
     .app-sidebar {
