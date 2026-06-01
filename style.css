@@ -339,9 +339,11 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
-    height: calc(var(--header-height) + var(--safe-area-top));
-    /*padding-top: var(--safe-area-top);*/
-    /*padding-top: clamp(12px, env(safe-area-inset-top), 60px);*/
+    height: var(--header-height);
+    /* sem limite usando max: */
+    /*padding-top: max(20px, env(safe-area-inset-top));*/
+    padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1908,7 +1910,7 @@ button:active {
 }
 
 .native-header {
-    justify-content:flex-start !important;
+    justify-content: flex-start !important;
 }
 
 .modal-back-btn {
@@ -2900,6 +2902,7 @@ animation: float 2s ease-in-out infinite;
     from {
         background-color: rgba(0, 0, 0, 0);
     }
+
     to {
         background-color: rgba(0, 0, 0, 0);
     }
@@ -2909,6 +2912,7 @@ animation: float 2s ease-in-out infinite;
     from {
         background: rgba(0, 0, 0, 0);
     }
+
     to {
         background: rgba(0, 0, 0, 0);
     }
@@ -2987,6 +2991,7 @@ Cobre 100% da tela quando o modal está aberto
     from {
         background: rgba(0, 0, 0, 0.5);
     }
+
     to {
         background: rgba(0, 0, 0, 0);
     }
@@ -3045,6 +3050,7 @@ Desvinculado completamente do sistema genérico de modais
     from {
         background: rgba(0, 0, 0, 0);
     }
+
     to {
         background: rgba(0, 0, 0, 0);
     }
@@ -3055,6 +3061,7 @@ Desvinculado completamente do sistema genérico de modais
         transform: translateY(100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -3065,6 +3072,7 @@ Desvinculado completamente do sistema genérico de modais
     from {
         background: rgba(0, 0, 0, 0);
     }
+
     to {
         background: rgba(0, 0, 0, 0);
     }
@@ -3075,6 +3083,7 @@ Desvinculado completamente do sistema genérico de modais
         transform: translateY(0);
         opacity: 1;
     }
+
     to {
         transform: translateY(100%);
         opacity: 0;
@@ -3113,12 +3122,15 @@ Desvinculado completamente do sistema genérico de modais
 /* =============================================================================
 MOBILE SPECIFIC STYLES
 ============================================================================= */
-@media screen and (max-width: 768px) {
+@media (orientation: portrait) and (max-width: 768px){
+/*@media screen and (max-width: 768px) {*/
 
     /* HEADER MOBILE */
     .app-header {
-        /*height: calc(var(--header-height-mobile) + var(--safe-area-top));*/
-        padding-top: var(--safe-area-top);
+        /* sem limite usando max: */
+        /*padding-top: max(20px, env(safe-area-inset-top));*/
+        height: var(--header-height);
+        padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
         width: 100%;
         border-bottom: none;
         display: flex;
@@ -3208,10 +3220,11 @@ MOBILE SPECIFIC STYLES
         background-repeat: no-repeat;
 
     }
+
     .skeleton {
-    background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+        background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
     }
 
     .player-embed {
@@ -3308,11 +3321,12 @@ MOBILE SPECIFIC STYLES
     .app-sidebar.show.closing {
         animation: slideUpSidebarClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
     }
+
     .app-player-footer {
-        background: radial-gradient(circle,rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
+        background: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
         background-size: 100% auto;
         background-repeat: no-repeat;
-        background-position: bottom center;        
+        background-position: bottom center;
     }
 
     .footer-content-wrapper {
@@ -3328,7 +3342,7 @@ MOBILE SPECIFIC STYLES
 
     .block-controls {
         gap: clamp(1rem, 2vw, 1rem);
-         z-index: 3;
+        z-index: 3;
     }
 
     .block-controls svg.icon {
@@ -3359,42 +3373,50 @@ MOBILE SPECIFIC STYLES
 ============================================================================= */
 
 @media (orientation: landscape) and (max-width: 1024px) {
-    .app-sidebar{
+    .app-sidebar {
         display: none;
     }
 
-    .app-header{
+    .app-header {
         display: flex;
     }
-    .app-main-grid{
+
+    .app-main-grid {
         top: 0;
         padding: 0;
     }
 
-    .video-stage{
+    .video-stage {
         padding: 0 0 5px 0;
     }
-    .playlist-item{
-    padding: .2rem;
-    gap: 10px;
+
+    .playlist-item {
+        padding: .2rem;
+        gap: 10px;
     }
-    .progress-time-labels{
+
+    .progress-time-labels {
         font-size: .875rem;
     }
-    .current-details .c-title{
+
+    .current-details .c-title {
         font-size: 1rem;
     }
-    .current-details .c-artist{
+
+    .current-details .c-artist {
         font-size: .875rem;
     }
-    .playlist-info .m-title{
+
+    .playlist-info .m-title {
         font-size: 1rem;
     }
-    .sidebar-header .title-pl{
+
+    .sidebar-header .title-pl {
         font-size: .9rem;
     }
-    .thumb-mini{
-    width: clamp(2rem, 5vw, 3.5rem);
+
+    .thumb-mini {
+        width: clamp(2rem, 5vw, 3.5rem);
 
     }
-}    
+}
