@@ -115,10 +115,12 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 </style>
-	   <script>
+<script>
     (function() {
-        // Verifica se a URL contém a assinatura do seu APK
-        const isApk = window.location.hash === '#apk-client' || window.location.search.includes('from=apk');
+        // 🎯 VALIDAÇÃO COMPLETA: Detecta os parâmetros da URL OU a assinatura injetada no User-Agent do APK
+        const isApk = window.location.hash === '#apk-client' || 
+                      window.location.search.includes('from=apk') || 
+                      navigator.userAgent.includes('SanPlayerAPK'); // <--- Linha crucial para o Java
 
         if (isApk) {
             // Se for o APK, removemos a hash para limpar a URL visualmente
@@ -126,6 +128,7 @@
                 history.replaceState("", document.title, window.location.pathname + window.location.search);
             }
             // Não faz nada e deixa o index.html carregar o San Player normalmente
+            console.log('[San Player] App Oficial detectado via hardware. Acesso liberado.');
         } else {
             // Se NÃO for o APK, injeta a interface de bloqueio assim que o body abrir
             document.documentElement.classList.add('gate-active');
@@ -146,7 +149,7 @@
                             </div>
                             <h1 class="gate-title">Instale o San Player</h1>
                             <p class="gate-desc">Para garantir máxima performance, segundo plano estável e uma melhor experiência, utilize nosso app oficial.</p>
-                            <button onclick="baixarAPK()" title="Baixar Instalador" class="gate-btn" download>
+                            <button onclick="baixarAPK()" title="Baixar Instalador" class="gate-btn">
                                 Baixar Aplicativo Oficial
                             </button>
                             <span class="gate-badge">Versão: v1.0.2.6</span>
@@ -155,7 +158,6 @@
                 `;
                 document.body.insertAdjacentHTML('afterbegin', gateHTML);
                 
-                // Opcional: Para o app.js original de rodar e consumir processamento à toa
                 if (window.SanPlayerApp && typeof window.SanPlayerApp.destroy === 'function') {
                     window.SanPlayerApp.destroy();
                 }
