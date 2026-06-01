@@ -20,12 +20,15 @@
     	box-sizing: border-box;
     }
     body{
-    	padding: 20px;
+    	
     	height: 100dvh;
     }
     #sanplayer-gate {
         position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
+        height: 100dvh;
+        top: 0; 
+        left: 0;
+        width: 100vw;
         background-color: var(--bg-gate);
         color: var(--text-main);
         z-index: 999999; /* Fica por cima de absolutamente tudo */
@@ -43,7 +46,9 @@
         flex-direction: column;
         align-items: center;
         gap: 24px;
-		height: calc(100dvh - 60px);
+        margin-top: -60px;
+
+
     }
     .gate-icon-wrapper {
         width: 96px; height: 96px;
