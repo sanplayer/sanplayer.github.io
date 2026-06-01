@@ -663,7 +663,8 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+    /*padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));*/
+    padding-bottom: var(--safe-area-bottom);
 }
 
 .app-player-footer.keyboard-open {
@@ -3366,7 +3367,7 @@ MOBILE SPECIFIC STYLES
     }
 
     .app-header{
-        display: none;
+        display: flex;
     }
     .app-main-grid{
         top: 0;
