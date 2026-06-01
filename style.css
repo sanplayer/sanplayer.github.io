@@ -563,24 +563,6 @@ button:active {
     transform: translate(-50%, -50%);
 }
 
-/*@media (max-width: 768px) {
-    .player-embed.background-hidden {
-        position: fixed !important;
-        top: 0 !important;
-        left: -9999px !important;
-        width: 4px !important;
-        height: 4px !important;
-        min-width: 4px !important;
-        min-height: 4px !important;
-        opacity: 0.001 !important;
-        visibility: visible !important;
-        display: block !important;
-        pointer-events: none !important;
-        transform: none !important;
-        z-index: -1 !important;
-    }
-}*/
-
 .video-wrapper img {
     width: 100%;
     height: 100%;
@@ -3135,7 +3117,8 @@ MOBILE SPECIFIC STYLES
 
     /* HEADER MOBILE */
     .app-header {
-        height: calc(var(--header-height-mobile) + var(--safe-area-top));
+        /*height: calc(var(--header-height-mobile) + var(--safe-area-top));*/
+        padding-top: var(--safe-area-top);
         width: 100%;
         border-bottom: none;
         display: flex;
