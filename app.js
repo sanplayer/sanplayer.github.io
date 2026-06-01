@@ -2215,6 +2215,15 @@ function openModal(modalId, config = {}) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     
+    // Abrir scrim se existir (bottom-sheets e input-modals têm scrim)
+    const scrimId = modalId + 'Scrim';
+    const scrim = document.getElementById(scrimId);
+    if (scrim) {
+        scrim.classList.add('show');
+        // Adicionar listener para fechar ao clicar no scrim
+        scrim.addEventListener('click', () => closeModalWithAnimation(modalId), { once: true });
+    }
+    
     // Abrir modal
     modal.classList.add('show');
     
@@ -2249,15 +2258,28 @@ function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     
+    // Fechar scrim se existir
+    const scrimId = modalId + 'Scrim';
+    const scrim = document.getElementById(scrimId);
+    
     if (skipAnimation) {
         // Fechar instantaneamente sem animação
         modal.classList.remove('show');
+        if (scrim) {
+            scrim.classList.remove('show');
+            // Remover listener antigo (se houver)
+            scrim.removeEventListener('click', () => {});
+        }
         if (callback) callback();
         return;
     }
     
     // Adicionar classes de fechamento para ativar animação
     modal.classList.add('closing');
+    if (scrim) {
+        scrim.classList.add('closing');
+    }
+    
     // Suportar ambas: .modal-content (modais genéricos) e .input-modal-content (input-modals)
     const modalContent = modal.querySelector('.modal-content') || modal.querySelector('.input-modal-content');
     if (modalContent) {
@@ -2269,6 +2291,9 @@ function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
     const animationDuration = modal.classList.contains('input-modal') ? 350 : 850;
     setTimeout(() => {
         modal.classList.remove('show', 'closing');
+        if (scrim) {
+            scrim.classList.remove('show', 'closing');
+        }
         if (modalContent) {
             modalContent.classList.remove('closing');
         }
@@ -7104,26 +7129,11 @@ function setupEventListeners() {
     const closeItemOptions = document.getElementById('closeItemOptionsModal');
     if (closeItemOptions) closeItemOptions.addEventListener('click', closeItemOptionsModal);
 
-    // Fechar modais ao clicar fora (backdrop click)
-    // Modais com animação padrão de bottom-sheet
-    ['createPlaylistModal','userMenuModal','itemOptionsModal','editPlaylistModal'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('click', (e) => {
-                if (e.target === e.currentTarget) {
-                    // Usar ID do modal para fechar com animação
-                    closeModalWithAnimation(id);
-                }
-            });
-        }
-    });
-    
     // feedbackModal: fechar sem animação (auto-close existente)
     const feedbackModal = document.getElementById('feedbackModal');
     if (feedbackModal) {
-        feedbackModal.addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) feedbackModal.classList.remove('show');
-        });
+        // Scrim já fechará o modal ao clicar fora
+        // Aqui apenas garantimos que existe o modal
     }
     
     // Botão fechar modal de edição
@@ -7132,14 +7142,6 @@ function setupEventListeners() {
         closeEditPlaylistBtn.addEventListener('click', () => {
             closeModalWithAnimation('editPlaylistModal');
             setTimeout(() => openUserPlaylistsModal(), 300);
-        });
-    }
-    
-    // userPlaylistsModal precisa chamar a função para resetar estado
-    const userPlaylistsModalEl = document.getElementById('userPlaylistsModal');
-    if (userPlaylistsModalEl) {
-        userPlaylistsModalEl.addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeUserPlaylistsModal();
         });
     }
 
