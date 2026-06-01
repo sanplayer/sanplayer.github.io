@@ -2224,7 +2224,8 @@ function openModal(modalId, config = {}) {
         if (input) {
             input.focus();
             // Para bottom-sheet com input: garantir visibilidade acima do teclado
-            if (modal.classList.contains('modal-bottom-sheet')) {
+            // Suporta ambos: .modal-bottom-sheet (modais genéricos) e .input-modal (input-modals)
+            if (modal.classList.contains('modal-bottom-sheet') || modal.classList.contains('input-modal')) {
                 ensureInputVisible();
             }
         }
@@ -2257,13 +2258,15 @@ function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
     
     // Adicionar classes de fechamento para ativar animação
     modal.classList.add('closing');
-    const modalContent = modal.querySelector('.modal-content');
+    // Suportar ambas: .modal-content (modais genéricos) e .input-modal-content (input-modals)
+    const modalContent = modal.querySelector('.modal-content') || modal.querySelector('.input-modal-content');
     if (modalContent) {
         modalContent.classList.add('closing');
     }
     
-    // Esperar a animação terminar (duração em CSS: 0.5s)
-    // + pequeno buffer para garantir
+    // Esperar a animação terminar
+    // Input modals: 0.3s | Modais genéricos: 0.8s → usar 0.85s como máximo
+    const animationDuration = modal.classList.contains('input-modal') ? 350 : 850;
     setTimeout(() => {
         modal.classList.remove('show', 'closing');
         if (modalContent) {
@@ -2273,7 +2276,7 @@ function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
         if (callback) {
             callback();
         }
-    }, 550); // 500ms (animação) + 50ms (buffer)
+    }, animationDuration);
 }
 
 async function initApp() {

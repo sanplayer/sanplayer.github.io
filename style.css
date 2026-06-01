@@ -2975,6 +2975,90 @@ animation: float 2s ease-in-out infinite;
     animation: bottomSheetContentClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
 }
 
+/* =============================================================================
+INPUT MODAL - SISTEMA INDEPENDENTE (createPlaylistModal, editPlaylistModal)
+Desvinculado completamente do sistema genérico de modais
+============================================================================= */
+
+.input-modal {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.input-modal.show {
+    display: flex;
+    animation: inputModalBackdropOpen 0.3s ease-out forwards;
+}
+
+.input-modal-content {
+    background: var(--bg-modal);
+    width: 100%;
+    height: auto;
+    max-height: 65%;
+    padding-bottom: var(--keyboard-offset, 0px);
+    overflow-y: auto;
+    animation: inputModalContentOpen 0.6s ease-out forwards;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    transition: padding-bottom 0.2s ease-out;
+}
+
+.input-modal.closing {
+    animation: inputModalBackdropClose 0.3s ease-out forwards;
+}
+
+.input-modal-content.closing {
+    animation: inputModalContentClose 0.3s ease-out forwards;
+}
+
+@keyframes inputModalBackdropOpen {
+    from {
+        background-color: rgba(0, 0, 0, 0);
+    }
+    to {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+}
+
+@keyframes inputModalContentOpen {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes inputModalBackdropClose {
+    from {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    to {
+        background-color: rgba(0, 0, 0, 0);
+    }
+}
+
+@keyframes inputModalContentClose {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
 .modal-header {
     position: sticky;
     top: 0;
