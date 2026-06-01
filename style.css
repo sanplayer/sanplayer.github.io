@@ -2494,7 +2494,7 @@ button:active {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0);
     animation: fadeIn 0.3s ease-out;
 }
 
@@ -2919,7 +2919,7 @@ animation: float 2s ease-in-out infinite;
         background-color: rgba(0, 0, 0, 0);
     }
     to {
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0);
     }
 }
 
@@ -2927,9 +2927,8 @@ animation: float 2s ease-in-out infinite;
     from {
         background: rgba(0, 0, 0, 0);
     }
-
     to {
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0);
     }
 }
 
@@ -2983,14 +2982,14 @@ Desvinculado completamente do sistema genérico de modais
 .input-modal {
     display: none;
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
-    height: auto;
+    height: 100dvh;
     z-index: 10000;
-    background: rgba(0, 0, 0, 0.5);
     align-items: flex-end;
     justify-content: center;
+    background: rgba(0, 0, 0, 0);
 }
 
 .input-modal.show {
@@ -3005,26 +3004,31 @@ Desvinculado completamente do sistema genérico de modais
     max-height: 65%;
     padding-bottom: var(--keyboard-offset, 0px);
     overflow-y: auto;
-    animation: inputModalContentOpen 0.6s ease-out forwards;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
     transition: padding-bottom 0.2s ease-out;
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+.input-modal.show .input-modal-content {
+    animation: inputModalContentOpen 0.6s ease-out forwards;
 }
 
 .input-modal.closing {
     animation: inputModalBackdropClose 0.3s ease-out forwards;
 }
 
-.input-modal-content.closing {
+.input-modal.closing .input-modal-content {
     animation: inputModalContentClose 0.3s ease-out forwards;
 }
 
 @keyframes inputModalBackdropOpen {
     from {
-        background-color: rgba(0, 0, 0, 0);
+        background: rgba(0, 0, 0, 0);
     }
     to {
-        background-color: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0);
     }
 }
 
@@ -3041,10 +3045,10 @@ Desvinculado completamente do sistema genérico de modais
 
 @keyframes inputModalBackdropClose {
     from {
-        background-color: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0);
     }
     to {
-        background-color: rgba(0, 0, 0, 0);
+        background: rgba(0, 0, 0, 0);
     }
 }
 

@@ -2658,7 +2658,8 @@ function ensureInputVisible() {
     // Limpar timeout anterior para evitar scrolls conflitantes
     if (inputScrollTimeout) clearTimeout(inputScrollTimeout);
     
-    // Delay para garantir que o teclado virtual abriu completamente
+    // Delay: aguarda a animação do modal terminar (600ms) + tempo para o teclado aparecer
+    // Total: 700ms garante que tudo está posicionado antes do scroll
     inputScrollTimeout = setTimeout(() => {
         if (activeInputElement && activeInputElement.offsetParent !== null) {
             // ScrollIntoView com comportamento suave e centralizado
@@ -2671,7 +2672,7 @@ function ensureInputVisible() {
             activeInputElement.focus();
         }
         inputScrollTimeout = null;
-    }, 300);
+    }, 700);
 }
 
 /**
