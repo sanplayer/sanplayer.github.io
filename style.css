@@ -2865,6 +2865,11 @@ animation: float 2s ease-in-out infinite;
     height: auto;
 }
 
+/* Sub-variante: Bottom Sheet Pequeno (apenas input) - colado na base */
+.modal.modal-bottom-sheet.modal-small {
+    max-height: 65%;
+}
+
 /* Estado: Mostrar (aplica a ambas as variantes) */
 .modal.show {
     display: flex;
@@ -2894,10 +2899,13 @@ animation: float 2s ease-in-out infinite;
 
 /* Bottom Sheet Content: Padding aumentado para input acima do teclado */
 .modal.modal-bottom-sheet .modal-content {
-    /*padding-bottom: calc(var(--header-height-mobile) + var(--keyboard-offset, 0px));*/
-    
+    padding-bottom: calc(var(--header-height-mobile) + var(--keyboard-offset, 0px) + 20px);
+    transition: padding-bottom 0.2s ease-out;
+}
+
+/* Bottom Sheet Pequeno: Apenas o offset do teclado, sem buffer extra */
+.modal.modal-bottom-sheet.modal-small .modal-content {
     padding-bottom: var(--keyboard-offset, 0px);
-    transition: padding-bottom 0.8s ease-out;
 }
 
 /* Fullscreen Content: Scroll normal */
