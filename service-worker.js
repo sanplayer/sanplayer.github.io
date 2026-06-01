@@ -2,7 +2,7 @@
 // SERVICE WORKER - SanPlayer PWA
 // ============================================================================
 
-const CACHE_NAME = 'sanplayer-v1.0.2.4';
+const CACHE_NAME = 'sanplayer-v1.0.2.6';
 const URLS_TO_CACHE = [
     '/',
     '/style.css',
