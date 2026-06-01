@@ -116,6 +116,12 @@
     }
 </style>
 <script>
+function baixarAPK() {
+  const link = document.createElement('a');
+  link.href = '/apk/SanPlayer_v1.0.2.6.apk'; // URL ou caminho local do APK
+  link.download = 'Instalador SanPlayer_v1.0.2.6';// Nome que aparecerá para o usuário
+  link.click();
+};
     (function() {
         // 🎯 VALIDAÇÃO COMPLETA: Detecta os parâmetros da URL OU a assinatura injetada no User-Agent do APK
         const isApk = window.location.hash === '#apk-client' || 
