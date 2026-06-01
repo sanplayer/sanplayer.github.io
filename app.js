@@ -2197,6 +2197,46 @@ async function loadDefaultState() {
 /**
  * 🎬 Fecha um modal com animação padrão de bottom-sheet
  * 
+/**
+ * 🎯 CENTRAL: Abre qualquer modal com configuração unificada
+ * 
+ * Padrão único para todos os modais:
+ * - Sem duplicação de código
+ * - Suporta focus automático
+ * - Suporta callbacks personalizados
+ * - Profissional e escalável
+ * 
+ * @param {string} modalId - ID do modal (ex: 'createPlaylistModal')
+ * @param {object} config - Configuração opcional
+ *   - focusSelector: Selector do elemento para fazer focus (ex: '#newPlaylistName')
+ *   - onOpen: Callback executado após abrir
+ */
+function openModal(modalId, config = {}) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    // Abrir modal
+    modal.classList.add('show');
+    
+    // Fazer focus em elemento específico (para inputs)
+    if (config.focusSelector) {
+        const input = modal.querySelector(config.focusSelector);
+        if (input) {
+            input.focus();
+            // Para bottom-sheet com input: garantir visibilidade acima do teclado
+            if (modal.classList.contains('modal-bottom-sheet')) {
+                ensureInputVisible();
+            }
+        }
+    }
+    
+    // Callback personalizado
+    if (config.onOpen) {
+        config.onOpen();
+    }
+}
+
+/**
  * Função helper para gerenciar fechamento com animação suave
  * Aplicável a qualquer modal bottom-sheet futuro
  * 
@@ -2481,11 +2521,6 @@ function setLayoutVars() {
 
     if (footer) root.style.setProperty('--footer-height', `${footerHeight}px`);
     if (header) root.style.setProperty('--header-height', `${headerHeight}px`);
-
-    // Calcula altura real do viewport (corrige bug 100dvh em Android 10)
-    const vv = window.visualViewport;
-    const viewportHeight = vv && vv.height ? `${Math.round(vv.height)}px` : '100dvh';
-    root.style.setProperty('--viewport-height', viewportHeight);
 
     // Usar ResizeObserver apenas para footer (header não muda de altura dinamicamente)
     if (typeof ResizeObserver !== 'undefined' && footer && !footer.__observing) {
@@ -3036,31 +3071,19 @@ function initPWAInstall() {
 }
 
 function openAboutModal() {
-    const modal = document.getElementById('aboutModal');
-    if (modal) {
-        modal.classList.add('show');
-    }
+    openModal('aboutModal');
 }
 
 function openAuthorModal() {
-    const modal = document.getElementById('authorModal');
-    if (modal) {
-        modal.classList.add('show');
-    }
+    openModal('authorModal');
 }
 
 function openPrivacyModal() {
-    const modal = document.getElementById('privacyModal');
-    if (modal) {
-        modal.classList.add('show');
-    }
+    openModal('privacyModal');
 }
 
 function openTermsModal() {
-    const modal = document.getElementById('termsModal');
-    if (modal) {
-        modal.classList.add('show');
-    }
+    openModal('termsModal');
 }
 
 // ============================================================================
@@ -4324,12 +4347,9 @@ function closeArtistsModal() {
 // ----------------------
 
 function openCreatePlaylistModal() {
-    document.getElementById('createPlaylistModal').classList.add('show');
-    const input = document.getElementById('newPlaylistName');
-    input.focus();
-    
-    // Garantir que o input fica visível acima do teclado
-    ensureInputVisible();
+    openModal('createPlaylistModal', {
+        focusSelector: '#newPlaylistName'
+    });
 }
 
 function closeCreatePlaylistModal() {
@@ -4361,7 +4381,7 @@ function submitCreatePlaylist(e) {
 }
 
 function openUserMenuModal() {
-    document.getElementById('userMenuModal').classList.add('show');
+    openModal('userMenuModal');
 }
 
 function closeUserMenuModal() {
@@ -4404,8 +4424,8 @@ function openUserPlaylistsModal() {
     });
     
     container.appendChild(fragment);
-    // ABRIR O MODAL
-    document.getElementById('userPlaylistsModal').classList.add('show');
+    // Abrir o modal
+    openModal('userPlaylistsModal');
 }
 
 /**
@@ -4414,72 +4434,70 @@ function openUserPlaylistsModal() {
  * @param {String} currentName - nome atual
  */
 function openEditPlaylistModal(idx, currentName) {
-    const modal = document.getElementById('editPlaylistModal');
     const inputEl = document.getElementById('editPlaylistNameInput');
     const saveBtn = document.getElementById('editPlaylistSaveBtn');
     const cancelBtn = document.getElementById('editPlaylistCancelBtn');
     
-    // Preencher com nome atual
-    inputEl.value = currentName;
-    inputEl.focus();
-    inputEl.select();
-    
-    // Garantir que o input fica visível acima do teclado
-    ensureInputVisible();
-    
-    // Limpar listeners anteriores
-    const newSaveBtn = saveBtn.cloneNode(true);
-    const newCancelBtn = cancelBtn.cloneNode(true);
-    saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
-    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-    
-    // Adicionar novo listener para salvar
-    newSaveBtn.addEventListener('click', () => {
-        const newName = inputEl.value.trim();
-        if (newName && newName !== currentName) {
-            const list = getUserPlaylists();
-            list[idx].name = newName;
-            saveUserPlaylists(list);
-            showFeedbackModal(`Playlist renomeada para "${newName}"`);
+    openModal('editPlaylistModal', {
+        focusSelector: '#editPlaylistNameInput',
+        onOpen: () => {
+            // Preencher com nome atual
+            inputEl.value = currentName;
+            inputEl.select();
             
-            // 🔥 CRITICAL: Fechar editPlaylistModal e esperar feedback fechar antes de reabrir userPlaylistsModal
-            closeModalWithAnimation('editPlaylistModal');
-            setTimeout(() => {
-                // Aguardar feedback fechar (3s por padrão em showFeedbackModal)
-                setTimeout(() => {
-                    openUserPlaylistsModal();
-                }, 3200); // Feedback duration (3000) + buffer (200)
-            }, 550); // closeModalWithAnimation duration (550)
-        } else {
-            // Se nome não mudou, apenas fecha o modal
-            closeModalWithAnimation('editPlaylistModal', () => {
-                setTimeout(() => openUserPlaylistsModal(), 300);
+            // Limpar listeners anteriores
+            const newSaveBtn = saveBtn.cloneNode(true);
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+            
+            // Adicionar novo listener para salvar
+            newSaveBtn.addEventListener('click', () => {
+                const newName = inputEl.value.trim();
+                if (newName && newName !== currentName) {
+                    const list = getUserPlaylists();
+                    list[idx].name = newName;
+                    saveUserPlaylists(list);
+                    showFeedbackModal(`Playlist renomeada para "${newName}"`);
+                    
+                    // 🔥 CRITICAL: Fechar editPlaylistModal e esperar feedback fechar antes de reabrir userPlaylistsModal
+                    closeModalWithAnimation('editPlaylistModal');
+                    setTimeout(() => {
+                        // Aguardar feedback fechar (3s por padrão em showFeedbackModal)
+                        setTimeout(() => {
+                            openUserPlaylistsModal();
+                        }, 3200); // Feedback duration (3000) + buffer (200)
+                    }, 550); // closeModalWithAnimation duration (550)
+                } else {
+                    // Se nome não mudou, apenas fecha o modal
+                    closeModalWithAnimation('editPlaylistModal', () => {
+                        setTimeout(() => openUserPlaylistsModal(), 300);
+                    });
+                }
+            });
+            
+            // Fechar ao cancelar
+            newCancelBtn.addEventListener('click', () => {
+                closeModalWithAnimation('editPlaylistModal', () => {
+                    setTimeout(() => openUserPlaylistsModal(), 300);
+                });
+            });
+            
+            // Enter para salvar
+            inputEl.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    newSaveBtn.click();
+                }
+            });
+            
+            // Escape para cancelar
+            inputEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    newCancelBtn.click();
+                }
             });
         }
     });
-    
-    // Fechar ao cancelar
-    newCancelBtn.addEventListener('click', () => {
-        closeModalWithAnimation('editPlaylistModal', () => {
-            setTimeout(() => openUserPlaylistsModal(), 300);
-        });
-    });
-    
-    // Enter para salvar
-    inputEl.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            newSaveBtn.click();
-        }
-    });
-    
-    // Escape para cancelar
-    inputEl.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            newCancelBtn.click();
-        }
-    });
-    
-    modal.classList.add('show');
 }
 
 /**

@@ -1948,7 +1948,7 @@ button:active {
 }
 
 .about-modal-content {
-    max-height: var(--viewport-height, 100dvh);
+    max-height: calc(100dvh - var(--header-height));
     display: flex;
     flex-direction: column;
 }
@@ -2238,7 +2238,8 @@ button:active {
     top: 0;
     left: 0;
     width: 100vw;
-    height: var(--viewport-height, 100dvh);
+    height: auto;
+    max-height: 100dvh;
     display: none;
     align-items: center;
     justify-content: center;
@@ -2475,7 +2476,8 @@ button:active {
     top: 0;
     left: 0;
     width: 100vw;
-    height: var(--viewport-height, 100dvh);
+    height: auto;
+    max-height: 100dvh;
     z-index: 9997;
     display: none;
     align-items: flex-end;
@@ -2843,13 +2845,25 @@ animation: float 2s ease-in-out infinite;
 .modal {
     display: none;
     position: fixed;
-    top: calc(var(--header-height) + var(--safe-area-top));
+    top: var(--header-height);
     left: 0;
     width: 100%;
-    height: var(--viewport-height, 100dvh);
+    height: auto;
     z-index: 5000;
     align-items: flex-end;
     justify-content: center;
+}
+
+/* Variante: Fullscreen (listas, conteúdo grande) */
+.modal.modal-fullscreen {
+    max-height: calc(100dvh - var(--header-height));
+    height: 100%;
+}
+
+/* Variante: Bottom Sheet (ações, input) */
+.modal.modal-bottom-sheet {
+    max-height: 90dvh;
+    height: auto;
 }
 
 .modal.show {
@@ -2860,15 +2874,26 @@ animation: float 2s ease-in-out infinite;
     background: var(--bg-modal);
     width: 100%;
     min-width: 100vw;
-    height: 100%;
-    padding-bottom: calc(var(--header-height-mobile) + var(--keyboard-offset, 0px) + 20px);
+    height: auto;
+    max-height: 100%;
+    padding-bottom: var(--header-height-mobile);
     overflow-y: auto;
     animation: bottomSheetContentOpen 0.8s ease-out forwards;
     position: absolute;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
-    /* Suaviza o padding quando teclado abre/fecha */
+}
+
+/* Bottom Sheet Content: Padding aumentado para input acima do teclado */
+.modal.modal-bottom-sheet .modal-content {
+    padding-bottom: calc(var(--header-height-mobile) + var(--keyboard-offset, 0px) + 20px);
     transition: padding-bottom 0.2s ease-out;
+}
+
+/* Fullscreen Content: Scroll normal */
+.modal.modal-fullscreen .modal-content {
+    height: 100%;
+    padding-bottom: var(--header-height-mobile);
 }
 
 @keyframes bottomSheetBackdropOpen {
