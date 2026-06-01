@@ -2863,18 +2863,21 @@ animation: float 2s ease-in-out infinite;
     bottom: 0;
     max-height: 90dvh;
     height: auto;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
 }
 
+/* Estado: Mostrar (aplica a ambas as variantes) */
 .modal.show {
     display: flex;
+    animation: fadeInBackdrop 0.3s ease-out forwards;
 }
 
 .modal.modal-fullscreen.show {
-    display: flex;
     flex-direction: column;
+}
+
+.modal.modal-bottom-sheet.show {
+    align-items: flex-end;
+    justify-content: center;
 }
 
 .modal-content {
@@ -2899,6 +2902,15 @@ animation: float 2s ease-in-out infinite;
 .modal.modal-fullscreen .modal-content {
     height: 100%;
     padding-bottom: var(--header-height-mobile);
+}
+
+@keyframes fadeInBackdrop {
+    from {
+        background-color: rgba(0, 0, 0, 0);
+    }
+    to {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
 }
 
 @keyframes bottomSheetBackdropOpen {
