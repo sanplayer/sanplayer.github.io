@@ -123,7 +123,7 @@
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-left: env(safe-area-inset-left, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
-    --spacing-sm: 12px;
+    --spacing-sm: 20px;
 
     /* Border Radius System */
     --radius-lg: clamp(20px, 2vw, 30px);
@@ -663,8 +663,7 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    /*padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));*/
-    padding-bottom: var(--safe-area-bottom);
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
 }
 
 .app-player-footer.keyboard-open {
@@ -3311,11 +3310,9 @@ MOBILE SPECIFIC STYLES
     }
     .app-player-footer {
         background: radial-gradient(circle,rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
-
         background-size: 100% auto;
         background-repeat: no-repeat;
-        background-position: bottom center;
-
+        background-position: bottom center;        
     }
 
     .footer-content-wrapper {
