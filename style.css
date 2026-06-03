@@ -3121,8 +3121,15 @@ Desvinculado completamente do sistema genérico de modais
 /* =============================================================================
 MOBILE SPECIFIC STYLES
 ============================================================================= */
-@media (max-width: 768px){
-/*@media screen and (max-width: 768px) {*/
+@media screen and (max-width: 768px) {
+
+    .app-player-footer {
+        background: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-position: bottom center;
+        padding-bottom: var(--safe-area-bottom);
+    }
 
     /* HEADER MOBILE */
     .app-header {
@@ -3131,7 +3138,6 @@ MOBILE SPECIFIC STYLES
         display: flex;
         border-top-left-radius: var(--radius-lg);
         border-top-right-radius: var(--radius-lg);
-        
     }
 
     .header-app-logo svg.icon {
@@ -3316,14 +3322,6 @@ MOBILE SPECIFIC STYLES
 
     .app-sidebar.show.closing {
         animation: slideUpSidebarClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
-    }
-
-    .app-player-footer {
-        background: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
-        background-size: 100% auto;
-        background-repeat: no-repeat;
-        background-position: bottom center;
-        padding-bottom: var(--safe-area-bottom);
     }
 
     .footer-content-wrapper {
