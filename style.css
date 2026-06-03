@@ -1,4 +1,4 @@
-]/* =============================================================================
+/* =============================================================================
 1. TIPOGRAFIA
 ============================================================================= */
 /* exo-2-regular - latin */
@@ -119,10 +119,10 @@
     --keyboard-offset: 0px;
     --main-z-index: 10;
 
-    --safe-area-inset-top: env(safe-area-inset-top, 30px);
-    --safe-area-inset-bottom: env(safe-area-inset-bottom, 60px);
-    --safe-area-inset-left: env(safe-area-inset-left, 0px);
-    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+    --safe-area-top: env(safe-area-inset-top, 30px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 60px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
     --spacing-sm: 20px;
 
     /* Border Radius System */
