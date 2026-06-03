@@ -119,10 +119,12 @@
     --keyboard-offset: 0px;
     --main-z-index: 10;
 
-    --safe-area-top: env(safe-area-inset-top, 30px);
-    --safe-area-bottom: env(safe-area-inset-bottom);
-    --safe-area-left: env(safe-area-inset-left, 0px);
-    --safe-area-right: env(safe-area-inset-right, 0px);
+    --safe-area-top: 0px;
+    --safe-area-bottom: 0px;
+    --safe-area-left: 0px;
+    --safe-area-right: 0px;
+    --keyboard-height: 0px;
+
     --spacing-sm: 20px;
 
     /* Border Radius System */
@@ -493,8 +495,10 @@ button:active {
     height: auto;
     box-sizing: border-box;
     position: fixed;
-    top: calc(var(--header-height) + var(--safe-area-inset-top, 30px));
-    bottom: calc(var(--footer-height) + var(--safe-area-inset-bottom, 60px));
+
+    top: calc(var(--header-height) + var(--safe-area-top, 0px));
+    bottom: calc(var(--footer-height) + var(--safe-area-bottom, 0px));
+
     left: 0;
     right: 0;
     display: flex;
@@ -660,10 +664,12 @@ button:active {
 6. FOOTER (PLAYER)
 ============================================================================= */
 .app-player-footer {
+    bottom: calc(var(--footer-height) + var(--safe-area-bottom, 0px));
+    padding-bottom: var(--safe-area-bottom, 0px);
+    bottom: 0;
+
     position: fixed;
     padding: .2rem;
-    padding-bottom: var(--safe-area-inset-bottom, 60px);
-    bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
@@ -3125,10 +3131,6 @@ MOBILE SPECIFIC STYLES
     /*@media screen and (max-width: 768px) {*/
 
     /* HEADER MOBILE */
-    .app-main-grid{
-        position: fixed;
-        top: 0;
-    }
 
     .header-app-logo svg.icon {
         display: none;
@@ -3167,13 +3169,13 @@ MOBILE SPECIFIC STYLES
         background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgb(0 0 0 / 0%) 20%, rgb(0 0 0 / 0%) 100%);
     }
 
-    .app-main-grid {
+ /*   .app-main-grid {
         display: flex;
         flex-direction: column;
         top: 0;
         padding: 0;
         background: var(--bg-main);
-    }
+    }*/
 
     .video-stage {
         padding: 0;
@@ -3342,11 +3344,6 @@ MOBILE SPECIFIC STYLES
 @media (orientation: landscape) and (max-width: 1024px) {
     .app-sidebar {
         display: none;
-    }
-
-    .app-main-grid {
-        top: 0;
-        padding: 0;
     }
 
     .video-stage {
