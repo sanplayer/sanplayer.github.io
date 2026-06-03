@@ -119,8 +119,8 @@
     --keyboard-offset: 0px;
     --main-z-index: 10;
 
-    --safe-area-top: env(safe-area-inset-top, 0px);
-    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-top: env(safe-area-inset-top, 30px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 60px);
     --safe-area-left: env(safe-area-inset-left, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
     --spacing-sm: 20px;
@@ -346,7 +346,7 @@ button:active {
     justify-content: space-between;
     padding-left: var(--padding-app);
     padding-right: var(--padding-app);
-    padding-top: env(safe-area-inset-top, 25px);
+    padding-top: env(safe-area-inset-top, 30px);
     border-bottom: 1px solid var(--border-rgba);
     position: fixed;
     top: 0;
@@ -670,7 +670,7 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    background: #000000;
+    background: #181818;
 }
 
 .app-player-footer.keyboard-open {
