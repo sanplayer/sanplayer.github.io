@@ -93,7 +93,7 @@
     --gap-fluid: clamp(0.5rem, 2vw, 1.5rem);
     --gap-lg: clamp(1rem, 3vw, 1.8rem);
     --padding-app: clamp(0.75rem, 2.5vw, 2rem);
-    --header-height: clamp(50px, 10vh, 72px);
+    --header-height: clamp(50px, 10dvh, 72px);
     --header-height-mobile: clamp(30px, 10dvh, 40px);
     --footer-height: clamp(60px, 12vh, 100px);
     --btn-size: clamp(36px, 8vw, 48px);
@@ -339,21 +339,20 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
-    height: var(--header-height);
-    /* sem limite usando max: */
-    /*padding-top: max(20px, env(safe-area-inset-top));*/
-    padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
-
+    width: 100%;
+    --header-height: clamp(3.125rem, 8vw, 4.5rem);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-left: var(--padding-app);
     padding-right: var(--padding-app);
+    padding-top: env(safe-area-inset-top, 25px);
     border-bottom: 1px solid var(--border-rgba);
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
-    user-select: none;
 }
 
 .header-logo {
@@ -385,10 +384,13 @@ button:active {
     max-width: clamp(300px, 40vw, 600px);
     margin: 0 var(--gap-md);
     display: flex;
+    background: rgba(0,0,0,0.3);
+    padding: 0 8px;
+    border-radius: 20px;
 }
 
 .header-search form {
-    background: rgba(0, 0, 0, 0.3);
+    
     border-radius: 25px;
     padding: 0;
     display: flex;
@@ -477,7 +479,7 @@ button:active {
     border-radius: 50%;
     animation: pulse-badge 1.5s infinite;
     font-weight: bold;
-    color: #fff;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -491,8 +493,8 @@ button:active {
     height: auto;
     box-sizing: border-box;
     position: fixed;
-    top: var(--header-height);
-    bottom: var(--footer-height);
+    top: calc(var(--header-height) + env(safe-area-inset-top, 25px));
+    bottom: calc(var(--footer-height) + env(safe-area-inset-bottom, 60px));
     left: 0;
     right: 0;
     display: flex;
@@ -659,13 +661,16 @@ button:active {
 ============================================================================= */
 .app-player-footer {
     position: fixed;
+    padding: .2rem;
+    padding-bottom: env(safe-area-inset-bottom, 60px);
     bottom: 0;
     left: 0;
+    right: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+    background: #000000;
 }
 
 .app-player-footer.keyboard-open {
@@ -674,6 +679,9 @@ button:active {
 
 .player-progress-area {
     width: 100%;
+    color: #ffffff;
+    font-weight: 500;
+    font-size: .9rem;
 }
 
 .progress {
@@ -760,9 +768,6 @@ button:active {
 .progress-time-labels {
     display: flex;
     justify-content: space-between;
-    font-size: var(--font-sm);
-    font-weight: 500;
-    color: #b0b0c0;
     padding: 0 var(--gap-md);
 }
 
@@ -1562,7 +1567,7 @@ button:active {
 
 .btn-add {
     background: var(--accent-roxo);
-    color: #fff;
+    color: #ffffff;
 }
 
 .btn-add:hover {
@@ -1621,7 +1626,7 @@ button:active {
     height: clamp(28px, 6vw, 36px);
     border-radius: 50%;
     background: var(--accent-roxo);
-    color: #fff;
+    color: #ffffff;
     font-weight: 600;
     font-size: clamp(0.85rem, 1.5vw, 1rem);
     line-height: 0;
@@ -1668,7 +1673,7 @@ button:active {
     height: 36px;
     border-radius: 50%;
     background: #b71c1c;
-    color: #fff;
+    color: #ffffff;
     font-weight: 700;
     font-size: 1.08rem;
     margin-left: 1rem;
@@ -2528,12 +2533,6 @@ font-size: clamp(1.5rem, 3vw, 2rem);
     padding: clamp(1rem, 2vw, 1.5rem) 0;
 }
 
-/*
-.pwa-install-icon i {
-font-size: clamp(3rem, 8vw, 4rem);
-color: var(--text-main);
-animation: float 2s ease-in-out infinite;
-}*/
 .pwa-install-icon svg.icon {
     width: clamp(3rem, 8vw, 4rem);
     height: clamp(3rem, 8vw, 4rem);
@@ -2588,7 +2587,7 @@ animation: float 2s ease-in-out infinite;
 
 .update-text strong {
     display: block;
-    color: #fff;
+    color: #ffffff;
 }
 
 .update-text p {
@@ -3122,47 +3121,29 @@ Desvinculado completamente do sistema genérico de modais
 /* =============================================================================
 MOBILE SPECIFIC STYLES
 ============================================================================= */
-@media (orientation: portrait) and (max-width: 768px){
-/*@media screen and (max-width: 768px) {*/
+@media (orientation: portrait) and (max-width: 768px) {
+    /*@media screen and (max-width: 768px) {*/
 
     /* HEADER MOBILE */
-    .app-header {
-        /* sem limite usando max: */
-        /*padding-top: max(20px, env(safe-area-inset-top));*/
-        height: var(--header-height);
-        padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
-        width: 100%;
-        border-bottom: none;
-        display: flex;
-        border-top-left-radius: var(--radius-lg);
-        border-top-right-radius: var(--radius-lg);
-        align-items: end;
+    .app-main-grid{
+        position: fixed;
+        top: 0;
     }
 
     .header-app-logo svg.icon {
-        fill: rgba(255, 255, 255, .2);
-        width: 24px;
-        height: 24px;
         display: none;
     }
-
     .app-header .title-player {
-        color: rgba(255, 255, 255, 0.2);
-        font-size: var(--font-md);
         display: none;
     }
-
-    /* BARRA DE BUSCA */
     .header-search {
         display: none;
     }
-
     .header-search input:focus {
         background: none;
     }
-
     .header-search.show-search {
-        display: flex !important;
+        display: flex;
         position: absolute;
         left: 0;
         right: 0;
@@ -3173,7 +3154,6 @@ MOBILE SPECIFIC STYLES
         gap: 0;
         top: var(--safe-area-top);
     }
-
     .header-search.show-search form {
         width: 100%;
         background: rgba(0, 0, 0, .8);
@@ -3233,7 +3213,6 @@ MOBILE SPECIFIC STYLES
         left: 50%;
         width: 178%;
         height: 122%;
-        /* size default = 0 */
         transform: translate(-50%, -50%);
     }
 
@@ -3322,13 +3301,6 @@ MOBILE SPECIFIC STYLES
         animation: slideUpSidebarClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
     }
 
-    .app-player-footer {
-        background: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
-        background-size: 100% auto;
-        background-repeat: no-repeat;
-        background-position: bottom center;
-    }
-
     .footer-content-wrapper {
         display: flex;
         flex-direction: column;
@@ -3338,11 +3310,6 @@ MOBILE SPECIFIC STYLES
         margin: 0;
         width: 100%;
         padding: 0 .5rem .3rem .5rem;
-    }
-
-    .block-controls {
-        gap: clamp(1rem, 2vw, 1rem);
-        z-index: 3;
     }
 
     .block-controls svg.icon {
@@ -3377,10 +3344,6 @@ MOBILE SPECIFIC STYLES
         display: none;
     }
 
-    .app-header {
-        display: flex;
-    }
-
     .app-main-grid {
         top: 0;
         padding: 0;
@@ -3393,10 +3356,6 @@ MOBILE SPECIFIC STYLES
     .playlist-item {
         padding: .2rem;
         gap: 10px;
-    }
-
-    .progress-time-labels {
-        font-size: .875rem;
     }
 
     .current-details .c-title {
