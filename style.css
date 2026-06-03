@@ -3128,7 +3128,7 @@ MOBILE SPECIFIC STYLES
         background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: bottom center;
-        margin-bottom: var(--safe-area-bottom);
+        bottom: var(--safe-area-bottom);
     }
 
     /* HEADER MOBILE */
