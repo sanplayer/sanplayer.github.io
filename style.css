@@ -661,7 +661,7 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+
 }
 
 .app-player-footer.keyboard-open {
@@ -764,6 +764,7 @@ button:active {
 
 .footer-content-wrapper {
     display: flex;
+    padding-bottom: .7rem;
 }
 
 .footer-block {
@@ -2891,7 +2892,8 @@ animation: float 2s ease-in-out infinite;
 /* Fullscreen Content: Scroll normal */
 .modal.modal-fullscreen .modal-content {
     height: 100%;
-    padding-bottom: var(--header-height-mobile);
+    position: fixed;
+    padding-bottom: 60px;
 }
 
 @keyframes fadeInBackdrop {
@@ -3123,13 +3125,12 @@ MOBILE SPECIFIC STYLES
 
     /* HEADER MOBILE */
     .app-header {
-        height: var(--header-height);
         width: 100%;
         border-bottom: none;
         display: flex;
         border-top-left-radius: var(--radius-lg);
         border-top-right-radius: var(--radius-lg);
-        align-items: end;
+        
     }
 
     .header-app-logo svg.icon {
@@ -3172,6 +3173,7 @@ MOBILE SPECIFIC STYLES
         background: rgba(0, 0, 0, .8);
         padding: 0.8rem 1rem;
         border-radius: var(--radius-lg);
+        margin-top: var(--header-height);
     }
 
 
