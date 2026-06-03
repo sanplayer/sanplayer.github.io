@@ -3121,7 +3121,7 @@ Desvinculado completamente do sistema genérico de modais
 /* =============================================================================
 MOBILE SPECIFIC STYLES
 ============================================================================= */
-@media (orientation: portrait) and (max-width: 768px){
+@media (max-width: 768px){
 /*@media screen and (max-width: 768px) {*/
 
     /* HEADER MOBILE */
@@ -3323,6 +3323,7 @@ MOBILE SPECIFIC STYLES
         background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: bottom center;
+        padding-bottom: var(--safe-area-bottom);
     }
 
     .footer-content-wrapper {
