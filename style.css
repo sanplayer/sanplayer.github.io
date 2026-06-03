@@ -123,6 +123,7 @@
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-left: env(safe-area-inset-left, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
+    
     --spacing-sm: 20px;
 
     /* Border Radius System */
@@ -661,7 +662,7 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-
+    padding-bottom: var(--safe-area-bottom);
 }
 
 .app-player-footer.keyboard-open {
