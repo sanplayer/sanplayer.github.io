@@ -7,6 +7,13 @@
     "url": "./data/playlists/lovesongs.json"
   },
   {
+    "id": "lovemusic",
+    "title": "Love Music",
+    "name": "Love Music",
+    "cover": "love-music.webp",
+    "url": "./data/playlists/love-music.json"
+  },
+  {
     "id": "nacionais-romanticas",
     "title": "Nacionais Romanticas",
     "name": "Nacionais Romanticas",
