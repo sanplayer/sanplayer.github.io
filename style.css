@@ -3120,15 +3120,13 @@ Desvinculado completamente do sistema genérico de modais
 
 
 /* =============================================================================
-MOBILE SPECIFIC STYLES
+HEADER - MAX 768PX
 ============================================================================= */
-@media (orientation: portrait) and (max-width: 768px){
-/*@media screen and (max-width: 768px) {*/
+
+@media screen and (max-width: 768px) {
 
     /* HEADER MOBILE */
     .app-header {
-        /* sem limite usando max: */
-        /*padding-top: max(20px, env(safe-area-inset-top));*/
         height: var(--header-height);
         padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
         width: 100%;
@@ -3181,8 +3179,9 @@ MOBILE SPECIFIC STYLES
         border-radius: var(--radius-lg);
     }
 
-
-    /* VIDEO MOBILE AREA */
+/* =============================================================================
+VIDEO - MAX 768PX
+============================================================================= */
     .overlay-layer {
         background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgb(0 0 0 / 0%) 20%, rgb(0 0 0 / 0%) 100%);
     }
@@ -3221,12 +3220,6 @@ MOBILE SPECIFIC STYLES
 
     }
 
-    .skeleton {
-        background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-    }
-
     .player-embed {
         position: absolute;
         top: 50%;
@@ -3236,6 +3229,10 @@ MOBILE SPECIFIC STYLES
         /* size default = 0 */
         transform: translate(-50%, -50%);
     }
+
+/* =============================================================================
+PLAYLIST-ASIDE - MAX 768PX
+============================================================================= */
 
     .playlist-aside {
         display: flex;
@@ -3247,108 +3244,66 @@ MOBILE SPECIFIC STYLES
         overflow-y: auto;
     }
 
-    .modal.modal-fullscreen {
-        top: var(--header-height-mobile);
-    }
 
-    .app-sidebar {
-        display: none;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: auto;
-        background: var(--bg-surface);
-        padding: 1rem;
-        z-index: 3000;
-        animation: slideUpSidebar 0.3s ease-out forwards;
-        transform: translateY(100%);
-    }
-
-    .sidebar-nav {
-        border-radius: 20px;
-        background: var(--bg-modal-content);
-        padding: 0.5rem;
-    }
-
-    .sidebar-nav li a {
-        display: flex;
-        align-items: center;
-        gap: var(--gap-md);
-        padding: 0.8rem;
-        color: var(--text-main);
-        text-decoration: none;
-        font-size: var(--font-md);
-        transition: background 0.2s;
-    }
-
-    .app-sidebar.show {
-        display: flex;
-        flex-direction: column;
-        animation: slideUpSidebarShow 0.8s ease-out forwards;
-        transform: translateY(0);
-        background: var(--bg-modal);
-        z-index: 1000;
-        border-top-left-radius: var(--radius-lg);
-        border-top-right-radius: var(--radius-lg);
-
-    }
-
-    @keyframes slideUpSidebarShow {
-        from {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes slideUpSidebarClose {
-        from {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        to {
-            transform: translateY(100%);
-            opacity: 0;
-        }
-    }
-
-    .app-sidebar.show.closing {
-        animation: slideUpSidebarClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
-    }
-
+/* =============================================================================
+APP-PLAYER-FOOTER - MAX 768PX
+============================================================================= */
     .app-player-footer {
         background: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
         background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: bottom center;
+        padding-bottom: var(--safe-area-bottom);
+    }
+    .footer-content-wrapper {display: flex;flex-direction: column;}
+   
+
+/* =============================================================================
+APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
+============================================================================= */
+    .progress-time-labels{color:var(--accent-roxo);}
+
+    .footer-block{justify-content: center;}
+   
+    .block-info {margin: 0; width: 100%;flex: 1;display: flex;align-items: center;}
+
+    .current-actions{margin-left: auto;display: flex;gap:.5rem;flex-shrink: 0;}
+
+    .block-controls svg.icon {width: 2rem;height: 2rem;}
+
+    .skeleton {
+        background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;}
+
+    .modal.modal-fullscreen {top: var(--header-height-mobile);}
+
+    .app-sidebar {display: none;position: fixed;bottom: 0;left: 0;width: 100%;height: auto;        background: var(--bg-surface);padding: 1rem;z-index: 3000;
+        animation: slideUpSidebar 0.3s ease-out forwards;transform: translateY(100%);}
+
+    .sidebar-nav { border-radius: 20px;background: var(--bg-modal-content);
+        padding: 0.5rem;}
+
+    .sidebar-nav li a {display: flex;align-items: center;gap: var(--gap-md);padding: 0.8rem;
+        color: var(--text-main);text-decoration: none;font-size: var(--font-md);
+        transition: background 0.2s; }
+
+    .app-sidebar.show {display: flex;flex-direction: column;animation: slideUpSidebarShow 0.8s ease-out forwards; transform: translateY(0);background: var(--bg-modal);
+        z-index: 1000;border-top-left-radius: var(--radius-lg);border-top-right-radius: var(--radius-lg);}
+
+    @keyframes slideUpSidebarShow {
+        from {transform: translateY(100%);opacity: 0;}
+
+        to {transform: translateY(0);opacity: 1;}
     }
 
-    .footer-content-wrapper {
-        display: flex;
-        flex-direction: column;
+    @keyframes slideUpSidebarClose {
+        from {transform: translateY(0);opacity: 1;}
+
+        to {transform: translateY(100%);opacity: 0;}
     }
 
-    .block-info {
-        margin: 0;
-        width: 100%;
-        padding: 0 .5rem .3rem .5rem;
-    }
-
-    .block-controls {
-        gap: clamp(1rem, 2vw, 1rem);
-        z-index: 3;
-    }
-
-    .block-controls svg.icon {
-        width: 2rem;
-        height: 2rem;
-    }
+    .app-sidebar.show.closing {animation: slideUpSidebarClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;}
 
     .bottom-sheet-content {
         position: fixed;
@@ -3368,55 +3323,21 @@ MOBILE SPECIFIC STYLES
     }
 }
 
+
 /* =============================================================================
  MOBILE LANDSCAPE CONFIG
 ============================================================================= */
 
-@media (orientation: landscape) and (max-width: 1024px) {
-    .app-sidebar {
-        display: none;
-    }
-
-    .app-header {
-        display: flex;
-    }
-
-    .app-main-grid {
-        top: 0;
-        padding: 0;
-    }
-
-    .video-stage {
-        padding: 0 0 5px 0;
-    }
-
-    .playlist-item {
-        padding: .2rem;
-        gap: 10px;
-    }
-
-    .progress-time-labels {
-        font-size: .875rem;
-    }
-
-    .current-details .c-title {
-        font-size: 1rem;
-    }
-
-    .current-details .c-artist {
-        font-size: .875rem;
-    }
-
-    .playlist-info .m-title {
-        font-size: 1rem;
-    }
-
-    .sidebar-header .title-pl {
-        font-size: .9rem;
-    }
-
-    .thumb-mini {
-        width: clamp(2rem, 5vw, 3.5rem);
-
-    }
+@media screen (orientation: landscape) and (max-width: 1024px) {
+    .app-sidebar {display: none;}
+    .app-header {display: flex;}
+    .app-main-grid {top: 0; padding: 0;}
+    .video-stage { padding: 0 0 5px 0;}
+    .playlist-item { padding: .2rem; gap: 10px;}
+    .progress-time-labels {font-size: .875rem;}
+    .current-details .c-title {font-size: 1rem;}
+    .current-details .c-artist {font-size: .875rem;}
+    .playlist-info .m-title {font-size: 1rem;}
+    .sidebar-header .title-pl { font-size: .9rem;}
+    .thumb-mini {width: clamp(2rem, 5vw, 3.5rem);}
 }
