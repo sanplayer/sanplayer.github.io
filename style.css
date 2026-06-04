@@ -119,11 +119,10 @@
     --keyboard-offset: 0px;
     --main-z-index: 10;
 
-    --safe-area-top: 0px;
-    --safe-area-bottom: 0px;
-    --safe-area-left: 0px;
-    --safe-area-right: 0px;
-    
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
     --spacing-sm: 20px;
 
     /* Border Radius System */
@@ -341,6 +340,10 @@ button:active {
 ============================================================================= */
 .app-header {
     height: var(--header-height);
+    /* sem limite usando max: */
+    /*padding-top: max(20px, env(safe-area-inset-top));*/
+    padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -662,7 +665,7 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-
+    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
 }
 
 .app-player-footer.keyboard-open {
@@ -765,7 +768,6 @@ button:active {
 
 .footer-content-wrapper {
     display: flex;
-    padding-bottom: .7rem;
 }
 
 .footer-block {
@@ -2893,8 +2895,7 @@ animation: float 2s ease-in-out infinite;
 /* Fullscreen Content: Scroll normal */
 .modal.modal-fullscreen .modal-content {
     height: 100%;
-    position: fixed;
-    padding-bottom: 60px;
+    padding-bottom: var(--header-height-mobile);
 }
 
 @keyframes fadeInBackdrop {
@@ -3121,23 +3122,21 @@ Desvinculado completamente do sistema genérico de modais
 /* =============================================================================
 MOBILE SPECIFIC STYLES
 ============================================================================= */
-@media screen and (max-width: 768px) {
-
-    .app-player-footer {
-        background: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
-        background-size: 100% auto;
-        background-repeat: no-repeat;
-        background-position: bottom center;
-        bottom: var(--safe-area-bottom);
-    }
+@media (orientation: portrait) and (max-width: 768px){
+/*@media screen and (max-width: 768px) {*/
 
     /* HEADER MOBILE */
     .app-header {
+        /* sem limite usando max: */
+        /*padding-top: max(20px, env(safe-area-inset-top));*/
+        height: var(--header-height);
+        padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
         width: 100%;
         border-bottom: none;
         display: flex;
         border-top-left-radius: var(--radius-lg);
         border-top-right-radius: var(--radius-lg);
+        align-items: end;
     }
 
     .header-app-logo svg.icon {
@@ -3180,7 +3179,6 @@ MOBILE SPECIFIC STYLES
         background: rgba(0, 0, 0, .8);
         padding: 0.8rem 1rem;
         border-radius: var(--radius-lg);
-        margin-top: var(--header-height);
     }
 
 
@@ -3324,6 +3322,13 @@ MOBILE SPECIFIC STYLES
         animation: slideUpSidebarClose 0.8s cubic-bezier(0.25, 0, 0.46, 1) forwards;
     }
 
+    .app-player-footer {
+        background: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-position: bottom center;
+    }
+
     .footer-content-wrapper {
         display: flex;
         flex-direction: column;
@@ -3366,7 +3371,7 @@ MOBILE SPECIFIC STYLES
 /* =============================================================================
  MOBILE LANDSCAPE CONFIG
 ============================================================================= */
-/*
+
 @media (orientation: landscape) and (max-width: 1024px) {
     .app-sidebar {
         display: none;
@@ -3414,4 +3419,4 @@ MOBILE SPECIFIC STYLES
         width: clamp(2rem, 5vw, 3.5rem);
 
     }
-}*/
+}
