@@ -3261,7 +3261,7 @@ APP-PLAYER-FOOTER - MAX 768PX
 /* =============================================================================
 APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
 ============================================================================= */
-    .progress-time-labels{color:var(--accent-roxo);}
+    .progress-time-labels{color: rgba(255 255, 255, 0.5); font-size: .9rem}
 
     .footer-block{justify-content: center;}
    
