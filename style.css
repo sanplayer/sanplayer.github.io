@@ -3253,7 +3253,7 @@ APP-PLAYER-FOOTER - MAX 768PX
         background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: bottom center;
-        padding-bottom: var(--safe-area-bottom);
+        padding-bottom: 50px;
     }
     .footer-content-wrapper {display: flex;flex-direction: column;}
    
