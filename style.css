@@ -344,7 +344,8 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
-    height: var(--header-height);
+    padding-top: var(--safe-area-top);
+    height: calc(var(--header-height) + var(--safe-area-top));
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -664,6 +665,7 @@ button:active {
     width: 100%;
     display: flex;
     flex-direction: column;
+    padding-bottom: var(--safe-area-bottom);
     transition: transform var(--transition-base) ease;
     
 }
@@ -3127,11 +3129,12 @@ MOBILE CONFIG - MAX 768PX
     /* HEADER MOBILE */
     .app-header {
         background: var(--bg-footer-violet);
-        height: var(--header-height-mobile);/* no chang */
+        padding-top: var(--safe-area-top);
+        height: calc(var(--header-height-mobile) + var(--safe-area-top));
         width: 100%;border-bottom: none;display: flex;align-items: end;
         border-top-left-radius: var(--radius-lg);border-top-right-radius: var(--radius-lg);
         top: 0;
-        padding-top: var(--safe-area-top);
+        
     }
     
     .header-app-logo svg.icon { display: none; }
@@ -3221,8 +3224,7 @@ APP-PLAYER-FOOTER - MAX 768PX
         background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: bottom center;
-        bottom: 0;
-        padding-bottom: var(--safe-area-bottom);
+        
     }
 
     .footer-content-wrapper {display: flex;flex-direction: column;}
