@@ -3122,13 +3122,13 @@ MOBILE CONFIG - MAX 768PX
 ============================================================================= */
 
 @media screen and (max-width: 768px) {
-
+    body.is-webview .app-header { padding-top: 30px;}
     /* HEADER MOBILE */
     .app-header {
         background: rgba(0, 0, 0, .5);
-z        /*padding-top: calc(var(--safe-area-top) + 20px);*/
+        /*padding-top: calc(var(--safe-area-top) + 20px);*/
         /* Quando estiver dentro do WebView do Android (Aplica o ajuste de 50px) */
-        body.is-webview .app-header { padding-top: 30px;
+        
 
         width: 100%;border-bottom: none;display: flex;align-items: end;
         border-top-left-radius: var(--radius-lg);border-top-right-radius: var(--radius-lg);
