@@ -3124,7 +3124,7 @@ MOBILE CONFIG - MAX 768PX
 
     /* HEADER MOBILE */
     .app-header {
-        background: rgba(0, 0, 0, .8);
+        background: rgb(128 0 255 / 50%);
         height: var(--header-height-mobile);/* no chang */
         padding-top: calc(var(--safe-area-top) + 50px);
         
