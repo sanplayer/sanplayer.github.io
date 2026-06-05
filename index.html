@@ -986,14 +986,16 @@ function baixarAPK() {
       </div>
       
       <!-- OTHERS SCRIPTS -->
-      <script>
-         // Detecta se está rodando dentro do WebView do seu App
-            const isWebView = navigator.userAgent.includes('SanPlayerWebView') || window.AndroidBridge;
+     <script>
+    const isWebView = navigator.userAgent.includes('SanPlayerWebView') || window.AndroidBridge;
 
-            if (isWebView) {
-            document.body.classList.add('is-webview');
-            }
-      </script>
+    if (isWebView) {
+        document.body.classList.add('is-webview');
+        // ALERTA TEMPORÁRIO DE TESTE: Se esse alerta NÃO aparecer na tela do WebView, 
+        // significa que o JS não reconheceu o seu app.
+        alert('WebView Detectado com Sucesso!'); 
+    }
+</script>
       
       <script src="https://www.youtube.com/iframe_api"></script>
       <script type="module" src="/app.js"></script>
