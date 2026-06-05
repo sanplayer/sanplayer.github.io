@@ -66,6 +66,7 @@
     --bg-modal-content: #2c3134;
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
+    --bg-footer: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
     --accent-roxo: #A238FF;
     --accent-gold: #E7CC7F;
     --accent-roxo-dark: #5c119e;
@@ -340,10 +341,6 @@ button:active {
 ============================================================================= */
 .app-header {
     height: var(--header-height);
-    /* sem limite usando max: */
-    /*padding-top: max(20px, env(safe-area-inset-top));*/
-    padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
-
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -354,6 +351,7 @@ button:active {
     top: 0;
     z-index: 100;
     user-select: none;
+    background: green;
 }
 
 .header-logo {
@@ -3120,13 +3118,14 @@ Desvinculado completamente do sistema genérico de modais
 
 
 /* =============================================================================
-HEADER - MAX 768PX
+MOBILE CONFIG - MAX 768PX
 ============================================================================= */
 
 @media screen and (max-width: 768px) {
 
     /* HEADER MOBILE */
     .app-header {
+        background: none;
         height: var(--header-height);
         padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
         width: 100%;
@@ -3249,11 +3248,12 @@ PLAYLIST-ASIDE - MAX 768PX
 APP-PLAYER-FOOTER - MAX 768PX
 ============================================================================= */
     .app-player-footer {
-        background: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
+        background: var(--bg-footer);
         background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: bottom center;
-        padding-bottom: 50px;
+        /*padding-bottom: 50px;*/
+        bottom: var(--safe-area-bottom);
     }
     .footer-content-wrapper {display: flex;flex-direction: column;}
    
@@ -3328,16 +3328,32 @@ APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
  MOBILE LANDSCAPE CONFIG
 ============================================================================= */
 
-@media screen (orientation: landscape) and (max-width: 1024px) {
+@media screen and (orientation: landscape) and (max-width: 1000px) {
+
+
     .app-sidebar {display: none;}
-    .app-header {display: flex;}
-    .app-main-grid {top: 0; padding: 0;}
-    .video-stage { padding: 0 0 5px 0;}
-    .playlist-item { padding: .2rem; gap: 10px;}
+    .app-header {display: none;}
+
+    .app-main-grid { padding-left: var(--safe-area-left); padding-right: var(--safe-area-right);}
+
+    .video-stage { padding: 0; }
+    .video-wrapper {aspect-ratio: 16/9; width: 100%; height: 100%; border-radius: 20px;}
+    .player-embed { width: 100%; height: 130%;}
+    .sidebar-header{display: none;}
+    .playlist-aside { padding-left: var(--safe-area-left); padding-right: var(--safe-area-right); }
+    .playlist-item {padding: 0 0.5rem;}
+
+    .app-player-footer {padding-left: var(--safe-area-left); padding-right: var(--safe-area-right);
+        background: var(--bg-footer)}
+
     .progress-time-labels {font-size: .875rem;}
     .current-details .c-title {font-size: 1rem;}
     .current-details .c-artist {font-size: .875rem;}
     .playlist-info .m-title {font-size: 1rem;}
     .sidebar-header .title-pl { font-size: .9rem;}
     .thumb-mini {width: clamp(2rem, 5vw, 3.5rem);}
+
+
+
+
 }
