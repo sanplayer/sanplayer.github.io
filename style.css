@@ -3129,7 +3129,7 @@ MOBILE CONFIG - MAX 768PX
     .app-header {
         background: rgba(0, 0, 0, .5);
         height: var(--header-height-mobile);/* no chang */
-        padding-top: calc(var(--safe-area-top) + 20px);
+        padding-top: calc(var(--safe-area-top) + 50px);
         
         width: 100%;border-bottom: none;display: flex;align-items: end;
         border-top-left-radius: var(--radius-lg);border-top-right-radius: var(--radius-lg);
