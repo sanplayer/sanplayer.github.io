@@ -499,10 +499,9 @@ button:active {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    /*z-index: var(--main-z-index);*/s
+    /*z-index: var(--main-z-index);*/
     overflow: hidden;
     background: var(--bg-surface);
-    border-bottom: 1px solid red;
 }
 
 .app-sidebar {
@@ -665,7 +664,6 @@ button:active {
     flex-direction: column;
     padding-bottom: calc(var(--safe-area-bottom) + 10px);
     transition: transform var(--transition-base) ease;
-    
 }
 
 .app-player-footer.keyboard-open {
@@ -682,8 +680,8 @@ button:active {
     gap: 0rem;
     padding: var(--progress-padding) 0;
     margin: calc(-1 * var(--progress-padding)) 0;
-    user-select: none;
     -webkit-user-select: none;
+    
 }
 
 .progress-bar {
@@ -698,7 +696,7 @@ button:active {
     outline: none;
     overflow: visible;
     accent-color: var(--footer-accent);
-    --progress: 0%;
+    
     opacity: 1;
     transition: background-size 0.1s ease, opacity 0.2s ease;
     cursor: pointer;
@@ -754,7 +752,7 @@ button:active {
     background: transparent;
     border: none;
     outline: none;
-    height: 40px;
+    height: 30px;
 }
 
 .progress-time-labels {
@@ -3132,7 +3130,7 @@ MOBILE CONFIG - MAX 768PX
 
     /* HEADER MOBILE */
     .app-header {
-        background: var(--bg-footer-violet);
+        background: linear-gradient(180deg,rgba(0, 0, 0, 0.20) 0%, rgba(255, 255, 255, 0) 100%);
         padding-top: var(--safe-area-top);
         width: 100%;border-bottom: none;display: flex;align-items: end;
         border-top-left-radius: var(--radius-lg);border-top-right-radius: var(--radius-lg);
@@ -3169,9 +3167,9 @@ VIDEO - MAX 768PX
 
     .video-stage {
         padding: 0;
-        max-width: 100vw;
+        max-width: 100%;
         flex: 0 1 auto;
-        /*height: auto;*/
+        height: auto;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -3203,24 +3201,13 @@ VIDEO - MAX 768PX
         transform: translate(-50%, -50%);
     }
 
-
-/* =============================================================================
-APP-PLAYER-FOOTER - MAX 768PX
-============================================================================= */
-    .app-player-footer {
-        background: var(--bg-footer-violet);
-        background-size: 100% auto;
-        background-repeat: no-repeat;
+    .app-player-footer {background: var(--bg-footer);
+        background-size: 100% auto; background-repeat: no-repeat;
         background-position: bottom center;
-        
     }
 
     .footer-content-wrapper {display: flex;flex-direction: column;}
    
-
-/* =============================================================================
-APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
-============================================================================= */
     .progress-time-labels{font-size: .875rem}
 
     .footer-block{justify-content: center;}
@@ -3294,31 +3281,68 @@ APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
 }
 
 
-/* =============================================================================
- MOBILE LANDSCAPE CONFIG
-============================================================================= */
-
-@media screen and (orientation: landscape) and (max-width: 1000px) {
 
 
-    .app-sidebar {display: none;}
-    .app-header {display: none;}
+@media screen and (orientation: landscape) and (pointer: coarse) {
 
-    .app-main-grid { padding-left: var(--safe-area-left); padding-right: var(--safe-area-right);}
+    .app-header{display: none;}
 
-    .video-stage { padding: 0; }
-    .video-wrapper {aspect-ratio: 16/9; width: 100%; height: 100%; border-radius: 20px;}
-    .player-embed { width: 100%; height: 130%;}
-    .sidebar-header{display: none;}
+    .app-main-grid{top: 0;border:none}
+
+    .video-stage {padding: 0;max-width: 100%;flex-direction: column;border-radius: none;
+        align-items: center;justify-content: center; overflow-y: visible; }
+    .video-wrapper {aspect-ratio: 16/9;width: 100%;box-shadow: 0;border: none;
+        flex-shrink: 0;background-image: url(icons/cover-vd.webp);
+        background-size: cover;background-repeat: no-repeat; }
+    .player-embed {position: absolute;top: 50%;left: 50%; width: 100%;height: 100%;
+        transform: translate(-50%, -50%);}
+      
+    .overlay-buttons-left{width: auto;flex-direction: column;left: 20px;
+        position: absolute;bottom: 100px;gap: 2px}
+
+    .app-sidebar{display: none;}
+    .playlist-aside{display: none}
+        
+    .app-player-footer{ padding: 20px;
+        background: linear-gradient(0deg,rgba(0, 0, 0, 0.50) 0%, rgba(255, 255, 255, 0) 100%);
+}
+    .progress-time-labels{ color:var(--text-main);}
+    .block-info{ width: 1000%; }
+    .block-controls{background:none;}
+
+
+/*  BARRA DE PROGRESSO */    
+
+.player-progress-area {
+    width: 100%;
+}
+
+.progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0rem;
+    padding: var(--progress-padding) 0;
+    margin: calc(-1 * var(--progress-padding)) 0;
+    -webkit-user-select: none;
+}
+
+.progress-bar {
+
+    background: rgba(255, 255, 255, 0.1);
+    background-image: linear-gradient(to right, var(--accent-roxo) 0%, var(--accent-roxo) 100%);
+    background-repeat: no-repeat;
+    background-size: var(--progress-bar-fill, 0% 100%);
+    outline: none;
+    overflow: visible;
+    accent-color: var(--footer-accent);
+    opacity: 0;
+    transition: background-size 0.1s ease, opacity 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    -webkit-appearance: none;
+    border: none;
+}
+
+
     
-    .progress-time-labels {font-size: .875rem;}
-    .current-details .c-title {font-size: 1rem;}
-    .current-details .c-artist {font-size: .875rem;}
-    .playlist-info .m-title {font-size: 1rem;}
-    .sidebar-header .title-pl { font-size: .9rem;}
-    .thumb-mini {width: clamp(2rem, 5vw, 3.5rem);}
-
-
-
-
 }
