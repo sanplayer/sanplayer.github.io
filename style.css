@@ -3287,7 +3287,7 @@ VIDEO - MAX 768PX
 
     .app-header{display: none;}
 
-    .app-main-grid{top: 0;border:none}
+    .app-main-grid{top: 0;border:none; height: 100%;padding:0;} /*height critico*/
 
     .video-stage {padding: 0;max-width: 100%;flex-direction: column;border-radius: none;
         align-items: center;justify-content: center; overflow-y: visible; }
@@ -3297,15 +3297,15 @@ VIDEO - MAX 768PX
     .player-embed {position: absolute;top: 50%;left: 50%; width: 100%;height: 100%;
         transform: translate(-50%, -50%);}
       
-    .overlay-buttons-left{width: auto;flex-direction: column;left: 20px;
-        position: absolute;bottom: 100px;gap: 2px}
+    .overlay-buttons-left{width: auto;flex-direction: column; padding-left: calc(var(--safe-area-left) + 10px);
+        position: absolute;bottom: 110px;gap: 2px;background: red;}
 
     .app-sidebar{display: none;}
     .playlist-aside{display: none}
         
     .app-player-footer{ padding: 20px;
-        background: linear-gradient(0deg,rgba(0, 0, 0, 0.50) 0%, rgba(255, 255, 255, 0) 100%);
-}
+    /*background: linear-gradient(0deg,rgba(0, 0, 0, 0.18) 0%, rgba(255, 255, 255, 0) 100%);}*/
+    background: transparent;
     .progress-time-labels{ color:var(--text-main);}
     .block-info{ width: 1000%; }
     .block-controls{background:none;}
@@ -3317,17 +3317,11 @@ VIDEO - MAX 768PX
     width: 100%;
 }
 
-.progress {
-    display: flex;
-    flex-direction: column;
-    gap: 0rem;
-    padding: var(--progress-padding) 0;
-    margin: calc(-1 * var(--progress-padding)) 0;
-    -webkit-user-select: none;
-}
-
 .progress-bar {
-
+    width: 100%;
+    appearance: none;
+    height: 3px;
+    border-radius: 999px;
     background: rgba(255, 255, 255, 0.1);
     background-image: linear-gradient(to right, var(--accent-roxo) 0%, var(--accent-roxo) 100%);
     background-repeat: no-repeat;
@@ -3335,13 +3329,15 @@ VIDEO - MAX 768PX
     outline: none;
     overflow: visible;
     accent-color: var(--footer-accent);
-    opacity: 0;
+    --progress: 0%;
+    opacity: 1;
     transition: background-size 0.1s ease, opacity 0.2s ease;
     cursor: pointer;
     position: relative;
     -webkit-appearance: none;
     border: none;
 }
+
 
 
     
