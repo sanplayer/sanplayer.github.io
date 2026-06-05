@@ -67,6 +67,7 @@
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --bg-footer-violet: rgb(128 0 255 / 50%);
+    --bg-footer-pink: #E91E63;
     --bg-footer: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
     --accent-roxo: #A238FF;
     --accent-gold: #E7CC7F;
@@ -498,9 +499,10 @@ button:active {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    z-index: var(--main-z-index);
+    /*z-index: var(--main-z-index);*/s
     overflow: hidden;
     background: var(--bg-surface);
+    border-bottom: 1px solid red;
 }
 
 .app-sidebar {
@@ -589,9 +591,7 @@ button:active {
 }
 
 .playlist-aside h2 {
-    margin-bottom: 1rem;
     font-size: var(--font-mt);
-    opacity: 0.8;
 }
 
 .playlist-item {
@@ -603,7 +603,6 @@ button:active {
     /*nao remover*/
     cursor: pointer;
     transition: background 0.2s;
-    user-select: none;
 }
 
 .playlist-item:hover {
@@ -664,7 +663,7 @@ button:active {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding-bottom: var(--safe-area-bottom);
+    padding-bottom: calc(var(--safe-area-bottom) + 10px);
     transition: transform var(--transition-base) ease;
     
 }
@@ -763,7 +762,7 @@ button:active {
     justify-content: space-between;
     font-size: var(--font-sm);
     font-weight: 500;
-    color: #b0b0c0;
+    color: rgba(255 255, 255, 0.5);
     padding: 0 var(--gap-md);
 }
 
@@ -783,8 +782,6 @@ button:active {
     align-items: center;
     gap: var(--gap-md);
     min-width: 0;
-    margin: 0 0.6rem;
-    width: 50%;
 }
 
 .current-thumb {
@@ -1586,7 +1583,6 @@ button:active {
     align-items: center;
     justify-content: space-between;
     padding: clamp(0.75rem, 2vw, 1.5rem);
-    /*border-bottom: 1px solid var(--border-rgba);*/
     transition: background 0.2s;
     cursor: pointer;
 }
@@ -2291,8 +2287,6 @@ button:active {
     top: 0;
     z-index: 10;
     background: var(--bg-main);
-    padding: 0 0.6rem;
-    user-select: none;
 
 }
 
@@ -3125,6 +3119,17 @@ MOBILE CONFIG - MAX 768PX
 
 @media screen and (max-width: 768px) {
 
+
+    .playlist-aside {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        width: 100%;
+        flex: 1 1 auto;
+        min-height: 0;
+        border-left: none;
+    }
+
     /* HEADER MOBILE */
     .app-header {
         background: var(--bg-footer-violet);
@@ -3198,20 +3203,6 @@ VIDEO - MAX 768PX
         transform: translate(-50%, -50%);
     }
 
-/* =============================================================================
-PLAYLIST-ASIDE - MAX 768PX
-============================================================================= */
-
-    .playlist-aside {
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        width: 100%;
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow-y: auto;
-    }
-
 
 /* =============================================================================
 APP-PLAYER-FOOTER - MAX 768PX
@@ -3230,7 +3221,7 @@ APP-PLAYER-FOOTER - MAX 768PX
 /* =============================================================================
 APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
 ============================================================================= */
-    .progress-time-labels{color: rgba(255 255, 255, 0.5); font-size: .9rem}
+    .progress-time-labels{font-size: .875rem}
 
     .footer-block{justify-content: center;}
    
@@ -3246,7 +3237,17 @@ APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
         animation: shimmer 1.5s infinite;}
 
     .modal.modal-fullscreen {top: var(--header-height-mobile);}
-
+    .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    
+    }
+    
     .app-sidebar {display: none;position: fixed;bottom: 0;left: 0;width: 100%;height: auto;        background: var(--bg-surface);padding: 1rem;z-index: 3000;
         animation: slideUpSidebar 0.3s ease-out forwards;transform: translateY(100%);}
 
@@ -3309,8 +3310,7 @@ APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
     .video-wrapper {aspect-ratio: 16/9; width: 100%; height: 100%; border-radius: 20px;}
     .player-embed { width: 100%; height: 130%;}
     .sidebar-header{display: none;}
-    .playlist-aside { padding-right: calc(var(--safe-area-right) + 5px); }
-    .playlist-item {padding: 0 0.5rem;}
+    
     .progress-time-labels {font-size: .875rem;}
     .current-details .c-title {font-size: 1rem;}
     .current-details .c-artist {font-size: .875rem;}
