@@ -66,6 +66,7 @@
     --bg-modal-content: #2c3134;
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
+    --bg-footer-violet: rgb(128 0 255 / 50%);
     --bg-footer: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
     --accent-roxo: #A238FF;
     --accent-gold: #E7CC7F;
@@ -121,9 +122,11 @@
     --main-z-index: 10;
 
     --safe-area-top: env(safe-area-inset-top, 0px);
-    --safe-area-bottom: env(safe-area-inset-bottom, 50px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-left: env(safe-area-inset-left, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
+
+
     --spacing-sm: 20px;
 
     /* Border Radius System */
@@ -172,6 +175,7 @@
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 html,
@@ -350,8 +354,6 @@ button:active {
     position: sticky;
     top: 0;
     z-index: 100;
-    user-select: none;
-    background: green;
 }
 
 .header-logo {
@@ -663,7 +665,7 @@ button:active {
     display: flex;
     flex-direction: column;
     transition: transform var(--transition-base) ease;
-    padding-bottom: calc(var(--spacing-sm) + var(--safe-area-bottom));
+    
 }
 
 .app-player-footer.keyboard-open {
@@ -3124,17 +3126,14 @@ MOBILE CONFIG - MAX 768PX
 
     /* HEADER MOBILE */
     .app-header {
-        background: rgb(128 0 255 / 50%);
+        background: var(--bg-footer-violet);
         height: var(--header-height-mobile);/* no chang */
-        padding-top: calc(var(--safe-area-top) + 50px);
-        
         width: 100%;border-bottom: none;display: flex;align-items: end;
         border-top-left-radius: var(--radius-lg);border-top-right-radius: var(--radius-lg);
+        top: 0;
+        padding-top: var(--safe-area-top);
     }
     
-body.is-webview .app-header {
-  padding-top: 50px !important; 
-}
     .header-app-logo svg.icon { display: none; }
     .app-header .title-player {display: none;}
     .header-search {display: none; }
@@ -3218,13 +3217,14 @@ PLAYLIST-ASIDE - MAX 768PX
 APP-PLAYER-FOOTER - MAX 768PX
 ============================================================================= */
     .app-player-footer {
-        background: var(--bg-footer);
+        background: var(--bg-footer-violet);
         background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: bottom center;
-        /*padding-bottom: 50px;*/
-        bottom: var(--safe-area-bottom);
+        bottom: 0;
+        padding-bottom: var(--safe-area-bottom);
     }
+
     .footer-content-wrapper {display: flex;flex-direction: column;}
    
 
@@ -3312,10 +3312,6 @@ APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
     .sidebar-header{display: none;}
     .playlist-aside { padding-right: calc(var(--safe-area-right) + 5px); }
     .playlist-item {padding: 0 0.5rem;}
-
-    .app-player-footer {padding-left: var(--safe-area-left); padding-right: var(--safe-area-right);
-        background: var(--bg-footer)}
-
     .progress-time-labels {font-size: .875rem;}
     .current-details .c-title {font-size: 1rem;}
     .current-details .c-artist {font-size: .875rem;}
