@@ -3340,7 +3340,7 @@ APP-PLAYER-FOOTER - BLOCK INFO - MAX 768PX
     .video-wrapper {aspect-ratio: 16/9; width: 100%; height: 100%; border-radius: 20px;}
     .player-embed { width: 100%; height: 130%;}
     .sidebar-header{display: none;}
-    .playlist-aside { right: var(--safe-area-right), 55px; }
+    .playlist-aside { padding-right: var(--safe-area-right), 55px; }
     .playlist-item {padding: 0 0.5rem;}
 
     .app-player-footer {padding-left: var(--safe-area-left); padding-right: var(--safe-area-right);
