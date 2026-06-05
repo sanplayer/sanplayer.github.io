@@ -94,7 +94,7 @@
     --gap-fluid: clamp(0.5rem, 2vw, 1.5rem);
     --gap-lg: clamp(1rem, 3vw, 1.8rem);
     --padding-app: clamp(0.75rem, 2.5vw, 2rem);
-    --header-height: clamp(50px, 10vh, 72px);
+    --header-height: clamp(50px, 10dvh, 72px);
     --header-height-mobile: clamp(30px, 10dvh, 40px);
     --footer-height: clamp(60px, 12vh, 100px);
     --btn-size: clamp(36px, 8vw, 48px);
@@ -3125,57 +3125,23 @@ MOBILE CONFIG - MAX 768PX
 
     /* HEADER MOBILE */
     .app-header {
-        background: none;
-        height: var(--header-height);
-        padding-top: clamp(20px, env(safe-area-inset-top), 9999px);
-        width: 100%;
-        border-bottom: none;
-        display: flex;
-        border-top-left-radius: var(--radius-lg);
-        border-top-right-radius: var(--radius-lg);
-        align-items: end;
+        background: rgba(0, 0, 0, .5);
+        height: var(--header-height-mobile);/* no chang */
+        padding-top: calc(var(--safe-area-top) + 20px);
+        width: 100%;border-bottom: none;display: flex;align-items: end;
+        border-top-left-radius: var(--radius-lg);border-top-right-radius: var(--radius-lg);
     }
-    /*.app-header svg.icon { width: 28px; height:28px; }*/
-    .header-app-logo svg.icon {
-        fill: rgba(255, 255, 255, .2);
-        width: 24px;
-        height: 24px;
-        display: none;
+    .header-app-logo svg.icon { display: none; }
+    .app-header .title-player {display: none;}
+    .header-search {display: none; }
+    .header-search input:focus { background: none;}
+    .header-search.show-search { display: flex !important;position: absolute;
+        left: 0;right: 0; width: 100%;z-index: 1500;max-width: none;margin: 0;
+        gap: 0;top: var(--safe-area-top);
     }
 
-    .app-header .title-player {
-        color: rgba(255, 255, 255, 0.2);
-        font-size: var(--font-md);
-        display: none;
-    }
-
-    /* BARRA DE BUSCA */
-    .header-search {
-        display: none;
-    }
-
-    .header-search input:focus {
-        background: none;
-    }
-
-    .header-search.show-search {
-        display: flex !important;
-        position: absolute;
-        left: 0;
-        right: 0;
-        width: 100%;
-        z-index: 1500;
-        max-width: none;
-        margin: 0;
-        gap: 0;
-        top: var(--safe-area-top);
-    }
-
-    .header-search.show-search form {
-        width: 100%;
-        background: rgba(0, 0, 0, .8);
-        padding: 0.8rem 1rem;
-        border-radius: var(--radius-lg);
+    .header-search.show-search form { width: 100%;background: rgba(0, 0, 0, .8);
+        padding: 0.8rem 1rem; border-radius: var(--radius-lg);
     }
 
 /* =============================================================================
