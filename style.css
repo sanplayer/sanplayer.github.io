@@ -345,7 +345,6 @@ button:active {
 ============================================================================= */
 .app-header {
     padding-top: var(--safe-area-top);
-    height: calc(var(--header-height) + var(--safe-area-top));
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -3130,11 +3129,9 @@ MOBILE CONFIG - MAX 768PX
     .app-header {
         background: var(--bg-footer-violet);
         padding-top: var(--safe-area-top);
-        height: calc(var(--header-height-mobile) + var(--safe-area-top));
         width: 100%;border-bottom: none;display: flex;align-items: end;
         border-top-left-radius: var(--radius-lg);border-top-right-radius: var(--radius-lg);
         top: 0;
-        
     }
     
     .header-app-logo svg.icon { display: none; }
