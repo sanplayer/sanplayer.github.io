@@ -327,11 +327,31 @@ function findArtistVideos(artistName) {
 // ============================================================================
 
 /**
- * Build YouTube thumbnail URL
+ * Busca de forma inteligente e dinâmica a maior miniatura válida do YouTube
+ * Evita caminhos fixos (coisa do passado) e previne erros 404 no WhatsApp
  */
-function getYouTubeThumbnail(videoId) {
-    // Usar highest quality disponível
-    return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+async function getYouTubeThumbnail(videoId) {
+    // Hierarquia oficial de resoluções do YouTube (do maior para o menor)
+    const resolutions = ['maxresdefault', 'sddefault', 'hqdefault', 'mqdefault', 'default'];
+
+    for (const res of resolutions) {
+        const url = `https://i.ytimg.com/vi/${videoId}/${res}.jpg`;
+        try {
+            // Método HEAD baixa apenas os metadados da imagem em milissegundos
+            const response = await fetch(url, { method: 'HEAD' });
+            if (response.ok) {
+                console.log(`[YouTube] Miniatura encontrada em resolução: ${res}`);
+                return url; // Encontrou a maior disponível! Retorna e encerra.
+            }
+        } catch (error) {
+            // Silencia erros de rede e avança para a próxima resolução
+            console.log(`[YouTube] Resolução ${res} indisponível, tentando próxima...`);
+        }
+    }
+
+    // Fallback absoluto caso o YouTube falhe bizarramente
+    console.warn(`[YouTube] Nenhuma resolução disponível para ${videoId}, usando fallback`);
+    return 'https://sanplayer.github.io/icons/og-image.webp';
 }
 
 /**
@@ -374,9 +394,9 @@ function getArtistCoverUrl(artistName) {
 }
 
 /**
- * Gera OpenGraph baseada em query params
+ * Gera OpenGraph baseada em query params (Atualizada para Async/Await)
  */
-function generateOpenGraph(videoId, playlistId, artistId) {
+async function generateOpenGraph(videoId, playlistId, artistId) {
     const baseUrl = 'https://sanplayer.github.io';
     const defaultOG = {
         title: 'SanPlayer',
@@ -390,10 +410,12 @@ function generateOpenGraph(videoId, playlistId, artistId) {
         if (videoId) {
             const found = findVideoById(videoId);
             if (found) {
+                // ADICIONADO O AWAIT AQUI PARA PEGAR A THUMB CORRETA
+                const thumbnail = await getYouTubeThumbnail(videoId);
                 return {
                     title: `${found.video.title} • ${found.video.artist}`,
                     description: `Escutando: ${found.video.title} - ${found.video.artist} no SanPlayer`,
-                    image: getYouTubeThumbnail(videoId),
+                    image: thumbnail,
                     url: `${baseUrl}/?videoId=${videoId}`,
                 };
             }
@@ -501,7 +523,7 @@ function escapeHtml(text) {
 // ============================================================================
 
 // 🔥 ROTA PRINCIPAL: GET /index.html com OG dinâmica + Redirect Inteligente
-app.get(['/', '/index.html', '/index.htm'], (req, res) => {
+app.get(['/', '/index.html', '/index.htm'], async (req, res) => {
     try {
         // ============================================================
         // FASE 2: DETECÇÃO + REDIRECT INTELIGENTE
@@ -531,7 +553,7 @@ app.get(['/', '/index.html', '/index.htm'], (req, res) => {
         console.log(`[Server] GET ${req.path} - params:`, { videoId, playlistId, artistId });
 
         // Gerar OG dinâmica
-        const og = generateOpenGraph(videoId, playlistId, artistId);
+        const og = await generateOpenGraph(videoId, playlistId, artistId);
         console.log(`[Server] OG gerada:`, og);
 
         // Ler HTML original
