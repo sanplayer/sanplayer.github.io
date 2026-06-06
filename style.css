@@ -66,7 +66,6 @@
     --bg-modal-content: #2c3134;
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
-    --bg-footer-violet: rgb(128 0 255 / 50%);
     --bg-footer-pink: #E91E63;
     --bg-footer: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
     --accent-roxo: #A238FF;
@@ -229,25 +228,6 @@ body.is-routing {
     opacity: 0.6;
 }
 
-/* class temp disable for donate text*/
-.button-donate {
-    cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    background: transparent;
-    justify-content: center;
-    display: flex;
-    align-items: center;
-    border-radius: 25px;
-    color: inherit;
-    transition: background 0.2s ease;
-    aspect-ratio: none;
-    padding: 0 20px;
-    gap: 5px;
-    height: 30px;
-    width: 120px;
-    min-width: var(--touch-target);
-    min-height: var(--touch-target);
-}
 
 button {
     cursor: pointer;
@@ -489,19 +469,16 @@ button:active {
 ============================================================================= */
 .app-main-grid {
     width: 100%;
-    height: auto;
     box-sizing: border-box;
     position: fixed;
     top: var(--header-height);
     bottom: var(--footer-height);
     left: 0;
     right: 0;
-    display: flex;
+    display: flex;    
     flex-direction: row;
     justify-content: space-between;
-    /*z-index: var(--main-z-index);*/
     overflow: hidden;
-    background: var(--bg-surface);
 }
 
 .app-sidebar {
@@ -510,6 +487,7 @@ button:active {
     flex: 0 0 clamp(220px, 18vw, 260px);
     height: 100%;
     overflow-y: auto;
+    border-right: 1px solid var(--border-rgba);
 }
 
 .sidebar-nav li a {
@@ -550,14 +528,11 @@ button:active {
     border-radius: var(--radius-lg);
     position: relative;
     overflow: hidden;
-    /*box-shadow: var(--shadow-lg);*/
-    /*border: 1px solid var(--border-video);*/
 }
 
 /* DESKTOP  */
 .player-embed {
     aspect-ratio: 16 / 9;
-    /*border-radius: var(--radius-lg);*/
     position: absolute;
     top: 50%;
     left: 50%;
@@ -585,8 +560,8 @@ button:active {
     padding: 0 0.25rem;
     border-left: 1px solid var(--border-rgba);
     flex: 0 0 clamp(260px, 28vw, 380px);
-    height: 100%;
     overflow-y: auto;
+
 }
 
 .playlist-aside h2 {
@@ -695,7 +670,6 @@ button:active {
     outline: none;
     overflow: visible;
     accent-color: var(--footer-accent);
-
     opacity: 1;
     transition: background-size 0.1s ease, opacity 0.2s ease;
     cursor: pointer;
@@ -835,7 +809,6 @@ button:active {
 .current-actions {
     margin-left: auto;
     display: flex;
-    /*gap: var(--gap-lg);*/
     flex-shrink: 0;
 }
 
@@ -3227,12 +3200,12 @@ VIDEO - MAX 768PX
         transform: translate(-50%, -50%);
     }
 
-    .app-player-footer {
+   /* .app-player-footer {
         background: var(--bg-footer);
         background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: bottom center;
-    }
+    } */
 
     .footer-content-wrapper {
         display: flex;
@@ -3407,6 +3380,7 @@ VIDEO - MAX 768PX
     .video-wrapper {
         aspect-ratio: 16/9;
         width: 100%;
+        height: 100%;
         box-shadow: 0;
         border: none;
         flex-shrink: 0;
