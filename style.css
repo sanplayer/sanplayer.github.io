@@ -3451,7 +3451,7 @@ VIDEO - MAX 768PX
         height: 3px;
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.1);
-        background-image: linear-gradient(to right, var(--accent-roxo) 0%, var(--accent-roxo) 100%);
+        background-image: linear-gradient(to right, var(--bg-main) 0%, var(--bg-main) 100%);
         background-repeat: no-repeat;
         background-size: var(--progress-bar-fill, 0% 100%);
         outline: none;
