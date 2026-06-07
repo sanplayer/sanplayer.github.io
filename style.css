@@ -3217,9 +3217,8 @@ VIDEO - MAX 768PX
 
     .progress-time-labels {
         font-size: .875rem;
-        background: #1f1f1f;
     }
-
+    
     .footer-block {
         justify-content: center;
     }
@@ -3230,7 +3229,6 @@ VIDEO - MAX 768PX
         flex: 1;
         display: flex;
         align-items: center;
-        background: #373735;
     }
 
     .current-actions {
@@ -3240,7 +3238,6 @@ VIDEO - MAX 768PX
         flex-shrink: 0;
     }
     .block-controls {
-        background: #1E1F20;
         padding-top: 10px;
     }
     .block-controls svg.icon {
