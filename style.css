@@ -748,7 +748,6 @@ button:active {
     flex: 1;
     display: flex;
     align-items: center;
-
 }
 
 .block-info {
@@ -756,8 +755,8 @@ button:active {
     align-items: center;
     gap: var(--gap-md);
     min-width: 0;
-    padding-left: calc(var(--safe-area-left) + 15px);
-    padding-right: calc(var(--safe-area-right) + 15px);
+    padding-left: calc(var(--safe-area-left) + 10px);
+    padding-right: calc(var(--safe-area-right) + 10px);
     
 }
 
@@ -3242,6 +3241,7 @@ VIDEO - MAX 768PX
     }
     .block-controls {
         background: #1E1F20;
+        padding-top: 10px;
     }
     .block-controls svg.icon {
         width: 2rem;
