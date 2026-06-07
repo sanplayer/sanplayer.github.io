@@ -3238,7 +3238,9 @@ VIDEO - MAX 768PX
         gap: .5rem;
         flex-shrink: 0;
     }
-
+    .block-controls {
+        background: #1E1F20;
+    }
     .block-controls svg.icon {
         width: 2rem;
         height: 2rem;
