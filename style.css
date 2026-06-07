@@ -2841,16 +2841,16 @@ animation: float 2s ease-in-out infinite;
     justify-content: center;
 }
 
-.modal-content {
+.modal-content {    
     background: var(--bg-modal);
     width: 100%;
-    height: auto;
     max-height: 100%;
-    padding-bottom: var(--header-height-mobile);
     overflow-y: auto;
     animation: bottomSheetContentOpen 0.8s ease-out forwards;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
+    position: fixed;
+    padding-bottom: calc(var(--safe-area-bottom) + 50px);
 }
 
 /* Bottom Sheet Content: Padding aumentado para input acima do teclado */
