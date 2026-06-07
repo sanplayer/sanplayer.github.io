@@ -2995,7 +2995,7 @@ Desvinculado completamente do sistema genérico de modais
 .input-modal-content {
     background: var(--bg-modal);
     width: 100%;
-    height: auto;
+    height: 100%;
     max-height: 65%;
     padding-bottom: var(--keyboard-offset, 0px);
     overflow-y: auto;
