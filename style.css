@@ -3406,66 +3406,30 @@ VIDEO - MAX 768PX
     .overlay-buttons-left {
         padding-top: var(--safe-area-top);
         padding-left: calc(var(--safe-area-left) + 15px);
-        left: 0;
-        top: 0;
-        flex-direction: column;
-        height: 100%;
-        position: fixed;
-        gap: 2px;
-    }
+        left: 0; top: 0; flex-direction: column;
+        height: 100%; position: fixed; gap: 2px; }
 
-    .app-sidebar {
-        display: none;
-    }
-
-    .playlist-aside {
-        display: none
-    }
-
+    .app-sidebar {display: none;}
+    .playlist-aside {display: none}
+    
     .app-player-footer {
-        
-        background: transparent;
-        padding-left: var(--safe-area-left);
-        padding-right: var(--safe-area-right);
-    }
+        background:linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+        padding-left: var(--safe-area-left); padding-right: var(--safe-area-right);  }
 
-    .progress-time-labels {
-        color: var(--text-main);
-    }
+    .block-info { width: 100%; }
+    .block-controls {background: none;}
+    
+    .player-progress-area { width: 100%;}
+    .progress-time-labels { color: var(--text-main); }
 
-    .block-info {
-        width: 100%;
-    }
-
-    .block-controls {
-        background: none;
-    }
-
-/* BARRA DE PROGRESSO */
-    .player-progress-area {
-        width: 100%;
-    }
-
-    .progress-bar {
-        width: 100%;
-        appearance: none;
-        height: 3px;
-        border-radius: 999px;
+    .progress-bar { width: 100%; ppearance: none; height: 3px; border-radius: 999px;
         background: rgba(255, 255, 255, 0.1);
         background-image: linear-gradient(to right, var(--text-main) 0%, var(--text-main) 100%);
-        background-repeat: no-repeat;
-        background-size: var(--progress-bar-fill, 0% 100%);
-        outline: none;
-        overflow: visible;
-        accent-color: var(--footer-accent);
+        background-repeat: no-repeat; background-size: var(--progress-bar-fill, 0% 100%);
+        outline: none; overflow: visible;accent-color: var(--footer-accent);
         --progress: 0%;
-        opacity: 1;
-        transition: background-size 0.1s ease, opacity 0.2s ease;
-        cursor: pointer;
-        position: relative;
-        -webkit-appearance: none;
-        border: none;
-    }
+        opacity: 1; transition: background-size 0.1s ease, opacity 0.2s ease;
+        cursor: pointer; position: relative; -webkit-appearance: none; border: none; }
 
     .btn-play-pause {border: 2px solid rgba(255,255,255,0.2);background: rgba(0, 0, 0, 0.1);}
     .btn-play-pause:hover {background: rgba(0,0,0,0.1)}
