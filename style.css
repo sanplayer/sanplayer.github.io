@@ -67,7 +67,7 @@
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --bg-footer-pink: #E91E63;
-    --bg-footer: radial-gradient(circle, rgba(95, 22, 184, 0.5) 0%, rgba(0, 0, 0, 0.9) 100%);
+    --bg-footer: radial-gradient(circle, rgb(43 16 91) 0%, rgba(0, 0, 0, 0.95) 100%);
     --accent-roxo: #A238FF;
     --accent-gold: #E7CC7F;
     --accent-roxo-dark: #5c119e;
