@@ -3282,26 +3282,25 @@ VIDEO - MAX 768PX
         transition: background 0.2s;
     }
 
-       .app-sidebar {
-        display: none;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: auto;
-        background: var(--bg-surface);
-        padding: 1rem;
+    .app-sidebar {
+    display: none;
+    position: fixed;
+    bottom: var(--footer-height);
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+    height: auto;
     }
 
     .app-sidebar.show {
-        display: flex;
-        flex-direction: column;
-        animation: slideUpSidebarShow 0.8s ease-out forwards;
-        transform: translateY(0);
-        background: var(--bg-modal);
-        z-index: 1000;
-        border-top-left-radius: var(--radius-lg);
-        border-top-right-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    animation: slideUpSidebarShow 0.8s ease-out forwards;
+    transform: translateY(0);
+    background: var(--bg-modal);
+    z-index: 1000;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
     }
 
     @keyframes slideUpSidebarShow {
