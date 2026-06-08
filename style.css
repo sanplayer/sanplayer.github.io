@@ -3260,7 +3260,7 @@ VIDEO - MAX 768PX
         position: sticky;
         padding: 0.55rem;
         /*background: #131314;*/
-        border-bottom: rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
     .sidebar-nav {
