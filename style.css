@@ -3147,10 +3147,10 @@ MOBILE CONFIG - MAX 768PX
     }
 
     .header-search.show-search form {
-        width: 100%;
-        background: rgba(0, 0, 0, .8);
-        padding: 0.8rem 1rem;
-        border-radius: var(--radius-lg);
+    width: 100%;
+    background: rgba(0, 0, 0, .8);
+    padding: 1rem;
+    position: fixed;
     }
 
     /* =============================================================================
