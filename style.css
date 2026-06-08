@@ -96,7 +96,7 @@
     --gap-lg: clamp(1rem, 3vw, 1.8rem);
     --padding-app: clamp(0.75rem, 2.5vw, 2rem);
     --header-height: clamp(50px, 10dvh, 72px);
-    --header-height-mobile: clamp(30px, 10dvh, 40px);
+    --header-height-mobile: clamp(50px, 10dvh, 60px);
     --footer-height: clamp(60px, 13vh, 100px);
     --btn-size: clamp(36px, 8vw, 48px);
     --icon-size: clamp(1.25rem, 3vw, 1.8rem);
@@ -3108,14 +3108,13 @@ MOBILE CONFIG - MAX 768PX
    
     /* HEADER MOBILE */
     .app-header {
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0.20) 0%, rgba(255, 255, 255, 0) 100%);
-        width: 100%;
-        border-bottom: none;
-        display: flex;
-        align-items: end;
-        border-top-left-radius: var(--radius-lg);
-        border-top-right-radius: var(--radius-lg);
-        top: 0;
+    width: 100%;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    height: var(--header-height-mobile);
+    top: var(--safe-area-top);
+    padding: 0;
     }
 
     .header-app-logo svg.icon {
