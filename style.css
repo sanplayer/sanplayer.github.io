@@ -571,7 +571,7 @@ button:active {
     display: flex;
     gap: var(--gap-md);
     align-items: center;
-    padding: var(--gap-sm) clamp(0.2rem, 0.5vw, 0.5rem);
+    padding: var(--gap-sm);
     border-bottom: 1px solid var(--border-rgba);
     /*nao remover*/
     cursor: pointer;
@@ -3105,7 +3105,7 @@ MOBILE CONFIG - MAX 768PX
         min-height: 0;
         border-left: none;
     }
-
+   
     /* HEADER MOBILE */
     .app-header {
         background: linear-gradient(180deg, rgba(0, 0, 0, 0.20) 0%, rgba(255, 255, 255, 0) 100%);
@@ -3254,16 +3254,13 @@ VIDEO - MAX 768PX
     .modal.modal-fullscreen {
         top: var(--header-height-mobile);
     }
-
+    
     .sidebar-header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
         position: sticky;
-        top: 0;
-        z-index: 10;
-
+        padding: 0.55rem;
+        background: #131314;
     }
 
     .sidebar-nav {
