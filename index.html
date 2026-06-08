@@ -58,7 +58,7 @@
         background-image: url(./assets/splash-wide.webp);
         background-size: cover;
         background-repeat: no-repeat;
-        background-color: var(--bg-gate);
+        background-color: #211a5f;
         color: var(--text-main);
         z-index: 999999; /* Fica por cima de absolutamente tudo */
         display: flex;
@@ -68,8 +68,10 @@
     }
     @media (orientation: portrait) and (max-width: 768px){
          #sanplayer-gate {
-            justify-content: center;
-            background-image: url(./assets/splash.webp);
+    justify-content: center;
+    background-image: url(./assets/splash-wide.webp);
+    background-position-x: center;
+    background-size: contain;
          }
     }
     @media (orientation: landscape) and (max-width: 900px){
