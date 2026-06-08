@@ -412,6 +412,7 @@ button:active {
     display: flex;
     align-items: center;
     color: var(--text-main);
+    padding: 0 .65rem;
 }
 
 .btn-search-mobile {
@@ -3114,7 +3115,7 @@ MOBILE CONFIG - MAX 768PX
     align-items: center;
     height: var(--header-height-mobile);
     top: var(--safe-area-top);
-    padding: 0;
+    padding: 0 .65rem;
     }
 
     .header-app-logo svg.icon {
