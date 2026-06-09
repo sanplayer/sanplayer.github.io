@@ -1,67 +1,17 @@
 /* =============================================================================
 1. TIPOGRAFIA
 ============================================================================= */
-/* exo-2-regular - latin */
-@font-face {
-    font-display: swap;
-    font-family: 'Exo 2';
-    font-style: normal;
-    font-weight: 400;
-    src: url('/fonts/exo-2-v26-latin-regular.woff2') format('woff2');
-}
-
-/* exo-2-600 - latin */
-@font-face {
-    font-display: swap;
-    font-family: 'Exo 2';
-    font-style: normal;
-    font-weight: 600;
-    src: url('/fonts/exo-2-v26-latin-600.woff2') format('woff2');
-}
-
-/* FONTE INTER */
-@font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('/fonts/inter-400.woff2') format('woff2');
-}
 
 @font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: url('/fonts/inter-500.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 600;
-    font-display: swap;
-    src: url('/fonts/inter-600.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('/fonts/inter-700.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 800;
-    font-display: swap;
-    src: url('/fonts/inter-800.woff2') format('woff2');
+  font-display: swap;
+  font-family: 'Roboto Flex';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/roboto-flex-v30-latin-regular.woff2') format('woff2');
 }
 
 :root {
-    --bg-main: #000000;
+    --bg-main: #070708;
     --bg-modal: #181c1f;
     --bg-modal-content: #2c3134;
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
@@ -96,8 +46,11 @@
     --gap-lg: clamp(1rem, 3vw, 1.8rem);
     --padding-app: clamp(0.75rem, 2.5vw, 2rem);
     --header-height: clamp(50px, 10dvh, 72px);
-    --header-height-mobile: clamp(50px, 10dvh, 60px);
-    --footer-height: clamp(60px, 13vh, 100px);
+    --header-height-mobile: clamp(40px, 10dvh, 50px);
+    /* FOOTER */
+    --footer-height: clamp(90px, 13vh, 100px);
+    --footer-height-mobile: clamp(100px, 15vh, 150px);
+
     --btn-size: clamp(36px, 8vw, 48px);
     --icon-size: clamp(1.25rem, 3vw, 1.8rem);
     --icon-size-main: clamp(1.75rem, 5vw, 2.25rem);
@@ -184,7 +137,7 @@ body {
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Roboto Flex', sans-serif;
     background: var(--bg-main);
     background-attachment: fixed;
     color: var(--text-main);
@@ -325,6 +278,7 @@ button:active {
 4. HEADER
 ============================================================================= */
 .app-header {
+    height: var(--header-height);
     padding-top: var(--safe-area-top);
     display: flex;
     align-items: center;
@@ -412,7 +366,6 @@ button:active {
     display: flex;
     align-items: center;
     color: var(--text-main);
-    padding: 0 .65rem;
 }
 
 .btn-search-mobile {
@@ -421,7 +374,6 @@ button:active {
 
 .profile-avatar {
     border-radius: 50%;
-    border: 1px solid var(--border-rgba);
     cursor: pointer;
     color: var(--text-main);
 }
@@ -480,6 +432,7 @@ button:active {
     flex-direction: row;
     justify-content: space-between;
     overflow: hidden;
+    background: #131314;
 }
 
 .app-sidebar {
@@ -557,10 +510,11 @@ button:active {
 }
 
 .playlist-aside {
-    padding: 0 0.25rem;
+    padding: 0;
     border-left: 1px solid var(--border-rgba);
     flex: 0 0 clamp(260px, 28vw, 380px);
     overflow-y: auto;
+    
 
 }
 
@@ -637,10 +591,11 @@ button:active {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding-bottom: calc(var(--safe-area-bottom) + 10px);
     padding-left: var(--safe-area-left);
     padding-right: var(--safe-area-right);
+    padding-bottom: calc(var(--safe-area-bottom) + 10px);
     transition: transform var(--transition-base) ease;
+    background: none;
 }
 
 .app-player-footer.keyboard-open {
@@ -816,6 +771,7 @@ button:active {
     margin-left: auto;
     display: flex;
     flex-shrink: 0;
+    gap: .5rem;
 }
 
 .reply {
@@ -833,7 +789,6 @@ button:active {
 }
 
 .btn-play-pause {
-    background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -841,14 +796,15 @@ button:active {
     place-items: center;
     aspect-ratio: 1 / 1;
     transition: background 0.2s ease;
+    border: 2px solid var(--text-main);
 }
 
 .btn-play-pause:hover {
-    background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
+    background: transparent;
 }
 
 .btn-play-pause:active {
-    background-image: linear-gradient(0deg, var(--accent-roxo-dark) 35%, var(--accent-roxo) 100%);
+    background: transparent;
 }
 
 
@@ -2261,7 +2217,9 @@ button:active {
     gap: 1rem;
     position: sticky;
     top: 0;
-    z-index: 10;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    height: var(--header-height-mobile);
+    padding: 0 1rem;
     background: var(--bg-main);
 
 }
@@ -3105,6 +3063,7 @@ MOBILE CONFIG - MAX 768PX
         flex: 1 1 auto;
         min-height: 0;
         border-left: none;
+        background: var(--bg-modal);
     }
    
     /* HEADER MOBILE */
@@ -3115,7 +3074,7 @@ MOBILE CONFIG - MAX 768PX
     align-items: center;
     height: var(--header-height-mobile);
     top: var(--safe-area-top);
-    padding: 0 .65rem;
+    padding: 0;
     }
 
     .header-app-logo svg.icon {
@@ -3164,9 +3123,14 @@ VIDEO - MAX 768PX
     .app-main-grid {
         display: flex;
         flex-direction: column;
+        position: fixed;
         top: 0;
+        bottom: var(--footer-height);
+        left: 0;
+        right: 0;
         padding: 0;
         background: var(--bg-main);
+        z-index: 1;
     }
 
     .video-stage {
@@ -3186,7 +3150,10 @@ VIDEO - MAX 768PX
         width: 100%;
         box-shadow: 0;
         border: none;
-        border-radius: var(--radius-mobile);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: var(--radius-mobile);
+        border-top-right-radius: var(--radius-mobile);
         flex-shrink: 0;
         background-image: url(icons/cover-vd.webp);
         background-size: cover;
@@ -3203,12 +3170,6 @@ VIDEO - MAX 768PX
         transform: translate(-50%, -50%);
     }
 
-   .app-player-footer {
-        background: var(--bg-footer);
-        background-size: 100% auto;
-        background-repeat: no-repeat;
-        background-position: bottom center;
-    }
 
     .footer-content-wrapper {
         display: flex;
@@ -3260,8 +3221,14 @@ VIDEO - MAX 768PX
         align-items: center;
         position: sticky;
         padding: 0.55rem;
-        /*background: #131314;*/
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+        flex: 0 0 auto;
+
+    }
+
+    .playlist-items {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        min-height: 0;
     }
 
     .sidebar-nav {
@@ -3284,22 +3251,29 @@ VIDEO - MAX 768PX
     .app-sidebar {
     display: none;
     position: fixed;
-    bottom: var(--footer-height);
+    bottom: 0;
     left: 0;
     width: 100%;
     padding: 1rem;
     height: auto;
+    border: none;
+    
+    }
+
+    .modal-scrim {
+        z-index: 500;
     }
 
     .app-sidebar.show {
     display: flex;
     flex-direction: column;
     animation: slideUpSidebarShow 0.8s ease-out forwards;
-    transform: translateY(0);
+    /*transform: translateY(0);*/
     background: var(--bg-modal);
     z-index: 1000;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
+    padding-bottom: calc(var(--safe-area-bottom) + 20px);
     }
 
     @keyframes slideUpSidebarShow {
@@ -3346,6 +3320,7 @@ VIDEO - MAX 768PX
         transform: translateY(var(--keyboard-offset, 0px));
         transition: transform 0.25s ease;
     }
+ 
 }
 
 
@@ -3417,10 +3392,9 @@ VIDEO - MAX 768PX
     }
 
     .app-player-footer {
-        
-        background: transparent;
         padding-left: var(--safe-area-left);
         padding-right: var(--safe-area-right);
+        z-index: 10 !important;
     }
 
     .progress-time-labels {
