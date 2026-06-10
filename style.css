@@ -795,7 +795,7 @@ button:active {
     place-items: center;
     aspect-ratio: 1 / 1;
     transition: background 0.2s ease;
-    border: 2px solid var(--text-main);
+    border: 2px solid var(--accent-roxo-dark;
 }
 
 .btn-play-pause:hover {
