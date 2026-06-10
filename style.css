@@ -3373,14 +3373,16 @@ LANDSCAPE CONFIG
     }
 
     .overlay-buttons-left {
-        padding-top: var(--safe-area-top);
-        padding-left: calc(var(--safe-area-left) + 15px);
-        left: 0;
+        padding-top: calc(var(--safe-area-top) + 10px);
+        padding-left: calc(var(--safe-area-left) + 10px);
+        padding-right: calc(var(--safe-area-right) + 10px);
+        padding-bottom: var(--safe-area-bottom);
+        right: 0;
         top: 0;
         flex-direction: column;
+        justify-content: flex-start;
         height: 100%;
         position: fixed;
-        gap: 2px;
     }
 
     .app-sidebar {
