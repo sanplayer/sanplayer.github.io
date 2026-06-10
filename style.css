@@ -23,7 +23,7 @@
     --accent-roxo-dark: #5c119e;
     --text-main: #EEF1F6;
     --text-dim: #C1C7CE;
-    --border-rgba: rgba(255, 255, 255, 0.1);
+    --border-rgba: rgba(255, 255, 255, 0.05);
     --border-video: #1a1a1a;
     --gradient-top: #1f1f1f;
     --gradient-bottom: #070707;
@@ -432,7 +432,6 @@ button:active {
     flex-direction: row;
     justify-content: space-between;
     overflow: hidden;
-    background: #131314;
 }
 
 .app-sidebar {
@@ -3063,7 +3062,7 @@ MOBILE CONFIG - MAX 768PX
         flex: 1 1 auto;
         min-height: 0;
         border-left: none;
-        background: var(--bg-modal);
+        background: var(--bg-surface);
     }
    
     /* HEADER MOBILE */
@@ -3129,7 +3128,6 @@ VIDEO - MAX 768PX
         left: 0;
         right: 0;
         padding: 0;
-        background: var(--bg-main);
         z-index: 1;
     }
 
