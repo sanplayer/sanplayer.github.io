@@ -23,7 +23,7 @@
     --accent-roxo-dark: #5c119e;
     --text-main: #EEF1F6;
     --text-dim: #C1C7CE;
-    --border-rgba: rgba(255, 255, 255, 0.05);
+    --border-rgba: rgba(255, 255, 255, 0.1);
     --border-video: #1a1a1a;
     --gradient-top: #1f1f1f;
     --gradient-bottom: #070707;
@@ -795,7 +795,7 @@ button:active {
     place-items: center;
     aspect-ratio: 1 / 1;
     transition: background 0.2s ease;
-    border: 2px solid var(--accent-roxo-dark;
+    border: 2px solid var(--accent-roxo-dark);
 }
 
 .btn-play-pause:hover {
