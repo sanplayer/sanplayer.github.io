@@ -2814,7 +2814,7 @@ MODAL CONTENT - ESTRUTURA ÚNICA COM PADDING + SAFE AREA
     position: fixed;
     /* ✅ PADDING MÍNIMO DE 10px EM TODAS AS DIREÇÕES + SAFE AREA */
     padding: 20px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(var(--safe-area-bottom) +10px));
     /* ✅ ANIMAÇÃO ACELERADA POR HARDWARE: transform: translateY */
     transform: translateY(100%);
     opacity: 0;
@@ -2907,7 +2907,7 @@ INPUT MODAL - SISTEMA INDEPENDENTE (createPlaylistModal, editPlaylistModal)
     transform: translateY(100%);
     opacity: 0;
     padding: 10px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(var(--safe-area-bottom) + 10px);
 }
 
 .input-modal.show .input-modal-content {
@@ -3000,7 +3000,7 @@ BOTTOM SHEET CONTENT OVERRIDE
 
 /* Bottom Sheet Content: Padding aumentado para input acima do teclado */
 .modal.modal-bottom-sheet .modal-content {
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px));
+    padding-bottom: calc(var(--safe-area-bottom) + var(--keyboard-offset, 0px));
     transition: transform 0.35s cubic-bezier(0.25, 0, 0.46, 1), opacity 0.35s cubic-bezier(0.25, 0, 0.46, 1), padding-bottom 0.2s ease-out;
 }
 
