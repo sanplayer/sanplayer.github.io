@@ -2287,8 +2287,8 @@ function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
     }
     
     // Esperar a animação terminar
-    // Input modals: 0.3s | Modais genéricos: 0.8s → usar 0.85s como máximo
-    const animationDuration = modal.classList.contains('input-modal') ? 350 : 850;
+    // Input modals: 0.3s | Modais genéricos: 0.35s (CSS transition) → usar 400ms como máximo
+    const animationDuration = modal.classList.contains('input-modal') ? 400 : 400;
     setTimeout(() => {
         modal.classList.remove('show', 'closing');
         if (scrim) {
@@ -2303,6 +2303,21 @@ function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
         }
     }, animationDuration);
 }
+
+// ============================================================================
+// 🏗️ EXPOR FUNÇÕES PARA ONCLICK NO HTML (Módulo ES6)
+// ============================================================================
+// O app.js é carregado como type="module", então funções não são globais.
+// Precisamos expor explicitamente as funções chamadas via onclick no HTML.
+window.closeModalWithAnimation = closeModalWithAnimation;
+window.closePlaylistsModal = closePlaylistsModal;
+window.closeArtistsModal = closeArtistsModal;
+window.closeSearchModal = closeSearchModal;
+window.closeCreatePlaylistModal = closeCreatePlaylistModal;
+window.closeEditPlaylistModal = closeEditPlaylistModal;
+window.closeUserMenuModal = closeUserMenuModal;
+window.closeUserPlaylistsModal = closeUserPlaylistsModal;
+window.closeItemOptionsModal = closeItemOptionsModal;
 
 async function initApp() {
     // 🔒 Proteger contra múltiplas inicializações
@@ -4371,6 +4386,13 @@ function closeArtistsModal() {
     closeModalWithAnimation('artistsModal');
 }
 
+function closeSearchModal() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+    
+    closeModalWithAnimation('searchModal');
+}
+
 // ----------------------
 // Gestão de Playlists do Usuário
 // ----------------------
@@ -4385,6 +4407,10 @@ function closeCreatePlaylistModal() {
     closeModalWithAnimation('createPlaylistModal', () => {
         document.getElementById('createPlaylistForm').reset();
     });
+}
+
+function closeEditPlaylistModal() {
+    closeModalWithAnimation('editPlaylistModal');
 }
 
 function getUserPlaylists() {
@@ -6921,8 +6947,6 @@ function setupEventListeners() {
         openPlaylistsModal();
     });
     
-    document.getElementById('closePlaylistModal').addEventListener('click', closePlaylistsModal);
-    
     document.getElementById('playlistModal').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) {
             closePlaylistsModal();
@@ -6934,8 +6958,6 @@ function setupEventListeners() {
         e.preventDefault();
         openArtistsModal();
     });
-    
-    document.getElementById('closeArtistsModal').addEventListener('click', closeArtistsModal);
     
     document.getElementById('artistsModal').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) {
@@ -6971,11 +6993,6 @@ function setupEventListeners() {
         });
     }
     
-    // Modal de busca
-    document.getElementById('closeSearchModal').addEventListener('click', () => {
-        closeModalWithAnimation('searchModal');
-    });
-
     document.getElementById('searchModal').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) {
             closeModalWithAnimation('searchModal');
@@ -7105,9 +7122,6 @@ function setupEventListeners() {
         });
     }
 
-    // Create playlist modal listeners
-    const closeCreateBtn = document.getElementById('closeCreatePlaylistModal');
-    if (closeCreateBtn) closeCreateBtn.addEventListener('click', closeCreatePlaylistModal);
     const createForm = document.getElementById('createPlaylistForm');
     if (createForm) createForm.addEventListener('submit', submitCreatePlaylist);
     const cancelCreate = document.getElementById('cancelCreatePlaylist');
@@ -7116,33 +7130,15 @@ function setupEventListeners() {
     // User menu
     const userBtn = document.getElementById('userMenuButton');
     if (userBtn) userBtn.addEventListener('click', (e) => { e.stopPropagation(); openUserMenuModal(); });
-    const closeUserMenu = document.getElementById('closeUserMenuModal');
-    if (closeUserMenu) closeUserMenu.addEventListener('click', closeUserMenuModal);
     const userPlaylistsBtn = document.getElementById('userPlaylistsBtn');
     if (userPlaylistsBtn) userPlaylistsBtn.addEventListener('click', () => { closeUserMenuModal(); document.getElementById('userPlaylistsModal').classList.add('show'); openUserPlaylistsModal(); });
     const userFavoritesBtn = document.getElementById('userFavoritesBtn');
     if (userFavoritesBtn) userFavoritesBtn.addEventListener('click', () => { closeUserMenuModal(); displayFavoritesList(); });
-    const closeUserPlaylists = document.getElementById('closeUserPlaylistsModal');
-    if (closeUserPlaylists) closeUserPlaylists.addEventListener('click', closeUserPlaylistsModal);
-
-    // Item options modal close
-    const closeItemOptions = document.getElementById('closeItemOptionsModal');
-    if (closeItemOptions) closeItemOptions.addEventListener('click', closeItemOptionsModal);
-
+    
     // feedbackModal: fechar sem animação (auto-close existente)
     const feedbackModal = document.getElementById('feedbackModal');
     if (feedbackModal) {
         // Scrim já fechará o modal ao clicar fora
-        // Aqui apenas garantimos que existe o modal
-    }
-    
-    // Botão fechar modal de edição
-    const closeEditPlaylistBtn = document.getElementById('editPlaylistCloseBtn');
-    if (closeEditPlaylistBtn) {
-        closeEditPlaylistBtn.addEventListener('click', () => {
-            closeModalWithAnimation('editPlaylistModal');
-            setTimeout(() => openUserPlaylistsModal(), 300);
-        });
     }
 
     // Detectar redimensionamento da janela para ajustar marquee
@@ -7287,10 +7283,10 @@ function onProgressChange(event) {
     }
     updateProgressBar();
 }
-
+//download
 function baixarAPK() {
   const link = document.createElement('a');
-  link.href = '/apk/SanPlayer_v1.0.2.7.apk'; // URL ou caminho local do APK
-  link.download = 'Instalador SanPlayer_v1.0.2.7';         // Nome que aparecerá para o usuário
+  link.href = '/apk/SanPlayer_v1.0.1.9.apk'; // URL ou caminho local do APK
+  link.download = 'Instalador SanPlayer_v1.0.1.9';         // Nome que aparecerá para o usuário
   link.click();
 }

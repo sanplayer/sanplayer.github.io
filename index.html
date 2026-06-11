@@ -9,14 +9,14 @@
       <meta name="description" content="Música para os seus ouvidos">
       <link rel="stylesheet" href="./style.css">
       <!-- ICONES -->
-      <link rel="icon" type="image/svg+xml" href="icons/favicon.svg" />
-      <link rel="icon" type="image/webp" href="icons/favicon-96x96.webp" sizes="96x96" />
-      <link rel="shortcut icon" href="icons/favicon.ico" />
-      <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.webp" />
+      <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg" />
+      <link rel="icon" type="image/webp" href="./icons/favicon-96x96.webp" sizes="96x96" />
+      <link rel="shortcut icon" href="./icons/favicon.ico" />
+      <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.webp" />
       <!-- safari -->
-      <link rel="mask-icon" href="/icons/favicon.svg" color="#000000">
+      <link rel="mask-icon" href="./icons/favicon.svg" color="#000000">
       <!-- PWA CONFIG -->
-      <link rel="manifest" href="/manifest.json" />
+      <link rel="manifest" href="./manifest.json" />
       <meta name="theme-color" content="#0f0d12">
       <meta name="color-scheme" content="dark">
 
@@ -38,8 +38,9 @@
       <meta name="twitter:description" content="Música para os seus ouvidos">
       <meta name="twitter:image" content="https://sanplayer.github.io/icons/og-image.webp">
 
-<!--- START -->
-    
+<!-- 
+
+
    <style id="gate-styles">
     :root {
         --bg-gate: #000000;
@@ -58,7 +59,7 @@
         background-image: url(./assets/splash-wide.webp);
         background-size: cover;
         background-repeat: no-repeat;
-        background-color: #211a5f;
+        background-color: var(--bg-gate);
         color: var(--text-main);
         z-index: 999999; /* Fica por cima de absolutamente tudo */
         display: flex;
@@ -68,10 +69,8 @@
     }
     @media (orientation: portrait) and (max-width: 768px){
          #sanplayer-gate {
-    justify-content: center;
-    background-image: url(./assets/splash-wide.webp);
-    background-position-x: center;
-    background-size: contain;
+            justify-content: center;
+            background-image: url(./assets/splash.webp);
          }
     }
     @media (orientation: landscape) and (max-width: 900px){
@@ -104,7 +103,10 @@
         flex-direction: column;
         align-items: center;
         gap: 24px;
+        
+        background: rgba(0,0,0,0.7);
         border-radius: 20px;
+        padding: 20px;
     }
     .gate-icon-wrapper {
         width: 96px; height: 96px;
@@ -113,12 +115,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid #9C27B0;
+        border: 1px solid #9C27B0;
     }
     .gate-icon-wrapper svg { width: 64px; height: 64px; fill: url(#fire-grad-gate); }
     .gate-title { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
     .gate-desc { color: var(--text-muted); font-size: 1.2rem; line-height: 1.5; }
-    .gate-btn:hover { background: #0f0d12;color:#a238ff }  
     .gate-btn {
         background: var(--accent-fire);
         color: #fff;
@@ -185,7 +186,7 @@ function baixarAPK() {
                                     <path d="M481 274l0 8c-2,5 0,16 -13,34 -7,10 -15,13 -18,17 -9,9 -7,18 -6,27 1,18 -6,38 -19,50 -22,21 -41,16 -50,20 -16,5 -11,19 -33,37 -18,15 -45,18 -66,8 -6,-3 -11,-7 -19,-7 -8,0 -13,5 -19,7 -28,13 -57,4 -77,-19 -8,-10 -10,-22 -21,-26 -10,-3 -30,0 -50,-20 -8,-8 -15,-18 -18,-29 -6,-23 1,-30 -4,-41 -3,-6 -7,-9 -11,-12 -5,-4 -8,-7 -12,-12 -12,-14 -12,-31 -13,-33l0 -9c1,-3 1,-9 2,-13 3,-9 5,-13 10,-20 11,-16 4,-21 0,-35 -5,-18 -2,-40 10,-55 24,-30 40,-16 49,-35 2,-4 2,-8 3,-12 7,-29 32,-48 60,-47 14,0 18,4 25,5 18,3 18,-13 38,-23 14,-7 31,-9 46,-4 23,8 25,21 36,26 12,5 20,-4 38,-4 16,0 33,8 43,19 17,19 14,33 19,42 4,8 9,9 19,12 21,7 38,26 41,50 4,34 -18,39 -2,62 2,3 4,6 6,9 2,3 3,7 4,11 1,4 1,9 2,13zm-93 -21c-2,-7 -8,-12 -11,-16 -1,-2 -1,-2 -3,-3 -1,-1 -2,-2 -4,-4 -7,-8 -14,-13 -22,-20 -3,-2 -5,-4 -8,-6 -15,-10 -26,-18 -43,-27 -23,-13 -53,-26 -80,-32 -22,-5 -30,-5 -37,14 -16,47 -17,153 2,198 3,7 6,12 15,13 8,0 17,-2 24,-4 15,-4 28,-9 41,-14 13,-6 25,-12 37,-19 6,-3 12,-7 18,-10 12,-8 22,-15 33,-23 1,-1 2,-2 4,-3l8 -7c1,-1 2,-2 4,-3 4,-3 16,-16 20,-22 2,-3 4,-7 3,-11z"/>
                                 </svg>
                             </div>
-                            <h1 class="gate-title">Instale o SanPlayer</h1>
+                            <h1 class="gate-title">Instale o San Player</h1>
                             <p class="gate-desc">Para garantir máxima performance, segundo plano estável e uma melhor experiência, utilize nosso app oficial.</p>
                             <button onclick="baixarAPK()" title="Baixar Instalador" class="gate-btn">
                                 Baixar Aplicativo Oficial
@@ -203,9 +204,9 @@ function baixarAPK() {
         }
     })();
 </script>
-<!--- END -->
 
 
+-->
       
    </head>
    <body>
@@ -213,12 +214,12 @@ function baixarAPK() {
          <div class="header-logo">
             <button title="menu" class="btn-hamburger" aria-label="Abrir menu">
                <svg class="icon">
-                  <use href="/icons/package.svg#menu-case"></use>
+                  <use href="./icons/package.svg#menu-case"></use>
                </svg>
             </button>
             <div class="header-app-logo" alt="Logo do SanPlayer">
                <svg class="icon">
-                  <use href="/icons/package.svg#logo-case"></use>
+                  <use href="./icons/package.svg#logo-case"></use>
                </svg>
             </div>
             <span class="title-player">SanPlayer</span>
@@ -227,25 +228,25 @@ function baixarAPK() {
             <form action="#">
                <input type="search" placeholder="Pesquise músicas, artis..." id="searchInput">
                <svg class="icon">
-                  <use href="/icons/package.svg#search-case"></use>
+                  <use href="./icons/package.svg#search-case"></use>
                </svg>
             </form>
          </div>
          <div class="header-actions">
             <button class="btn-search-mobile" aria-label="Buscar">
                <svg class="icon">
-                  <use href="/icons/package.svg#search-case"></use>
+                  <use href="./icons/package.svg#search-case"></use>
                </svg>
             </button>
             <button id="btn-notifications" class="notification-btn" aria-label="Notificações">
                <svg class="icon">
-                  <use href="/icons/package.svg#notifications-case"></use>
+                  <use href="./icons/package.svg#notifications-case"></use>
                </svg>
             </button>
             <!-- foto do usuário -->
             <button id="userMenuButton" class="profile-avatar">
                <svg class="icon">
-                  <use href="/icons/package.svg#person-case"></use>
+                  <use href="./icons/package.svg#person-case"></use>
                </svg>
             </button>
          </div>
@@ -256,25 +257,25 @@ function baixarAPK() {
             <div class="sidebar-content">
                <ul class="sidebar-nav">
                   <li>
-                     <a href="index.html?playlistId=LoveSongs">
+                     <a href="./index.html?playlistId=LoveSongs">
                         <svg class="icon">
-                           <use href="/icons/package.svg#home-case"></use>
+                           <use href="./icons/package.svg#home-case"></use>
                         </svg>
                         Home
                      </a>
                   </li>
                   <li>
-                     <a href="/index.html?modal=playlists" id="link-playlists">
+                     <a href="./index.html?modal=playlists" id="link-playlists">
                         <svg class="icon">
-                           <use href="/icons/package.svg#playlist-case"></use>
+                           <use href="./icons/package.svg#playlist-case"></use>
                         </svg>
                         Playlists
                      </a>
                   </li>
                   <li>
-                     <a href="/index.html?modal=artists" id="link-artistas">
+                     <a href="./index.html?modal=artists" id="link-artistas">
                         <svg class="icon">
-                           <use href="/icons/package.svg#artist-case"></use>
+                           <use href="./icons/package.svg#artist-case"></use>
                         </svg>
                         Artistas
                      </a>
@@ -282,7 +283,7 @@ function baixarAPK() {
                   <li>
                      <a href="#" id="link-criar-playlist">
                         <svg class="icon">
-                           <use href="/icons/package.svg#add-case"></use>
+                           <use href="./icons/package.svg#add-case"></use>
                         </svg>
                         Criar Playlist
                      </a>
@@ -290,7 +291,7 @@ function baixarAPK() {
                   <li>
                      <a href="#" id="link-favoritos">
                         <svg class="icon">
-                           <use href="/icons/package.svg#favorite-outlined-case"></use>
+                           <use href="./icons/package.svg#favorite-outlined-case"></use>
                         </svg>
                         Favoritos
                      </a>
@@ -298,7 +299,7 @@ function baixarAPK() {
                   <li>
                      <a href="#" id="link-sobre">
                         <svg class="icon">
-                           <use href="/icons/package.svg#info-case"></use>
+                           <use href="./icons/package.svg#info-case"></use>
                         </svg>
                         Sobre
                      </a>
@@ -317,31 +318,31 @@ function baixarAPK() {
                      
                      <button title="Ver Artistas">
                         <svg class="icon">
-                           <use href="/icons/package.svg#artist-case"></use>
+                           <use href="./icons/package.svg#artist-case"></use>
                         </svg>
                      </button>
                      
                      <button title="Ver Playlists">
                         <svg class="icon">
-                           <use href="/icons/package.svg#playlist-case"></use>
+                           <use href="./icons/package.svg#playlist-case"></use>
                         </svg>
                      </button>
                      
                      <button title="Criar Playlist">
                         <svg class="icon">
-                           <use href="/icons/package.svg#add-case"></use>
+                           <use href="./icons/package.svg#add-case"></use>
                         </svg>
                      </button>
 
                      <button alt="compartilhar item da tela" title="compartilha item da tela">
                         <svg class="icon">
-                           <use href="/icons/package.svg#share-case"></use>
+                           <use href="./icons/package.svg#share-case"></use>
                         </svg>
                      </button>
 
                      <button title="Opções do item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#more-vert-case"></use>
+                           <use href="./icons/package.svg#more-vert-case"></use>
                         </svg>
                      </button>
 
@@ -351,7 +352,7 @@ function baixarAPK() {
 
                      <button style="display:none;" id="btnFullscreen" title="Tela cheia">
                         <svg class="icon">
-                           <use href="/icons/package.svg#fullscreen-case"></use>
+                           <use href="./icons/package.svg#fullscreen-case"></use>
                         </svg>
                      </button>
 
@@ -366,13 +367,13 @@ function baixarAPK() {
                   <button class="sidebar-nav-btn" id="sidebarBackBtn" title="Voltar" aria-label="Voltar na navegação"
                      disabled>
                      <svg class="icon">
-                        <use href="/icons/package.svg#arrow-back-case"></use>
+                        <use href="./icons/package.svg#arrow-back-case"></use>
                      </svg>
                   </button>
                   <button class="sidebar-nav-btn" id="sidebarForwardBtn" title="Avançar"
                      aria-label="Avançar na navegação" disabled>
                      <svg class="icon">
-                        <use href="/icons/package.svg#arrow-forward-case"></use>
+                        <use href="./icons/package.svg#arrow-forward-case"></use>
                      </svg>
                   </button>
                </div>
@@ -394,7 +395,7 @@ function baixarAPK() {
             <div class="footer-block block-info">
                <!--<img src="covers/user.webp" alt="Capa" class="current-thumb">-->
                <svg class="current-thumb">
-                  <use href="/icons/package.svg#music-case"></use>
+                  <use href="./icons/package.svg#music-case"></use>
                </svg>
                <div class="current-details">
                   <span class="c-title">SanPlayer</span>
@@ -403,12 +404,12 @@ function baixarAPK() {
                <div class="current-actions">
                   <button alt="favoritar" title="favoritar">
                      <svg class="icon">
-                        <use href="/icons/package.svg#favorite-outlined-case"></use>
+                        <use href="./icons/package.svg#favorite-outlined-case"></use>
                      </svg>
                   </button>
                   <button alt="compartilhar" title="Compartilhar Item">
                      <svg class="icon">
-                        <use href="/icons/package.svg#share-case"></use>
+                        <use href="./icons/package.svg#share-case"></use>
                      </svg>
                   </button>
                </div>
@@ -416,27 +417,27 @@ function baixarAPK() {
             <div class="footer-block block-controls">
                <button>
                   <svg class="icon shuffle-repeat">
-                     <use href="/icons/package.svg#control-shuffle"></use>
+                     <use href="./icons/package.svg#control-shuffle"></use>
                   </svg>
                </button>
                <button>
                   <svg class="icon">
-                     <use href="/icons/package.svg#control-prev"></use>
+                     <use href="./icons/package.svg#control-prev"></use>
                   </svg>
                </button>
                <button class="btn-play-pause">
                   <svg class="icon">
-                     <use href="/icons/package.svg#control-pause"></use>
+                     <use href="./icons/package.svg#control-pause"></use>
                   </svg>
                </button>
                <button>
                   <svg class="icon">
-                     <use href="/icons/package.svg#control-next"></use>
+                     <use href="./icons/package.svg#control-next"></use>
                   </svg>
                </button>
                <button>
                   <svg class="icon shuffle-repeat">
-                     <use href="/icons/package.svg#control-repeat"></use>
+                     <use href="./icons/package.svg#control-repeat"></use>
                   </svg>
                </button>
             </div>
@@ -450,16 +451,12 @@ function baixarAPK() {
                   <input type="search" placeholder="Filtrar playlists..." id="playlistSearchInput"
                      class="modal-search-input">
                   <svg class="icon search-icon">
-                     <use href="/icons/package.svg#search-case"></use>
+                     <use href="./icons/package.svg#search-case"></use>
                   </svg>
                </div>
-               <button class="modal-close" id="closePlaylistModal" aria-label="Fechar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#close-case"></use>
-                  </svg>
-               </button>
             </div>
             <div id="playlistCardsContainer" class="cards-grid"></div>
+            <button class="modal-close-footer" type="button" onclick="closePlaylistsModal()">Fechar</button>
          </div>
       </div>
       <!-- MODAL DE ARTISTAS -->
@@ -470,16 +467,12 @@ function baixarAPK() {
                   <input type="search" placeholder="Filtrar artistas..." id="artistSearchInput"
                      class="modal-search-input">
                   <svg class="icon search-icon">
-                     <use href="/icons/package.svg#search-case"></use>
+                     <use href="./icons/package.svg#search-case"></use>
                   </svg>
                </div>
-               <button class="modal-close" id="closeArtistsModal" aria-label="Fechar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#close-case"></use>
-                  </svg>
-               </button>
             </div>
             <div id="artistsCardsContainer" class="cards-grid"></div>
+            <button class="modal-close-footer" type="button" onclick="closeArtistsModal()">Fechar</button>
          </div>
       </div>
       <!-- MODAL DE RESULTADOS DE BUSCA -->
@@ -487,13 +480,9 @@ function baixarAPK() {
          <div class="modal-content">
             <div class="modal-header">
                <h2 id="searchTitle">Resultados de busca</h2>
-               <button class="modal-close" id="closeSearchModal" aria-label="Fechar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#close-case"></use>
-                  </svg>
-               </button>
             </div>
             <div id="searchResultsContainer" class="search-results"></div>
+            <button class="modal-close-footer" type="button" onclick="closeSearchModal()">Fechar</button>
          </div>
       </div>
       <!-- SCRIM (overlay) - criar playlist -->
@@ -503,11 +492,6 @@ function baixarAPK() {
          <div class="input-modal-content">
             <div class="modal-header modal-header--item">
                <h2 class="modal-header-title">Criar Playlist</h2>
-               <button class="modal-close" id="closeCreatePlaylistModal" aria-label="Fechar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#close-case"></use>
-                  </svg>
-               </button>
             </div>
             <div class="modal-body">
                <form id="createPlaylistForm" autocomplete="off">
@@ -521,6 +505,7 @@ function baixarAPK() {
                   </div>
                </form>
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeCreatePlaylistModal()">Fechar</button>
          </div>
       </div>
       <!-- SCRIM (overlay) - menu usuário -->
@@ -530,18 +515,13 @@ function baixarAPK() {
          <div class="modal-content bottom-sheet-content">
             <div class="modal-header">
                <h2>Minha Conta</h2>
-               <button class="modal-close" id="closeUserMenuModal" aria-label="Fechar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#close-case"></use>
-                  </svg>
-               </button>
             </div>
             <div class="modal-body">
                <ul class="user-menu-list">
                   <li>
                      <a href="#" id="userAccountBtn">
                         <svg class="icon">
-                           <use href="/icons/package.svg#person-case"></use>
+                           <use href="./icons/package.svg#person-case"></use>
                         </svg>
                         <span>Minha conta</span>
                      </a>
@@ -549,7 +529,7 @@ function baixarAPK() {
                   <li>
                      <a href="#" id="userPlaylistsBtn">
                         <svg class="icon">
-                           <use href="/icons/package.svg#playlist-case"></use>
+                           <use href="./icons/package.svg#playlist-case"></use>
                         </svg>
                         <span>Minhas
                         Playlists</span>
@@ -558,7 +538,7 @@ function baixarAPK() {
                   <li>
                      <a href="#" id="userFavoritesBtn">
                         <svg class="icon">
-                           <use href="/icons/package.svg#favorite-filled-case"></use>
+                           <use href="./icons/package.svg#favorite-filled-case"></use>
                         </svg>
                         <span>Meus
                         favoritos</span>
@@ -574,6 +554,7 @@ function baixarAPK() {
                   </li>
                </ul>
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeUserMenuModal()">Fechar</button>
          </div>
       </div>
       <!-- SCRIM (overlay) - minhas playlists -->
@@ -583,14 +564,10 @@ function baixarAPK() {
          <div class="modal-content bottom-sheet-content">
             <div class="modal-header">
                <h2>Minhas Playlists</h2>
-               <button class="modal-close" id="closeUserPlaylistsModal" aria-label="Fechar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#close-case"></use>
-                  </svg>
-               </button>
             </div>
             <div class="modal-body" id="userPlaylistsContainer">
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeUserPlaylistsModal()">Fechar</button>
          </div>
       </div>
       <!-- SCRIM (overlay) - opções do item -->
@@ -600,15 +577,11 @@ function baixarAPK() {
          <div class="modal-content bottom-sheet-content">
             <div class="modal-header">
                <h2 id="itemOptionsTitle">Opções</h2>
-               <button class="modal-close" id="closeItemOptionsModal" aria-label="Fechar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#close-case"></use>
-                  </svg>
-               </button>
             </div>
             <div class="modal-body" id="itemOptionsBody">
                <!-- Conteúdo gerado dinamicamente -->
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeItemOptionsModal()">Fechar</button>
          </div>
       </div>
       <!-- SCRIM (overlay) - feedback -->
@@ -626,11 +599,6 @@ function baixarAPK() {
          <div class="input-modal-content">
             <div class="modal-header modal-header--item">
                <h2 class="modal-header-title">Editar Playlist</h2>
-               <button class="modal-close" id="editPlaylistCloseBtn" aria-label="Fechar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#close-case"></use>
-                  </svg>
-               </button>
             </div>
             <div class="modal-body">
                <form id="editPlaylistForm" autocomplete="off">
@@ -644,6 +612,7 @@ function baixarAPK() {
                   </div>
                </form>
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeEditPlaylistModal()">Fechar</button>
          </div>
       </div>
       <!-- ZOOM ALERT MODAL -->
@@ -651,7 +620,7 @@ function baixarAPK() {
          <div class="zoom-alert-content">
             <div class="zoom-alert-header">
                <svg class="icon">
-                  <use href="/icons/package.svg#zoom-in-case"></use>
+                  <use href="./icons/package.svg#zoom-in-case"></use>
                </svg>
                <span>Modo zoom ativo</span>
             </div>
@@ -668,7 +637,7 @@ function baixarAPK() {
          <div class="pwa-install-overlay"></div>
          <div class="pwa-install-content">
             <div class="pwa-install-header">
-               <img src="/icons/logo.svg" class="pwa-install-logo" alt="Ícone do app" />
+               <img src="./icons/logo.svg" class="pwa-install-logo" alt="Ícone do app" />
                <span>Instalar SanPlayer</span>
             </div>
             <div class="pwa-install-message">
@@ -676,7 +645,7 @@ function baixarAPK() {
             </div>
             <div class="pwa-install-icon">
                <svg class="icon">
-                  <use href="/icons/package.svg#download-case"></use>
+                  <use href="./icons/package.svg#download-case"></use>
                </svg>
             </div>
             <div class="pwa-install-actions">
@@ -689,7 +658,7 @@ function baixarAPK() {
       <div id="update-banner" class="update-sheet">
          <div class="update-content">
             <svg class="icon">
-               <use href="/icons/package.svg#update-case"></use>
+               <use href="./icons/package.svg#update-case"></use>
             </svg>
             <div class="update-text">
                <strong>Nova versão disponível</strong>
@@ -707,7 +676,7 @@ function baixarAPK() {
             <div class="modal-header native-header">
                <button class="modal-close modal-back-btn" id="closeAboutModal" aria-label="Voltar">
                   <svg class="icon">
-                     <use href="/icons/package.svg#arrow-back-case"></use>
+                     <use href="./icons/package.svg#arrow-back-case"></use>
                   </svg>
                </button>
                <h2 class="native-header-title">Sobre</h2>
@@ -717,7 +686,7 @@ function baixarAPK() {
                <div class="about-hero">
                   <div class="about-logo" alt="Logo do SanPlayer">
                      <svg class="icon">
-                        <use href="/icons/package.svg#logo-case"></use>
+                        <use href="./icons/package.svg#logo-case"></use>
                      </svg>
                   </div>
                   <h3>SanPlayer</h3>
@@ -735,7 +704,7 @@ function baixarAPK() {
                   <ul class="features-list">
                      <li class="feature-item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#control-play"></use>
+                           <use href="./icons/package.svg#control-play"></use>
                         </svg>
                         <div>
                            <strong>Reprodução Fluida</strong>
@@ -744,7 +713,7 @@ function baixarAPK() {
                      </li>
                      <li class="feature-item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#playlist-case"></use>
+                           <use href="./icons/package.svg#playlist-case"></use>
                         </svg>
                         <div>
                            <strong>Gerenciamento de Playlists</strong>
@@ -753,7 +722,7 @@ function baixarAPK() {
                      </li>
                      <li class="feature-item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#favorite-filled-case"></use>
+                           <use href="./icons/package.svg#favorite-filled-case"></use>
                         </svg>
                         <div>
                            <strong>Sistema de Favoritos</strong>
@@ -762,7 +731,7 @@ function baixarAPK() {
                      </li>
                      <li class="feature-item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#equalizer-case"></use>
+                           <use href="./icons/package.svg#equalizer-case"></use>
                         </svg>
                         <!--<div>
                            <strong>Equalizador Avançado</strong>
@@ -771,7 +740,7 @@ function baixarAPK() {
                      </li>
                      <li class="feature-item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#cloud-off-case"></use>
+                           <use href="./icons/package.svg#cloud-off-case"></use>
                         </svg>
                         <div>
                            <strong>Suporte Offline</strong>
@@ -785,7 +754,7 @@ function baixarAPK() {
                   <ul class="features-list">
                      <li class="feature-item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#privacy-link-case"></use>
+                           <use href="./icons/package.svg#privacy-link-case"></use>
                         </svg>
                         <div>
                            <a href="#" id="privacyLink">
@@ -795,7 +764,7 @@ function baixarAPK() {
                      </li>
                      <li class="feature-item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#terms-link-case"></use>
+                           <use href="./icons/package.svg#terms-link-case"></use>
                         </svg>
                         <div>
                            <a href="#" id="termsLink">
@@ -805,7 +774,7 @@ function baixarAPK() {
                      </li>
                      <li class="feature-item">
                         <svg class="icon">
-                           <use href="/icons/package.svg#credits-link-case"></use>
+                           <use href="./icons/package.svg#credits-link-case"></use>
                         </svg>
                         <div>
                            <a href="#" id="creditsLink">
@@ -819,22 +788,18 @@ function baixarAPK() {
             <div class="modal-footer">
                <p class="copyright-text">&copy; 2026 Waltemar Carneiro. Todos os direitos reservados.</p>
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeModalWithAnimation('aboutModal')">Fechar</button>
          </div>
       </div>
       <!-- MODAL AUTOR -->
       <div id="authorModal" class="modal modal-fullscreen">
          <div class="modal-content">
             <div class="modal-header native-header">
-               <button class="modal-close modal-back-btn" id="closeAuthorModal" aria-label="Voltar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#arrow-back-case"></use>
-                  </svg>
-               </button>
                <h2 class="native-header-title">Sobre o Desenvolvedor</h2>
             </div>
             <div class="modal-body">
                <div class="author-section">
-                  <div class="author-avatar"><img src="/icons/admin.webp" alt="Avatar do Autor"></div>
+                  <div class="author-avatar"><img src="./icons/admin.webp" alt="Avatar do Autor"></div>
                   <h3 class="author-name">Waltemar Carneiro</h3>
                   <p class="author-title">Full-Stack Developer</p>
                   <p class="author-bio">
@@ -862,17 +827,13 @@ function baixarAPK() {
             <div class="modal-footer">
                <p class="copyright-text">Desenvolvido com ❤️</p>
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeModalWithAnimation('authorModal')">Fechar</button>
          </div>
       </div>
       <!-- MODAL POLÍTICA DE PRIVACIDADE -->
       <div id="privacyModal" class="modal modal-fullscreen">
          <div class="modal-content">
             <div class="modal-header native-header">
-               <button class="modal-close modal-back-btn" id="closePrivacyModal" aria-label="Voltar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#arrow-back-case"></use>
-                  </svg>
-               </button>
                <h2 class="native-header-title">Política de Privacidade</h2>
 
             </div>
@@ -917,17 +878,13 @@ function baixarAPK() {
             <div class="modal-footer">
                <p class="copyright-text">Última atualização: Maio de 2026</p>
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeModalWithAnimation('privacyModal')">Fechar</button>
          </div>
       </div>
       <!-- MODAL TERMOS DE SERVIÇOS -->
       <div id="termsModal" class="modal modal-fullscreen">
          <div class="modal-content">
             <div class="modal-header native-header">
-               <button class="modal-close modal-back-btn" id="closeTermsModal" aria-label="Voltar">
-                  <svg class="icon">
-                     <use href="/icons/package.svg#arrow-back-case"></use>
-                  </svg>
-               </button>
                <h2 class="native-header-title">Termos de Serviços</h2>
 
             </div>
@@ -983,6 +940,7 @@ function baixarAPK() {
             <div class="modal-footer">
                <p class="copyright-text">Última atualização: Maio de 2026</p>
             </div>
+            <button class="modal-close-footer" type="button" onclick="closeModalWithAnimation('termsModal')">Fechar</button>
          </div>
       </div>
 
@@ -1002,6 +960,6 @@ function baixarAPK() {
 
       <!-- OTHERS SCRIPTS -->
       <script src="https://www.youtube.com/iframe_api"></script>
-      <script type="module" src="/app.js"></script>
+      <script type="module" src="./app.js"></script>
    </body>
 </html>

@@ -3,11 +3,11 @@
 ============================================================================= */
 
 @font-face {
-  font-display: swap;
-  font-family: 'Roboto Flex';
-  font-style: normal;
-  font-weight: 400;
-  src: url('./fonts/roboto-flex-v30-latin-regular.woff2') format('woff2');
+    font-display: swap;
+    font-family: 'Roboto Flex';
+    font-style: normal;
+    font-weight: 400;
+    src: url('./fonts/roboto-flex-v30-latin-regular.woff2') format('woff2');
 }
 
 :root {
@@ -168,7 +168,7 @@ svg.icon {
 }
 
 /* =============================================================================
-3. ESTILOS BASE (TÃƒÆ’Ã‚ÂTULOS, BOTÃƒÆ’Ã¢â‚¬Â¢ES)
+3. ESTILOS BASE (TÍTULOS, BOTÕES)
 ============================================================================= */
 .title-player {
     font-family: 'Exo 2', sans-serif;
@@ -428,7 +428,7 @@ button:active {
     bottom: var(--footer-height);
     left: 0;
     right: 0;
-    display: flex;    
+    display: flex;
     flex-direction: row;
     justify-content: space-between;
     overflow: hidden;
@@ -513,7 +513,7 @@ button:active {
     border-left: 1px solid var(--border-rgba);
     flex: 0 0 clamp(260px, 28vw, 380px);
     overflow-y: auto;
-    
+
 
 }
 
@@ -712,7 +712,7 @@ button:active {
     min-width: 0;
     padding-left: calc(var(--safe-area-left) + 10px);
     padding-right: calc(var(--safe-area-right) + 10px);
-    
+
 }
 
 .current-thumb {
@@ -1140,7 +1140,7 @@ button:active {
 }
 
 .modal-header {
-    padding: clamp(0.75rem, 2vw, 1.25rem) clamp(0.9rem, 2.5vw, 1.5rem);
+    padding-bottom: 15px;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -1154,6 +1154,8 @@ button:active {
     align-items: center;
     gap: clamp(0.5rem, 1.5vw, 1rem);
     padding: clamp(0.6rem, 1.5vw, 0.9rem) clamp(0.8rem, 2vw, 1.2rem);
+    border: 1px solid var(--accent-roxo);
+    border-radius: 20px;
 }
 
 .modal-search {
@@ -1325,7 +1327,7 @@ button:active {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #0f0f10;
+    background: rgba(0, 0, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1370,7 +1372,6 @@ button:active {
     grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 15vw, 220px), 1fr));
     gap: clamp(1.5rem, 2vw, 2rem);
     margin-top: 1rem;
-    padding: 0 clamp(1.25rem, 2vw, 2rem);
 }
 
 .card {
@@ -2003,13 +2004,13 @@ button:active {
 }
 
 .links-list a::before {
-    content: 'ÃƒÂ¢Ã…â€™Ã¢â‚¬Â¢';
+    content: 'â€¢';
     margin-right: 0.5rem;
     opacity: 0.5;
 }
 
 .links-list a::after {
-    content: 'ÃƒÂ¢Ã¢â€šÂ¬Ã‚Âº';
+    content: 'â€º';
     color: var(--text-dim);
     font-weight: bold;
 }
@@ -2422,6 +2423,8 @@ button:active {
     display: flex;
     flex-direction: column;
     gap: clamp(1rem, 2.5vw, 1.75rem);
+    bottom: 0;
+    position: fixed;
 }
 
 .pwa-install-content .btn-primary:hover {
@@ -2531,7 +2534,7 @@ animation: float 2s ease-in-out infinite;
 }
 
 /* =============================================================================
-8. ANIMAÃƒÆ’Ã¢â‚¬Â¡ÃƒÆ’Ã¢â‚¬Â¢ES (@keyframes)
+8. ANIMAÇÕES (@keyframes)
 ============================================================================= */
 @keyframes pulse-badge {
 
@@ -2797,35 +2800,262 @@ animation: float 2s ease-in-out infinite;
     justify-content: center;
 }
 
-.modal-content {    
+/* =============================================================================
+MODAL CONTENT - ESTRUTURA ÚNICA COM PADDING + SAFE AREA
+============================================================================= */
+.modal-content {
     background: var(--bg-modal);
     height: 100%;
     width: 100%;
     max-height: 100%;
     overflow-y: auto;
-    animation: bottomSheetContentOpen 0.8s ease-out forwards;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
     position: fixed;
-    padding-bottom: calc(var(--safe-area-bottom) + 50px);
+    /* ✅ PADDING MÍNIMO DE 10px EM TODAS AS DIREÇÕES + SAFE AREA */
+    padding: 20px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    /* ✅ ANIMAÇÃO ACELERADA POR HARDWARE: transform: translateY */
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.25, 0, 0.46, 1), opacity 0.35s cubic-bezier(0.25, 0, 0.46, 1);
+    will-change: transform, opacity;
 }
+
+/* Estado aberto: sobe suavemente */
+.modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Estado fechando: desce suavemente (MESMA DURAÇÃO) */
+.modal .modal-content.closing {
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.25, 0, 0.46, 1), opacity 0.35s cubic-bezier(0.25, 0, 0.46, 1);
+}
+
+/* =============================================================================
+BOTÃO FECHAR NO RODAPÉ
+============================================================================= */
+.modal-close-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px 24px;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    background: var(--accent-roxo-dark);
+    color: #ffffff;
+    border: none;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+    min-height: 52px;
+    height: var(--header-height-mobile);
+    letter-spacing: 0.3px;
+    /* Touch target adequado */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.modal-close-footer:hover {
+    background: #8a2be0;
+    transform: scale(1.01);
+}
+
+.modal-close-footer:active {
+    transform: scale(0.97);
+    background: #7c27c8;
+}
+
+/* =============================================================================
+INPUT MODAL - SISTEMA INDEPENDENTE (createPlaylistModal, editPlaylistModal)
+============================================================================= */
+
+.input-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0);
+}
+
+.input-modal.show {
+    display: flex;
+    animation: inputModalBackdropOpen 0.3s ease-out forwards;
+}
+
+.input-modal-content {
+    background: var(--bg-modal);
+    width: 100%;
+    height: 100%;
+    max-height: 70%;
+    padding-bottom: var(--keyboard-offset, 0px);
+    overflow-y: auto;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    transition: padding-bottom 0.2s ease-out;
+    transform: translateY(100%);
+    opacity: 0;
+    padding: 10px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+}
+
+.input-modal.show .input-modal-content {
+    animation: inputModalContentOpen 0.6s ease-out forwards;
+}
+
+.input-modal.closing {
+    animation: inputModalBackdropClose 0.3s ease-out forwards;
+}
+
+.input-modal.closing .input-modal-content {
+    animation: inputModalContentClose 0.3s ease-out forwards;
+}
+
+@keyframes inputModalBackdropOpen {
+    from {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0);
+    }
+}
+
+@keyframes inputModalContentOpen {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes inputModalBackdropClose {
+    from {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0);
+    }
+}
+
+@keyframes inputModalContentClose {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+.modal-header {
+    position: relative;
+    top: 0;
+    z-index: 21;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    background: #181C1F;
+    height: var(--header-height-mobile);
+}
+
+.modal-header h2 {
+    font-size: var(--font-lg);
+    margin: 0;
+    text-align: left;
+    color: var(--text-dim);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    background: #2C3134;
+    border-radius: 1.2rem;
+}
+
+/* =============================================================================
+BOTTOM SHEET CONTENT OVERRIDE
+============================================================================= */
 
 /* Bottom Sheet Content: Padding aumentado para input acima do teclado */
 .modal.modal-bottom-sheet .modal-content {
-    padding-bottom: calc(var(--header-height-mobile) + var(--keyboard-offset, 0px) + 20px);
-    transition: padding-bottom 0.2s ease-out;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px) + var(--keyboard-offset, 0px));
+    transition: transform 0.35s cubic-bezier(0.25, 0, 0.46, 1), opacity 0.35s cubic-bezier(0.25, 0, 0.46, 1), padding-bottom 0.2s ease-out;
 }
 
 /* Bottom Sheet Pequeno: Apenas o offset do teclado, sem buffer extra */
 .modal.modal-bottom-sheet.modal-small .modal-content {
-    padding-bottom: var(--keyboard-offset, 0px);
+    padding-bottom: calc(10px + var(--keyboard-offset, 0px));
 }
 
 /* Fullscreen Content: Scroll normal */
 .modal.modal-fullscreen .modal-content {
+    top: var(--header-height);
     height: 100%;
-
+    padding-bottom: calc(var(--safe-area-bottom) + 60px);
 }
+
+/* =============================================================================
+MODAL SCRIM - Overlay separado (padrão Material Design 3)
+============================================================================= */
+
+.modal-scrim {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100dvh;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.3s ease-out;
+    cursor: pointer;
+}
+
+.modal-scrim.show {
+    display: block;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-scrim.closing {
+    animation: scrimClose 0.3s ease-out forwards;
+}
+
+@keyframes scrimClose {
+    from {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0);
+    }
+}
+
+/* =============================================================================
+LEGACY ANIMATIONS - Mantidas para compatibilidade com JS
+Mas não são mais usadas diretamente (substituídas por transitions CSS)
+============================================================================= */
 
 @keyframes fadeInBackdrop {
     from {
@@ -2890,164 +3120,6 @@ animation: float 2s ease-in-out infinite;
 }
 
 /* =============================================================================
-MODAL SCRIM - Overlay separado (padrão Material Design 3)
-Cobre 100% da tela quando o modal está aberto
-============================================================================= */
-
-.modal-scrim {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100dvh;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0);
-    transition: background 0.3s ease-out;
-    cursor: pointer;
-}
-
-.modal-scrim.show {
-    display: block;
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-scrim.closing {
-    animation: scrimClose 0.3s ease-out forwards;
-}
-
-@keyframes scrimClose {
-    from {
-        background: rgba(0, 0, 0, 0.5);
-    }
-
-    to {
-        background: rgba(0, 0, 0, 0);
-    }
-}
-
-/* =============================================================================
-INPUT MODAL - SISTEMA INDEPENDENTE (createPlaylistModal, editPlaylistModal)
-Desvinculado completamente do sistema genérico de modais
-============================================================================= */
-
-.input-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10000;
-    align-items: flex-end;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0);
-}
-
-.input-modal.show {
-    display: flex;
-    animation: inputModalBackdropOpen 0.3s ease-out forwards;
-}
-
-.input-modal-content {
-    background: var(--bg-modal);
-    width: 100%;
-    height: 100%;
-    max-height: 70%;
-    padding-bottom: var(--keyboard-offset, 0px);
-    overflow-y: auto;
-    border-top-left-radius: var(--radius-lg);
-    border-top-right-radius: var(--radius-lg);
-    transition: padding-bottom 0.2s ease-out;
-    transform: translateY(100%);
-    opacity: 0;
-}
-
-.input-modal.show .input-modal-content {
-    animation: inputModalContentOpen 0.6s ease-out forwards;
-}
-
-.input-modal.closing {
-    animation: inputModalBackdropClose 0.3s ease-out forwards;
-}
-
-.input-modal.closing .input-modal-content {
-    animation: inputModalContentClose 0.3s ease-out forwards;
-}
-
-@keyframes inputModalBackdropOpen {
-    from {
-        background: rgba(0, 0, 0, 0);
-    }
-
-    to {
-        background: rgba(0, 0, 0, 0);
-    }
-}
-
-@keyframes inputModalContentOpen {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes inputModalBackdropClose {
-    from {
-        background: rgba(0, 0, 0, 0);
-    }
-
-    to {
-        background: rgba(0, 0, 0, 0);
-    }
-}
-
-@keyframes inputModalContentClose {
-    from {
-        transform: translateY(0);
-        opacity: 1;
-    }
-
-    to {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-}
-
-.modal-header {
-    position: sticky;
-    top: 0;
-    z-index: 21;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-    background: #181C1F;
-}
-
-.modal-header h2 {
-    font-size: var(--font-lg);
-    margin: 0;
-    text-align: left;
-    color: var(--text-dim);
-}
-
-.modal-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 150px;
-    background: #2C3134;
-    margin: 0 1rem 1.1rem 1rem;
-    border-radius: 1.2rem;
-}
-
-/* =============================================================================
 MOBILE CONFIG - MAX 768PX
 ============================================================================= */
 
@@ -3064,16 +3136,16 @@ MOBILE CONFIG - MAX 768PX
         border-left: none;
         background: var(--bg-surface);
     }
-   
+
     /* HEADER MOBILE */
     .app-header {
-    width: 100%;
-    border-bottom: none;
-    display: flex;
-    align-items: center;
-    height: var(--header-height-mobile);
-    top: var(--safe-area-top);
-    padding: 0;
+        width: 100%;
+        border-bottom: none;
+        display: flex;
+        align-items: center;
+        height: var(--header-height-mobile);
+        top: var(--safe-area-top);
+        padding: 0;
     }
 
     .header-app-logo svg.icon {
@@ -3106,13 +3178,13 @@ MOBILE CONFIG - MAX 768PX
     }
 
     .header-search.show-search form {
-    width: 100%;
-    background: rgba(0, 0, 0, .8);
-    padding: 1rem;
-    position: fixed;
+        width: 100%;
+        background: rgba(0, 0, 0, .8);
+        padding: 1rem;
+        position: fixed;
     }
 
-/* =============================================================================
+    /* =============================================================================
 VIDEO - MAX 768PX
 ============================================================================= */
     .overlay-layer {
@@ -3177,7 +3249,7 @@ VIDEO - MAX 768PX
     .progress-time-labels {
         font-size: .875rem;
     }
-    
+
     .footer-block {
         justify-content: center;
     }
@@ -3196,9 +3268,11 @@ VIDEO - MAX 768PX
         gap: .5rem;
         flex-shrink: 0;
     }
+
     .block-controls {
         padding-top: 10px;
     }
+
     .block-controls svg.icon {
         width: 2rem;
         height: 2rem;
@@ -3213,7 +3287,7 @@ VIDEO - MAX 768PX
     .modal.modal-fullscreen {
         top: var(--header-height-mobile);
     }
-    
+
     .sidebar-header {
         display: flex;
         align-items: center;
@@ -3247,15 +3321,15 @@ VIDEO - MAX 768PX
     }
 
     .app-sidebar {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 1rem;
-    height: auto;
-    border: none;
-    
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 1rem;
+        height: auto;
+        border: none;
+
     }
 
     .modal-scrim {
@@ -3263,15 +3337,15 @@ VIDEO - MAX 768PX
     }
 
     .app-sidebar.show {
-    display: flex;
-    flex-direction: column;
-    animation: slideUpSidebarShow 0.8s ease-out forwards;
-    /*transform: translateY(0);*/
-    background: var(--bg-modal);
-    z-index: 1000;
-    border-top-left-radius: var(--radius-lg);
-    border-top-right-radius: var(--radius-lg);
-    padding-bottom: calc(var(--safe-area-bottom) + 20px);
+        display: flex;
+        flex-direction: column;
+        animation: slideUpSidebarShow 0.8s ease-out forwards;
+        /*transform: translateY(0);*/
+        background: var(--bg-modal);
+        z-index: 1000;
+        border-top-left-radius: var(--radius-lg);
+        border-top-right-radius: var(--radius-lg);
+        padding-bottom: calc(var(--safe-area-bottom) + 20px);
     }
 
     @keyframes slideUpSidebarShow {
@@ -3312,13 +3386,13 @@ VIDEO - MAX 768PX
         max-width: 100vw;
         width: 100vw;
         border-radius: 25px 25px 0 0;
-        box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
+
         z-index: 3001;
         height: auto;
         transform: translateY(var(--keyboard-offset, 0px));
         transition: transform 0.25s ease;
     }
- 
+
 }
 
 
@@ -3397,7 +3471,7 @@ LANDSCAPE CONFIG
         padding-left: var(--safe-area-left);
         padding-right: var(--safe-area-right);
         z-index: 10 !important;
-        background: linear-gradient(180deg,rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.20) 100%);
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.20) 100%);
 
     }
 
@@ -3408,12 +3482,13 @@ LANDSCAPE CONFIG
     .block-info {
         width: 100%;
     }
+
     /*LNADSCAPE*/
     .block-controls {
         background: none;
     }
 
-/* BARRA DE PROGRESSO */
+    /* BARRA DE PROGRESSO */
     .player-progress-area {
         width: 100%;
     }
@@ -3425,7 +3500,7 @@ LANDSCAPE CONFIG
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.1);
         /*background-image: linear-gradient(to right, var(--text-main) 0%, var(--text-main) 100%);*/
-        background-image: linear-gradient(to right, rgb(255,255,255,0.0) 0%, rgb(255,255,255,0.5) 100%);
+        background-image: linear-gradient(to right, rgb(255, 255, 255, 0.0) 0%, rgb(255, 255, 255, 0.5) 100%);
         background-repeat: no-repeat;
         background-size: var(--progress-bar-fill, 0% 100%);
         outline: none;
@@ -3445,15 +3520,17 @@ LANDSCAPE CONFIG
         background: rgba(255, 255, 255, 0.1);
     }
 
-    .current-details .c-artist{
+    .current-details .c-artist {
         color: var(--text-main);
     }
-    .block-controls svg.icon{
+
+    .block-controls svg.icon {
         color: var(--text-main);
     }
+
     .block-info button {
         color: var(--text-main);
         border: 2px solid rgb(255, 255, 255, 0.1);
-    }    
+    }
 
 }
