@@ -233,18 +233,18 @@ function baixarAPK() {
             </form>
          </div>
          <div class="header-actions">
-            <button class="btn-search-mobile" aria-label="Buscar" title="Busca">
+            <button class="btn-search-mobile" aria-label="Buscar">
                <svg class="icon">
                   <use href="./icons/package.svg#search-case"></use>
                </svg>
             </button>
-            <button id="btn-notifications" class="notification-btn" aria-label="Notificações" title="Notificações">
+            <button id="btn-notifications" class="notification-btn" aria-label="Notificações">
                <svg class="icon">
                   <use href="./icons/package.svg#notifications-case"></use>
                </svg>
             </button>
             <!-- foto do usuário -->
-            <button id="userMenuButton" class="profile-avatar" title="Usuário">
+            <button id="userMenuButton" class="profile-avatar">
                <svg class="icon">
                   <use href="./icons/package.svg#person-case"></use>
                </svg>
@@ -443,6 +443,8 @@ function baixarAPK() {
             </div>
          </div>
       </footer>
+      <!-- SCRIM (overlay) - playlists -->
+      <div id="playlistModalScrim" class="modal-scrim"></div>
       <!-- MODAL DE PLAYLISTS -->
       <div id="playlistModal" class="modal modal-fullscreen">
          <div class="modal-content">
@@ -459,6 +461,8 @@ function baixarAPK() {
             <button class="modal-close-footer" type="button" onclick="closePlaylistsModal()">Fechar</button>
          </div>
       </div>
+      <!-- SCRIM (overlay) - artistas -->
+      <div id="artistsModalScrim" class="modal-scrim"></div>
       <!-- MODAL DE ARTISTAS -->
       <div id="artistsModal" class="modal modal-fullscreen">
          <div class="modal-content">
@@ -475,6 +479,8 @@ function baixarAPK() {
             <button class="modal-close-footer" type="button" onclick="closeArtistsModal()">Fechar</button>
          </div>
       </div>
+      <!-- SCRIM (overlay) - busca -->
+      <div id="searchModalScrim" class="modal-scrim"></div>
       <!-- MODAL DE RESULTADOS DE BUSCA -->
       <div id="searchModal" class="modal modal-fullscreen">
          <div class="modal-content">
@@ -670,6 +676,8 @@ function baixarAPK() {
             <button id="btn-update-now" class="btn-primary">ATUALIZAR AGORA</button>
          </div>
       </div>
+      <!-- SCRIM (overlay) - about -->
+      <div id="aboutModalScrim" class="modal-scrim"></div>
       <!-- MODAL SOBRE (About) -->
       <div id="aboutModal" class="modal modal-fullscreen">
          <div class="modal-content about-modal-content">
@@ -791,6 +799,8 @@ function baixarAPK() {
             <button class="modal-close-footer" type="button" onclick="closeModalWithAnimation('aboutModal')">Fechar</button>
          </div>
       </div>
+      <!-- SCRIM (overlay) - author -->
+      <div id="authorModalScrim" class="modal-scrim"></div>
       <!-- MODAL AUTOR -->
       <div id="authorModal" class="modal modal-fullscreen">
          <div class="modal-content">
@@ -830,6 +840,8 @@ function baixarAPK() {
             <button class="modal-close-footer" type="button" onclick="closeModalWithAnimation('authorModal')">Fechar</button>
          </div>
       </div>
+      <!-- SCRIM (overlay) - privacy -->
+      <div id="privacyModalScrim" class="modal-scrim"></div>
       <!-- MODAL POLÍTICA DE PRIVACIDADE -->
       <div id="privacyModal" class="modal modal-fullscreen">
          <div class="modal-content">
@@ -881,6 +893,8 @@ function baixarAPK() {
             <button class="modal-close-footer" type="button" onclick="closeModalWithAnimation('privacyModal')">Fechar</button>
          </div>
       </div>
+      <!-- SCRIM (overlay) - terms -->
+      <div id="termsModalScrim" class="modal-scrim"></div>
       <!-- MODAL TERMOS DE SERVIÇOS -->
       <div id="termsModal" class="modal modal-fullscreen">
          <div class="modal-content">

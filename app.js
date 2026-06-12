@@ -2262,46 +2262,13 @@ function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
     const scrimId = modalId + 'Scrim';
     const scrim = document.getElementById(scrimId);
     
-    if (skipAnimation) {
-        // Fechar instantaneamente sem animação
-        modal.classList.remove('show');
-        if (scrim) {
-            scrim.classList.remove('show');
-            // Remover listener antigo (se houver)
-            scrim.removeEventListener('click', () => {});
-        }
-        if (callback) callback();
-        return;
-    }
-    
-    // Adicionar classes de fechamento para ativar animação
-    modal.classList.add('closing');
+    // Apenas remover a classe .show - CSS transitions cuidam da animação
+    modal.classList.remove('show');
     if (scrim) {
-        scrim.classList.add('closing');
+        scrim.classList.remove('show');
     }
     
-    // Suportar ambas: .modal-content (modais genéricos) e .input-modal-content (input-modals)
-    const modalContent = modal.querySelector('.modal-content') || modal.querySelector('.input-modal-content');
-    if (modalContent) {
-        modalContent.classList.add('closing');
-    }
-    
-    // Esperar a animação terminar
-    // Input modals: 0.3s | Modais genéricos: 0.35s (CSS transition) → usar 400ms como máximo
-    const animationDuration = modal.classList.contains('input-modal') ? 400 : 400;
-    setTimeout(() => {
-        modal.classList.remove('show', 'closing');
-        if (scrim) {
-            scrim.classList.remove('show', 'closing');
-        }
-        if (modalContent) {
-            modalContent.classList.remove('closing');
-        }
-        // Executar callback (ex: restaurar conteúdo, limpar state)
-        if (callback) {
-            callback();
-        }
-    }, animationDuration);
+    if (callback) callback();
 }
 
 // ============================================================================
@@ -2698,8 +2665,8 @@ function ensureInputVisible() {
     // Limpar timeout anterior para evitar scrolls conflitantes
     if (inputScrollTimeout) clearTimeout(inputScrollTimeout);
     
-    // Delay: aguarda a animação do modal terminar (600ms) + tempo para o teclado aparecer
-    // Total: 700ms garante que tudo está posicionado antes do scroll
+    // Delay: aguarda a animação do modal terminar (400ms) + tempo para o teclado aparecer
+    // Total: 500ms garante que tudo está posicionado antes do scroll
     inputScrollTimeout = setTimeout(() => {
         if (activeInputElement && activeInputElement.offsetParent !== null) {
             // ScrollIntoView com comportamento suave e centralizado
@@ -2712,7 +2679,7 @@ function ensureInputVisible() {
             activeInputElement.focus();
         }
         inputScrollTimeout = null;
-    }, 700);
+    }, 500);
 }
 
 /**
@@ -3958,7 +3925,8 @@ function openPlaylistsModal() {
     }
     container.innerHTML = '';
     container.appendChild(skeletonFragment);
-    modal.classList.add('show');
+    // Usar openModal() para gerenciar scrim automaticamente
+    openModal('playlistModal');
     
     // 🔒 Marcar que o modal foi aberto nesta chamada
     modal.dataset.openTime = Date.now();
@@ -4306,7 +4274,8 @@ async function openArtistsModal() {
         skeletonContainer.appendChild(createCardSkeleton());
     }
     container.appendChild(skeletonContainer);
-    modal.classList.add('show');
+    // Usar openModal() para gerenciar scrim automaticamente
+    openModal('artistsModal');
 
     try {
         // Carregar todas as playlists (necessário para listar todos os artistas)
@@ -4522,7 +4491,7 @@ function openEditPlaylistModal(idx, currentName) {
                         setTimeout(() => {
                             openUserPlaylistsModal();
                         }, 3200); // Feedback duration (3000) + buffer (200)
-                    }, 550); // closeModalWithAnimation duration (550)
+                    }, 400); // closeModalWithAnimation duration (400ms)
                 } else {
                     // Se nome não mudou, apenas fecha o modal
                     closeModalWithAnimation('editPlaylistModal', () => {
@@ -4844,7 +4813,8 @@ function openItemOptionsModal(index) {
     fragment.appendChild(shareRow);
 
     body.appendChild(fragment);
-    modal.classList.add('show');
+    // Usar openModal() para gerenciar scrim automaticamente
+    openModal('itemOptionsModal');
 }
 
 /**
@@ -4962,7 +4932,8 @@ function openItemOptionsModalFromPlayer(video) {
     fragment.appendChild(shareRow);
 
     body.appendChild(fragment);
-    modal.classList.add('show');
+    // Usar openModal() para gerenciar scrim automaticamente
+    openModal('itemOptionsModal');
 }
 
 function closeItemOptionsModal() {
@@ -5026,7 +4997,8 @@ function openPlaylistShareModal(playlist) {
     fragment.appendChild(cancelRow);
     
     body.appendChild(fragment);
-    modal.classList.add('show');
+    // Usar openModal() para gerenciar scrim automaticamente
+    openModal('itemOptionsModal');
 }
 
 /**
@@ -5075,7 +5047,8 @@ function openArtistShareModal(artist) {
     fragment.appendChild(cancelRow);
     
     body.appendChild(fragment);
-    modal.classList.add('show');
+    // Usar openModal() para gerenciar scrim automaticamente
+    openModal('itemOptionsModal');
 }
 
 function addItemToUserPlaylist(playlistIdx) {
@@ -5163,8 +5136,8 @@ function showFeedbackModal(message, duration = 3000) {
     content.appendChild(icon);
     content.appendChild(messageEl);
     
-    // Mostrar modal
-    modal.classList.add('show');
+    // Usar openModal() para gerenciar scrim automaticamente
+    openModal('feedbackModal');
     
     // Fechar automaticamente após duração
     setTimeout(() => {
@@ -6856,7 +6829,8 @@ function displaySearchResults(results, query) {
         });
     }
     
-    modal.classList.add('show');
+    // Usar openModal() para gerenciar scrim automaticamente
+    openModal('searchModal');
 }
 
 // ============================================================================
@@ -7131,7 +7105,7 @@ function setupEventListeners() {
     const userBtn = document.getElementById('userMenuButton');
     if (userBtn) userBtn.addEventListener('click', (e) => { e.stopPropagation(); openUserMenuModal(); });
     const userPlaylistsBtn = document.getElementById('userPlaylistsBtn');
-    if (userPlaylistsBtn) userPlaylistsBtn.addEventListener('click', () => { closeUserMenuModal(); document.getElementById('userPlaylistsModal').classList.add('show'); openUserPlaylistsModal(); });
+    if (userPlaylistsBtn) userPlaylistsBtn.addEventListener('click', () => { closeUserMenuModal(); openUserPlaylistsModal(); });
     const userFavoritesBtn = document.getElementById('userFavoritesBtn');
     if (userFavoritesBtn) userFavoritesBtn.addEventListener('click', () => { closeUserMenuModal(); displayFavoritesList(); });
     
