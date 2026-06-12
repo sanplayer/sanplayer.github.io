@@ -2898,7 +2898,7 @@ INPUT MODAL - SISTEMA INDEPENDENTE (createPlaylistModal, editPlaylistModal)
     background: var(--bg-modal);
     width: 100%;
     height: 100%;
-    /*padding-bottom: var(--keyboard-offset, 0px);*/
+    padding-bottom: var(--keyboard-offset, 0px);
     overflow-y: auto;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
@@ -2906,7 +2906,7 @@ INPUT MODAL - SISTEMA INDEPENDENTE (createPlaylistModal, editPlaylistModal)
     transform: translateY(100%);
     opacity: 0;
     padding: 10px;
-    padding-bottom: calc(var(--safe-area-bottom) + 10px);
+    /*padding-bottom: calc(var(--safe-area-bottom) + 10px);*/
 }
 
 .input-modal.show .input-modal-content {
