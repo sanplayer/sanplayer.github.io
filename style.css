@@ -3035,7 +3035,7 @@ MODAL SCRIM - Overlay separado (padrão Material Design 3)
 
 .modal-scrim.show {
     display: block;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .modal-scrim.closing {
