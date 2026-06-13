@@ -2395,7 +2395,7 @@ button:active { background: var(--feedback-color); }
     border-top-right-radius: var(--radius-lg);
     position: fixed;
     padding: 20px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(10px + var(--safe-area-bottom));
     transform: translateY(100%);
     opacity: 0;
     animation: modalBottomSheetExit 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
@@ -2450,7 +2450,7 @@ button:active { background: var(--feedback-color); }
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
     padding: 10px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(10px + var(--safe-area-bottom));
     transform: translateY(100%);
     opacity: 0;
     animation: modalBottomSheetExit 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
