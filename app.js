@@ -128,6 +128,68 @@ const USE_NEW_INIT_LOGIC = true;
 let playerInitialized = false;
 
 // ============================================================================
+// GERENCIADOR CENTRAL DE REDE
+// ============================================================================
+
+const networkState = {
+    online: navigator.onLine,
+    reachable: true, // Pode ser refinado com pings
+
+    /**
+     * Atualiza o estado de rede e reflete na UI
+     * @param {Boolean} isOnline
+     */
+    update(isOnline) {
+        console.log(`[Network] Estado alterado: ${isOnline ? 'ONLINE' : 'OFFLINE'}`);
+        this.online = isOnline;
+
+        const banner = document.getElementById('offline-banner');
+        if (banner) {
+            if (!isOnline) {
+                banner.classList.add('show');
+            } else {
+                banner.classList.remove('show');
+                // Recuperação automática se houver algo pendente
+                this.handleRecovery();
+            }
+        }
+
+        // Notifica outros componentes se necessário
+        document.dispatchEvent(new CustomEvent('networkchange', { detail: { online: isOnline } }));
+    },
+
+    /**
+     * Tenta retomar o que foi interrompido pela falta de rede
+     */
+    handleRecovery() {
+        console.log('[Network] Iniciando recuperação automática...');
+
+        // Se o player estava tentando carregar e falhou
+        if (player.ytReady && ytPlayer && !player.isPlaying && player.shouldPlayOnReady) {
+            console.log('[Network] Retomando reprodução pendente');
+            ytPlayer.playVideo();
+        }
+
+        // Se estivermos em uma view vazia por erro de rede, recarregar
+        if (player.playlistsIndex.length === 0) {
+            loadPlaylists();
+        }
+    }
+};
+
+/**
+ * Hook global para o Android notificar mudança de rede
+ * @param {Boolean} isOnline
+ */
+window.onNetworkChange = function(isOnline) {
+    networkState.update(isOnline);
+};
+
+// Listeners padrão do browser (fallback/redundância)
+window.addEventListener('online', () => networkState.update(true));
+window.addEventListener('offline', () => networkState.update(false));
+
+// ============================================================================
 // ESTADO GLOBAL
 // ============================================================================
 
@@ -1216,9 +1278,22 @@ async function loadPlaylistsIndex() {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const index = await response.json();
         player.playlistsIndex = Array.isArray(index) ? index : [];
+
+        // 💾 Persistência da Biblioteca (Requirement 8)
+        storage.save('sanplayer:library_index', player.playlistsIndex);
+
         return player.playlistsIndex;
     } catch (error) {
         console.error('Erro ao carregar índice de playlists:', error);
+
+        // 📂 Fallback para dados locais persistidos
+        const savedIndex = storage.load('sanplayer:library_index');
+        if (savedIndex) {
+            console.log('[Library] Usando índice persistido offline');
+            player.playlistsIndex = savedIndex;
+            return savedIndex;
+        }
+
         return [];
     }
 }
@@ -1244,12 +1319,24 @@ async function loadPlaylistByUrl(url) {
         // Extrair playlist da estrutura wrapper
         // Estrutura esperada: { playlists: [{ name, coverage, videos }] }
         const playlist = (data.playlists && data.playlists[0]) ? data.playlists[0] : data;
-        
+
+        // 💾 Persistência da Playlist (Requirement 8)
+        storage.save(`sanplayer:playlist:${url}`, playlist);
+
         // Armazenar em cache
         playlistCache.set(url, playlist);
         return playlist;
     } catch (error) {
         console.error(`Erro ao carregar playlist (${url}):`, error);
+
+        // 📂 Fallback para dados persistidos
+        const savedPlaylist = storage.load(`sanplayer:playlist:${url}`);
+        if (savedPlaylist) {
+            console.log(`[Library] Usando playlist persistida offline: ${url}`);
+            playlistCache.set(url, savedPlaylist);
+            return savedPlaylist;
+        }
+
         return null;
     }
 }
@@ -1985,6 +2072,12 @@ async function playTrackById(trackId) {
         console.warn('[Init] ❌ playTrackById: Empty trackId provided');
         return false;
     }
+
+    // 📶 Verificação de Rede para Reprodução
+    if (!navigator.onLine && !window.Android?.isOnline()) {
+        console.warn('[Init] 📶 Offline: Impedindo playTrackById de conteúdo remoto');
+        // Mas permitimos carregar a UI do vídeo (cue) para bootstrap offline
+    }
     
     console.log(`[Init] 🎯 playTrackById: Tentando tocar trackId="${trackId}"`);
     
@@ -2308,6 +2401,13 @@ async function initApp() {
     if (playerInitialized) {
         console.warn('[Init] ⚠️ Player já foi inicializado. Ignorando segunda execução.');
         return;
+    }
+
+    // 📶 Sincronizar estado inicial de rede
+    if (window.Android && typeof window.Android.isOnline === 'function') {
+        networkState.update(window.Android.isOnline());
+    } else {
+        networkState.update(navigator.onLine);
     }
 
     // 🎯 BANNER: Fluxo de inicialização
@@ -5815,6 +5915,22 @@ function playVideoByIndex(index) {
 function playVideo(video) {
     if (!video || !video.id) {
         console.warn('[PlayVideo] ❌ Vídeo inválido ou sem ID');
+        return;
+    }
+
+    // 📶 Feedback Offline do Player
+    if (!navigator.onLine && (!window.Android || !window.Android.isOnline())) {
+        showFeedbackModal('Sem conexão para reproduzir este conteúdo.');
+        console.warn('[PlayVideo] 📶 Bloqueado: Sem conexão');
+
+        // Ainda assim, atualizamos a UI para mostrar que o usuário SELECIONOU o item
+        const videos = getCurrentViewVideos();
+        player.currentVideoIndex = videos.findIndex(v => v.id === video.id);
+        updateActivePlaylistItem();
+        updateCurrentVideoDisplay();
+
+        // Sinalizamos que queremos tocar quando a rede voltar
+        player.shouldPlayOnReady = true;
         return;
     }
     

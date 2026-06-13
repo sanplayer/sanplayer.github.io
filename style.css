@@ -2233,6 +2233,11 @@ button:active { background: var(--feedback-color); }
 
 .update-sheet.show { bottom: 0; }
 
+.update-sheet.offline-mode {
+    background: #b71c1c;
+    border-top-color: #d32f2f;
+}
+
 .update-content {
     display: flex;
     align-items: center;
