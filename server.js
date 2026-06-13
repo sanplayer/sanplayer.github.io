@@ -185,7 +185,7 @@ function loadPlaylistsIndex() {
 
     try {
         // ⚠️ CRÍTICO: Usar caminhos relativos que funcionam em Render + local
-        let indexPath = path.resolve('./data/playlists/index.json');
+        let indexPath = path.resolve('/data/playlists/index.json');
         
         if (!fs.existsSync(indexPath)) {
             indexPath = path.resolve(__dirname, 'data/playlists/index.json');
@@ -218,7 +218,7 @@ function loadPlaylist(fileName) {
 
     try {
         // ⚠️ CRÍTICO: Usar caminhos relativos que funcionam em Render + local
-        let playlistPath = path.resolve('./data/playlists', fileName);
+        let playlistPath = path.resolve('/data/playlists', fileName);
         
         if (!fs.existsSync(playlistPath)) {
             playlistPath = path.resolve(__dirname, 'data/playlists', fileName);
@@ -368,7 +368,7 @@ function getArtistCoverUrl(artistName) {
     const normalizedName = artistName.toLowerCase().replace(/\s+/g, '-');
     
     // Tentar encontrar arquivo de cover
-    let coversPath = path.resolve('./covers/artists');
+    let coversPath = path.resolve('/covers/artists');
     if (!fs.existsSync(coversPath)) {
         coversPath = path.resolve(__dirname, 'covers/artists');
     }
@@ -558,7 +558,7 @@ app.get(['/', '/index.html', '/index.htm'], async (req, res) => {
 
         // Ler HTML original
         // ⚠️ CRÍTICO: Usar caminhos relativos que funcionam em Render + local
-        let htmlPath = path.resolve('./index.html');
+        let htmlPath = path.resolve('/index.html');
         
         // Fallback se não existir no cwd (caso raro)
         if (!fs.existsSync(htmlPath)) {
@@ -572,7 +572,7 @@ app.get(['/', '/index.html', '/index.htm'], async (req, res) => {
 
         if (!fs.existsSync(htmlPath)) {
             console.error('[Server] ERRO CRÍTICO: index.html não encontrado em nenhum caminho:');
-            console.error('[Server] Tentou:', path.resolve('./index.html'));
+            console.error('[Server] Tentou:', path.resolve('/index.html'));
             console.error('[Server] Tentou:', path.resolve(__dirname, 'index.html'));
             console.error('[Server] Tentou:', path.resolve(__dirname, '..', 'index.html'));
             console.error('[Server] Cwd:', process.cwd());
@@ -629,13 +629,13 @@ function runDiagnostics() {
     
     // Verificar arquivos críticos
     const filesToCheck = [
-        './index.html',
+        '/index.html',
         'index.html',
-        path.resolve('./index.html'),
+        path.resolve('/index.html'),
         path.resolve(__dirname, 'index.html'),
-        './data/playlists/index.json',
+        '/data/playlists/index.json',
         'data/playlists/index.json',
-        path.resolve('./data/playlists/index.json'),
+        path.resolve('/data/playlists/index.json'),
     ];
 
     console.log('[Diag] Verificando arquivos:');
