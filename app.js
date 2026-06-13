@@ -2215,13 +2215,27 @@ function openModal(modalId, config = {}) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     
+    // ✅ GERENCIAMENTO DE STACK: Se há outro modal aberto, fechá-lo primeiro
+    // Modais que podem estar abertos: itemOptionsModal, userPlaylistsModal, createPlaylistModal, etc.
+    const openModals = document.querySelectorAll('.modal.show, .input-modal.show');
+    openModals.forEach(openModal => {
+        if (openModal.id !== modalId) {
+            // Fechar o modal anterior sem callback (para não interferir)
+            closeModalWithAnimation(openModal.id, null, true);
+        }
+    });
+    
     // Abrir scrim se existir (bottom-sheets e input-modals têm scrim)
     const scrimId = modalId + 'Scrim';
     const scrim = document.getElementById(scrimId);
     if (scrim) {
         scrim.classList.add('show');
-        // Adicionar listener para fechar ao clicar no scrim
-        scrim.addEventListener('click', () => closeModalWithAnimation(modalId), { once: true });
+        // ✅ CRÍTICO: Usar cloneNode() para remover listeners antigos
+        const cleanScrim = scrim.cloneNode(true);
+        scrim.parentNode.replaceChild(cleanScrim, scrim);
+        
+        // Adicionar listener NOVO para fechar ao clicar no scrim
+        cleanScrim.addEventListener('click', () => closeModalWithAnimation(modalId), { once: true });
     }
     
     // Abrir modal
@@ -2266,6 +2280,9 @@ function closeModalWithAnimation(modalId, callback, skipAnimation = false) {
     modal.classList.remove('show');
     if (scrim) {
         scrim.classList.remove('show');
+        
+        // ✅ CRÍTICO: Remover listener do scrim para evitar ghosting
+        scrim.replaceWith(scrim.cloneNode(true));
     }
     
     if (callback) callback();
@@ -2713,7 +2730,7 @@ function clearActiveInput() {
 
 function initServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js').then((registration) => {
+        navigator.serviceWorker.register('./service-worker.js').then((registration) => {
             console.log('[App] ✅ Service Worker registrado:', registration.scope);
             
             // Escuta por novas atualizações sendo instaladas
@@ -4448,7 +4465,9 @@ function openUserPlaylistsModal() {
     });
     
     container.appendChild(fragment);
-    // Abrir o modal
+    // ✅ CRÍTICO: Usar openModal() para gerenciar stack de modais
+    // Isso garante que se houver outro modal aberto (ex: itemOptionsModal),
+    // ele será fechado corretamente e não deixará scrim preso
     openModal('userPlaylistsModal');
 }
 
@@ -4641,6 +4660,24 @@ function renderUserPlaylistRow(pl, idx, isAddingMode) {
     });
     
     return row;
+}
+
+/**
+ * Atualizar o contador de uma playlist no modal de playlists
+ * @param {Number} playlistIdx - índice da playlist
+ * @param {Number} newCount - novo contador
+ */
+function updatePlaylistBadge(playlistIdx, newCount) {
+    const container = document.getElementById('userPlaylistsContainer');
+    if (!container) return;
+    
+    const rows = container.querySelectorAll('.playlist-item-row');
+    if (rows[playlistIdx]) {
+        const badge = rows[playlistIdx].querySelector('.playlist-count-badge');
+        if (badge) {
+            badge.textContent = newCount;
+        }
+    }
 }
 
 function closeUserPlaylistsModal() {
@@ -4949,6 +4986,12 @@ function closeItemOptionsModal() {
             displayFavoritesList();
         }
     });
+    
+    // ✅ Garantir que o scrim seja removido (mesmo se houver múltiplos modais)
+    const scrim = document.getElementById('itemOptionsModalScrim');
+    if (scrim && scrim.classList.contains('show')) {
+        scrim.classList.remove('show');
+    }
 }
 
 /**
@@ -5078,6 +5121,9 @@ function addItemToUserPlaylist(playlistIdx) {
         target.videos.push(video);
         saveUserPlaylists(list);
         showToast(`Adicionado a "${target.name}"`);
+        
+        // ✅ ATUALIZAR BADGE IMEDIATAMENTE
+        updatePlaylistBadge(playlistIdx, target.videos.length);
     } else {
         showToast(`Ja esta em "${target.name}"`);
     }
@@ -5139,11 +5185,9 @@ function showFeedbackModal(message, duration = 3000) {
     // Usar openModal() para gerenciar scrim automaticamente
     openModal('feedbackModal');
     
-    // Fechar automaticamente após duração
+    // ✅ Fechar CORRETAMENTE usando closeModalWithAnimation para remover scrim também
     setTimeout(() => {
-        modal.classList.remove('show');
-        // Garantir limpeza: remover qualquer classe 'closing' que possa ficar
-        modal.classList.remove('closing');
+        closeModalWithAnimation('feedbackModal', null, true);
     }, duration + 50); // +50ms de buffer para animação
 }
 
