@@ -2730,7 +2730,7 @@ function clearActiveInput() {
 
 function initServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+        navigator.serviceWorker.register('./service-worker.js').then((registration) => {
             console.log('[App] ✅ Service Worker registrado:', registration.scope);
             
             // Escuta por novas atualizações sendo instaladas
@@ -3002,13 +3002,7 @@ function initPWAInstall() {
         });
     }
 
-    const closeAboutModal = document.getElementById('closeAboutModal');
-    if (closeAboutModal) {
-        closeAboutModal.addEventListener('click', () => {
-            closeModalWithAnimation('aboutModal');
-        });
-    }
-
+    // Modal Sobre - Botão de fechar no rodapé
     const aboutModalElement = document.getElementById('aboutModal');
     if (aboutModalElement) {
         aboutModalElement.addEventListener('click', (e) => {
@@ -3120,15 +3114,11 @@ function openTermsModal() {
 // Quando o usuário está em Privacy/Terms/Author e clica em Voltar,
 // deve voltar para o modal About em vez de fechar tudo
 function goBackToAboutModal(currentModalId) {
-    const currentModal = document.getElementById(currentModalId);
-    if (currentModal) {
-        currentModal.classList.remove('show');
-    }
-    
-    // Aguardar animação de fechamento antes de abrir o About
-    setTimeout(() => {
+    // Fechar modal atual com limpeza correta de scrim e listeners
+    closeModalWithAnimation(currentModalId, () => {
+        // Após fechar, reabrir o modal About
         openAboutModal();
-    }, 300);
+    });
 }
 
 function showPWAInstallPrompt() {
