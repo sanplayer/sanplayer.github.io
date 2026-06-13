@@ -6722,7 +6722,7 @@ function setupMobileSearch() {
         const query = e.target.value.trim();
         
         if (query.length === 0) {
-            document.getElementById('searchModal').classList.remove('show');
+            closeModalWithAnimation('searchModal');
             return;
         }
         
@@ -6738,7 +6738,7 @@ function setupMobileSearch() {
             if (item && window.innerWidth <= 1023) {
                 // Limpar pesquisa e fechar
                 searchInput.value = '';
-                searchModal.classList.remove('show');
+                closeModalWithAnimation('searchModal');
                 headerSearch.classList.remove('show-search');
             }
         });
@@ -6853,8 +6853,8 @@ function displaySearchResults(results, query) {
                     // Persist current state
                     saveCurrentState();
                     
-                    // Fechar modal de busca
-                    modal.classList.remove('show');
+                    // Fechar modal de busca com limpeza de scrim
+                    closeModalWithAnimation('searchModal');
                 } catch (error) {
                     console.error('Erro ao tocar música da busca:', error);
                 }
