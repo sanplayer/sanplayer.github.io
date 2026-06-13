@@ -2231,7 +2231,7 @@ button:active { background: var(--feedback-color); }
     box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
 }
 
-.update-sheet.show { bottom: 0; padding-bottom: var(safe-area-bottom);}
+.update-sheet.show { bottom: 0; padding-bottom: var(--safe-area-bottom);}
 
 .update-sheet.offline-mode {
     background: var(--accent-roxo);
