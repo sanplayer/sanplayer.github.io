@@ -2234,7 +2234,7 @@ button:active { background: var(--feedback-color); }
 .update-sheet.show { bottom: 0; padding-bottom: var(--safe-area-bottom);}
 
 .update-sheet.offline-mode {
-    background: var(--accent-roxo);
+    background: var(--accent-roxo-dark);
     border-top-color: var(--accent-roxo-dark);
 }
 
