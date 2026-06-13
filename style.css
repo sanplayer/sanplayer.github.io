@@ -2580,10 +2580,15 @@ MOBILE CONFIG - MAX 768PX
         top: var(--safe-area-top);
     }
     .header-search.show-search form {
-        width: 100%;
-        background: rgba(0, 0, 0, .8);
-        padding: 1rem;
-        position: fixed;
+    width: 90%;
+    left:0px;
+    right:0px;
+    margin: auto;
+    background: rgba(0, 0, 0, .8);
+    padding: .6rem;
+    position: fixed;
+    border: 1px solid var(--accent-roxo-dark);
+    border-radius: 2rem;   
     }
     .overlay-layer {
         background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgb(0 0 0 / 0%) 20%, rgb(0 0 0 / 0%) 100%);
