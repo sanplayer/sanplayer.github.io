@@ -2361,7 +2361,6 @@ button:active { background: var(--feedback-color); }
     z-index: 1000;
     opacity: 0;
     pointer-events: none;
-    animation: backdropFadeOut 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 .modal.modal-fullscreen {
     top: var(--header-height);
@@ -2407,9 +2406,7 @@ button:active { background: var(--feedback-color); }
 }
 
 /* Overrides para Bottom-Sheet específico */
-.modal.modal-bottom-sheet .modal-content {
-    /*padding-bottom: calc(var(--safe-area-bottom) + var(--keyboard-offset));*/
-}
+
 .modal.modal-bottom-sheet.modal-small .modal-content {
     padding-bottom: calc(10px + var(--keyboard-offset, 0px));
 }
@@ -2433,7 +2430,6 @@ button:active { background: var(--feedback-color); }
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    animation: backdropFadeOut 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 .input-modal.show {
     display: flex;
@@ -2477,7 +2473,6 @@ button:active { background: var(--feedback-color); }
     background: rgba(0, 0, 0, 0.7);
     opacity: 0;
     pointer-events: none;
-    animation: backdropFadeOut 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     cursor: pointer;
 }
 .modal-scrim.show {
