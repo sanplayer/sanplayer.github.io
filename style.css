@@ -1474,6 +1474,7 @@ button:active { background: var(--feedback-color); }
     width: 100%;
     border-radius: 1rem;
     background: #2C3134;
+    margin: auto; /*add*/
 }
 
 .modal-header--item .thumb {
@@ -2512,6 +2513,7 @@ button:active { background: var(--feedback-color); }
     min-height: 150px;
     background: #2C3134;
     border-radius: 1.2rem;
+    margin-top: 1.5rem; /*add*/
 }
 
 /* (comentário do modal-close-footer foi mantido inline acima) */
