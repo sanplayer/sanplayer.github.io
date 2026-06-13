@@ -2440,22 +2440,26 @@ button:active { background: var(--feedback-color); }
     pointer-events: auto;
     animation: backdropFadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
+/* ============================================================================
+   ##SAFE AREA - NAO ALTAR ESTA CLASSE EM IPOTESE ALGUMA
+   ============================================================================ */
 .input-modal-content {
     background: var(--bg-modal);
     width: 100%;
-    height: 100%;
-    max-height: 70%;
-    padding-bottom: var(--keyboard-offset, 0px);
+    /*height: 100%;*/
+    /*max-height: 70%;*/
+    /*padding-bottom: var(--keyboard-offset, 0px);*/
     overflow-y: auto;
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
     padding: 10px;
-    padding-bottom: calc(10px + var(--safe-area-bottom));
+    padding-bottom: var(--safe-area-bottom);
     transform: translateY(100%);
     opacity: 0;
     animation: modalBottomSheetExit 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
                padding-bottom 0.2s ease-out;
 }
+
 .input-modal.show .input-modal-content {
     animation: modalBottomSheetEnter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
                padding-bottom 0.2s ease-out;
