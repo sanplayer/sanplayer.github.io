@@ -2408,7 +2408,7 @@ button:active { background: var(--feedback-color); }
 
 /* Overrides para Bottom-Sheet específico */
 .modal.modal-bottom-sheet .modal-content {
-    padding-bottom: calc(var(--safe-area-bottom) + var(--keyboard-offset));
+    /*padding-bottom: calc(var(--safe-area-bottom) + var(--keyboard-offset));*/
 }
 .modal.modal-bottom-sheet.modal-small .modal-content {
     padding-bottom: calc(10px + var(--keyboard-offset, 0px));
@@ -2513,7 +2513,7 @@ button:active { background: var(--feedback-color); }
     min-height: 150px;
     background: #2C3134;
     border-radius: 1.2rem;
-    margin-top: 1.5rem; /*add*/
+    margin-top: 1rem; /*add*/
 }
 
 /* (comentário do modal-close-footer foi mantido inline acima) */
