@@ -12,7 +12,8 @@ const URLS_TO_CACHE = [
     '/icons/favicon.svg',
     '/icons/icon192.png',
     '/icons/icon512.png',
-    '/icons/package.svg'
+    '/icons/package.svg',
+    '/assets/offline.webp'
 ];
 
 // ============================================================================
