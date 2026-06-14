@@ -2251,7 +2251,7 @@ button:active { background: var(--feedback-color); }
     background-image: var(--offline-player-bg, url('./assets/offline.webp'));
     background-size: cover;
     background-position: center center;
-    z-index: 999; /* Acima de todos os overlays do player (10, 11) */
+    z-index: 1; /* Neutro quando oculto */
     pointer-events: none; /* não bloquear interações */
     opacity: 0;
     transition: opacity 240ms ease-in-out;
@@ -2259,6 +2259,7 @@ button:active { background: var(--feedback-color); }
 .offline-player-placeholder.show {
     display: flex;
     opacity: 1;
+    z-index: 999; /* Acima de todos os overlays do player (10, 11) - APENAS quando visível */
 }
 
 
