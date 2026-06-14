@@ -194,6 +194,7 @@ window.addEventListener('offline', () => networkState.update(false));
 // ============================================================================
 let offlineBannerTimeout = null;
 let previousOnlineState = null;  // Rastreia estado anterior para detectar transições reais
+let networkInitializationDone = false;  // Flag para indicar que a inicialização de rede foi concluída
 
 /**
  * Garante que o placeholder do player exista no DOM e retorna o elemento
@@ -257,14 +258,23 @@ function hideOfflineAlert() {
 document.addEventListener('networkchange', (ev) => {
     const online = ev?.detail?.online === true;
     
-    // 🔒 CRÍTICO: Detectar TRANSIÇÃO REAL (não apenas o estado inicial)
-    // previousOnlineState começa como null na primeira vez
-    // Só reagimos se houver mudança: offline->online ou online->offline
+    // 🔒 CRÍTICO: Detectar TRANSIÇÃO REAL ou INICIALIZAÇÃO OFFLINE
     if (previousOnlineState === null) {
-        // Primeira vez: apenas registrar o estado inicial, sem feedback
+        // Primeira vez: registrar estado e reagir se OFFLINE
         previousOnlineState = online;
-        console.log('[NetworkChange] 🔧 Estado inicial registrado:', online ? 'ONLINE' : 'OFFLINE');
-        return;  // NÃO dispara feedback na inicialização
+        networkInitializationDone = true;
+        
+        if (!online) {
+            // App inicia OFFLINE: mostrar placeholder + banner imediatamente
+            console.log('[NetworkChange] 🔧 Inicialização com OFFLINE - mostrando feedback');
+            showOfflineAlert();
+            showPlayerPlaceholder(true);
+            showFeedbackModal('Sem conexão para reproduzir este conteúdo.', 3000);
+        } else {
+            // App inicia ONLINE: apenas registrar, sem feedback
+            console.log('[NetworkChange] 🔧 Estado inicial registrado: ONLINE (sem feedback)');
+        }
+        return;
     }
     
     // Houve mudança de estado?
@@ -273,7 +283,7 @@ document.addEventListener('networkchange', (ev) => {
         return;
     }
     
-    // 🔄 TRANSIÇÃO REAL DETECTADA
+    // 🔄 TRANSIÇÃO REAL DETECTADA (após inicialização)
     previousOnlineState = online;
     
     if (!online) {
@@ -2521,11 +2531,18 @@ async function initApp() {
         return;
     }
 
-    // 📶 Sincronizar estado inicial de rede
+    console.log('[Init] 📱 Inicializando SanPlayer...');
+
+    // 📶 Sincronizar estado inicial de rede (CRÍTICO: deve ser feito ANTES de qualquer fetch)
+    console.log('[Init] 📶 Verificando estado de rede...');
     if (window.Android && typeof window.Android.isOnline === 'function') {
-        networkState.update(window.Android.isOnline());
+        const androidOnline = window.Android.isOnline();
+        console.log('[Init] 🔗 Android Bridge disponível - estado:', androidOnline ? 'ONLINE' : 'OFFLINE');
+        networkState.update(androidOnline);
     } else {
-        networkState.update(navigator.onLine);
+        const navOnline = navigator.onLine;
+        console.log('[Init] 🔗 Usando navigator.onLine - estado:', navOnline ? 'ONLINE' : 'OFFLINE');
+        networkState.update(navOnline);
     }
 
     // 🎯 BANNER: Fluxo de inicialização
@@ -2701,6 +2718,17 @@ async function initApp() {
     initThemeColor();
 
     safeRender();
+    
+    // 🔒 GARANTIA OFFLINE: Se inicializamos offline, garantir placeholder visível
+    // Este check ocorre APÓS toda a UI estar pronta
+    if (!networkState.online) {
+        console.log('[Init] 📦 App iniciado OFFLINE - garantindo placeholder visível');
+        showPlayerPlaceholder(true);
+        showOfflineAlert();
+        // Feedback já foi mostrado no networkchange listener, mas reforçar visualmente
+    } else {
+        console.log('[Init] 📡 App iniciado ONLINE - nenhum placeholder necessário');
+    }
     
     // ✅ MARCA INICIALIZAÇÃO COMO COMPLETA (agora histórico pode funcionar)
     appInitComplete = true;

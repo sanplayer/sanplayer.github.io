@@ -2,18 +2,33 @@
 // SERVICE WORKER - SanPlayer PWA
 // ============================================================================
 
-const CACHE_NAME = 'sanplayer-v1.0.2.6';
+const CACHE_NAME = 'sanplayer-v1.0.2.5';
 const URLS_TO_CACHE = [
     '/',
+    '/index.html',
     '/style.css',
     '/app.js',
     '/manifest.json',
+    '/media/MediaBridge.js',
+    '/adapters/share.js',
     '/icons/favicon-96x96.webp',
     '/icons/favicon.svg',
     '/icons/icon192.png',
     '/icons/icon512.png',
     '/icons/package.svg',
-    '/assets/offline.webp'
+    '/assets/splash.webp',
+    '/assets/splash-wide.webp',
+    '/assets/offline.webp',
+    '/fonts/',
+    '/data/playlists/index.json'
+];
+
+// Padrões adicionais de URLs a cachear dinamicamente
+const DYNAMIC_CACHE_PATTERNS = [
+    /^\/data\/playlists\/.+\.json$/,
+    /^\/covers\/artists\/.+\.(webp|png|jpg)$/,
+    /^\/covers\/playlists\/.+\.(webp|png|jpg)$/,
+    /^\/icons\/.+\.(svg|webp|png|jpg)$/
 ];
 
 // ============================================================================
@@ -121,19 +136,21 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // ============================================================================
-// 6. ESTRATÉGIA DE BUSCA (FETCH) - Cache First com Fallback para Network
+// 6. ESTRATÉGIA DE BUSCA (FETCH) - Network First para dinâmicos, Cache First para estáticos
 // ============================================================================
 
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
-    // Ignorar requisições externas (YouTube/Google APIs)
-    if (event.request.url.includes('youtube.com') || event.request.url.includes('googleapis.com')) {
+    const url = event.request.url;
+
+    // ❌ Ignorar requisições externas (YouTube/Google APIs)
+    if (url.includes('youtube.com') || url.includes('googleapis.com') || url.includes('www.youtube.com')) {
         return;
     }
 
-    // Tratamento especial para o Manifest (sempre buscar versão nova)
-    if (event.request.url.includes('manifest.json')) {
+    // 🔄 Tratamento especial para o Manifest (sempre buscar versão nova, com fallback para cache)
+    if (url.includes('manifest.json')) {
         event.respondWith(
             fetch(event.request)
                 .then((response) => {
@@ -150,6 +167,35 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // 📊 Estratégia para dados dinâmicos (playlists JSON, etc)
+    // Network First: tenta network primeiro, fallback para cache se offline
+    const isDynamicData = /^\/data\/playlists\/.+\.json$/.test(new URL(url).pathname);
+    
+    if (isDynamicData) {
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    if (!response || response.status !== 200) {
+                        return response;
+                    }
+                    // Cachear a resposta bem-sucedida
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseToCache);
+                    });
+                    return response;
+                })
+                .catch(() => {
+                    // Offline: retornar do cache se existir
+                    return caches.match(event.request)
+                        .then((cached) => cached || createOfflineFallback(url));
+                })
+        );
+        return;
+    }
+
+    // 🖼️ Estratégia para assets estáticos (imagens, CSS, JS, covers)
+    // Cache First: usar cache se existir, caso contrário buscar network
     event.respondWith(
         caches.match(event.request).then((response) => {
             if (response) return response;
@@ -159,6 +205,7 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 }
 
+                // Cachear resposta bem-sucedida
                 const responseToCache = response.clone();
                 caches.open(CACHE_NAME).then((cache) => {
                     cache.put(event.request, responseToCache);
@@ -166,11 +213,51 @@ self.addEventListener('fetch', (event) => {
 
                 return response;
             }).catch(() => {
-                console.warn('[ServiceWorker] Falha na requisição offline:', event.request.url);
+                console.warn('[ServiceWorker] Falha em fetch offline:', url);
+                return createOfflineFallback(url);
             });
         })
     );
 });
+
+/**
+ * 🔒 Fallback para requisições offline
+ * Retorna resposta apropriada de acordo com o tipo de requisição
+ */
+function createOfflineFallback(url) {
+    // Se for imagem/cover, retornar um placeholder cinza
+    if (/\.(webp|png|jpg|jpeg)$/.test(url)) {
+        return new Response(
+            new Blob(
+                [new Uint8Array([
+                    // Mínimo PNG válido (1x1 pixel cinza)
+                    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+                    0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+                    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+                    0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+                    0xDE, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41,
+                    0x54, 0x08, 0x99, 0x63, 0xF8, 0xCF, 0xC0, 0x00,
+                    0x00, 0x03, 0x01, 0x01, 0x00, 0x18, 0xDD, 0x8D,
+                    0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E,
+                    0x44, 0xAE, 0x42, 0x60, 0x82
+                ])],
+                { type: 'image/png' }
+            ),
+            { status: 200, headers: { 'Content-Type': 'image/png' } }
+        );
+    }
+
+    // Se for JSON de playlist, retornar estrutura vazia
+    if (url.includes('/data/playlists/')) {
+        return new Response(
+            JSON.stringify({ name: 'Offline', videos: [] }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+    }
+
+    // Fallback genérico
+    return new Response('Recurso não disponível offline', { status: 503 });
+}
 
 // ============================================================================
 // 7. MENSAGENS E ATUALIZAÇÃO
