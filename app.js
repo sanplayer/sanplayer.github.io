@@ -196,6 +196,7 @@ let offlineBannerTimeout = null;
 let previousOnlineState = null;  // Rastreia estado anterior para detectar transições reais
 let networkInitializationDone = false;  // Flag para indicar que a inicialização de rede foi concluída
 let offlineAlertShown = false;  // 🆕 Rastreia se o banner offline já foi mostrado neste ciclo
+let isRestoringPlayerState = false;  // 🆕 Flag para indicar que estamos restaurando estado (não mostrar toast "Sem conexão" aqui)
 
 /**
  * Garante que o placeholder do player exista no DOM e retorna o elemento
@@ -317,7 +318,9 @@ document.addEventListener('networkchange', (ev) => {
                 }
             }
         }
-        // 🔔 Feedback de reconexão removido - já existe banner no PWA
+        // 🔔 RESTAURADO: Mostrar feedback de reconexão ao usuário
+        console.log('[NetworkChange] 📢 Mostrando feedback de reconexão');
+        showFeedbackModal('Conexão restaurada', 3000);
     }
 });
 
@@ -779,11 +782,15 @@ function persistPlayerState() {
  * - Auto-play se estava tocando
  */
 async function restorePlayerState() {
-    const saved = storage.load('sanplayer:state');
-    if (!saved) {
-        console.log('[Restore] ℹ️ Nenhum estado salvo');
-        return false;
-    }
+    // 🆕 Flag para indicar que estamos em modo restore (evita mostrar toast offline aqui)
+    isRestoringPlayerState = true;
+    
+    try {
+        const saved = storage.load('sanplayer:state');
+        if (!saved) {
+            console.log('[Restore] ℹ️ Nenhum estado salvo');
+            return false;
+        }
     
     console.log('[Restore] 📂 Estado encontrado:', {
         videoId: saved.currentVideoId,
@@ -923,6 +930,11 @@ async function restorePlayerState() {
     console.log('[Restore] ✅ Sidebar renderizada');
     
     return true;
+    } finally {
+        // 🆕 CRÍTICO: Sempre resetar a flag após restore completar (sucesso ou erro)
+        isRestoringPlayerState = false;
+        console.log('[Restore] 🔄 Modo restore finalizado - isRestoringPlayerState = false');
+    }
 }
 
 // ============================================================================
@@ -2739,8 +2751,8 @@ async function initApp() {
     if (!networkState.online) {
         console.log('[Init] 📦 App iniciado OFFLINE - garantindo placeholder visível');
         showPlayerPlaceholder(true);
-        showOfflineAlert();
-        // Feedback já foi mostrado no networkchange listener, mas reforçar visualmente
+        // 🆕 NÃO mostrar banner aqui - o networkchange listener já gerencia isso
+        // A flag previousOnlineState === null garante que não mostra na inicialização
     } else {
         console.log('[Init] 📡 App iniciado ONLINE - nenhum placeholder necessário');
     }
@@ -5743,10 +5755,17 @@ function loadVideo(video) {
     // Player container já existe no HTML, não precisa recriá-lo
 
     // 🆕 VALIDAÇÃO: Se tentar tocar offline, mostrar feedback
-    if (!networkState.online) {
+    // ⚠️ MAS: Não mostrar durante restauração (restore pode falhar, tentar depois que reconectar)
+    if (!networkState.online && !isRestoringPlayerState) {
         console.log('[loadVideo] ⚠️ Tentativa de reproduzir vídeo offline - mostrando feedback');
         showFeedbackModal('Sem conexão para reproduzir este conteúdo.', 3000);
         return;  // NÃO carregar o vídeo se estiver offline
+    }
+    
+    // 🔔 Se está offline mas é durante restore, apenas não carregar (silencioso)
+    if (!networkState.online && isRestoringPlayerState) {
+        console.log('[loadVideo] 🔇 Offline durante restore - não mostrando toast (será retry quando reconectar)');
+        return;  // Silencioso durante restore
     }
 
     if (ytPlayer && typeof ytPlayer.cueVideoById === 'function') {
