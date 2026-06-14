@@ -195,6 +195,7 @@ window.addEventListener('offline', () => networkState.update(false));
 let offlineBannerTimeout = null;
 let previousOnlineState = null;  // Rastreia estado anterior para detectar transições reais
 let networkInitializationDone = false;  // Flag para indicar que a inicialização de rede foi concluída
+let offlineAlertShown = false;  // 🆕 Rastreia se o banner offline já foi mostrado neste ciclo
 
 /**
  * Garante que o placeholder do player exista no DOM e retorna o elemento
@@ -260,16 +261,15 @@ document.addEventListener('networkchange', (ev) => {
     
     // 🔒 CRÍTICO: Detectar TRANSIÇÃO REAL ou INICIALIZAÇÃO OFFLINE
     if (previousOnlineState === null) {
-        // Primeira vez: registrar estado e reagir se OFFLINE
+        // Primeira vez: registrar estado - NÃO mostrar feedback aqui
         previousOnlineState = online;
         networkInitializationDone = true;
         
         if (!online) {
-            // App inicia OFFLINE: mostrar placeholder + banner imediatamente
-            console.log('[NetworkChange] 🔧 Inicialização com OFFLINE - mostrando feedback');
-            showOfflineAlert();
+            // App inicia OFFLINE: apenas mostrar placeholder silenciosamente
+            console.log('[NetworkChange] 🔧 Inicialização com OFFLINE - apenas placeholder (sem feedback)');
             showPlayerPlaceholder(true);
-            showFeedbackModal('Sem conexão para reproduzir este conteúdo.', 3000);
+            offlineAlertShown = false;  // Reseta flag para mostrar banner se reconectar
         } else {
             // App inicia ONLINE: apenas registrar, sem feedback
             console.log('[NetworkChange] 🔧 Estado inicial registrado: ONLINE (sem feedback)');
@@ -287,17 +287,23 @@ document.addEventListener('networkchange', (ev) => {
     previousOnlineState = online;
     
     if (!online) {
-        // OFFLINE: Mostrar banner por 5s e placeholder no player
-        console.log('[NetworkChange] 📶 Desconectado - mostrando placeholder');
-        showOfflineAlert();
+        // OFFLINE: Mostrar banner UMA VEZ (rastreado por offlineAlertShown)
+        console.log('[NetworkChange] 📶 Desconectado - mostrando banner offline');
         showPlayerPlaceholder(true);
-        // Feedback curto para o usuário
-        showFeedbackModal('Sem conexão para reproduzir este conteúdo.', 3000);
+        
+        // 🆕 Mostrar banner apenas UMA VEZ por ciclo de desconexão
+        if (!offlineAlertShown) {
+            showOfflineAlert();
+            offlineAlertShown = true;  // Marca que já mostrou
+            console.log('[NetworkChange] 🔔 Banner offline mostrado (só uma vez)');
+        }
+        // ⚠️ NÃO mostrar feedback aqui - apenas quando TENTA TOCAR um vídeo
     } else {
         // ONLINE: Restaurado - remover placeholder, recarregar vídeo e mostrar feedback
         console.log('[NetworkChange] 🌐 Reconectado - recarregando vídeo');
         showPlayerPlaceholder(false);
         hideOfflineAlert();
+        offlineAlertShown = false;  // Reseta flag para próxima desconexão
         
         // 🔄 CRÍTICO: Recarregar o vídeo no YouTube player para limpar erro de conexão
         if (ytPlayer && player.ytReady) {
@@ -5726,6 +5732,13 @@ function loadFirstVideo() {
 
 function loadVideo(video) {
     // Player container já existe no HTML, não precisa recriá-lo
+
+    // 🆕 VALIDAÇÃO: Se tentar tocar offline, mostrar feedback
+    if (!networkState.online) {
+        console.log('[loadVideo] ⚠️ Tentativa de reproduzir vídeo offline - mostrando feedback');
+        showFeedbackModal('Sem conexão para reproduzir este conteúdo.', 3000);
+        return;  // NÃO carregar o vídeo se estiver offline
+    }
 
     if (ytPlayer && typeof ytPlayer.cueVideoById === 'function') {
         ytPlayer.cueVideoById(video.id);

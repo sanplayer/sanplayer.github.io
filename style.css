@@ -741,12 +741,18 @@ button:active { background: var(--feedback-color); }
     width: 70%;
     height: 1rem;
     border-radius: 4px;
+    background: linear-gradient(90deg, #1a1a1f 0%, #252530 50%, #1a1a1f 100%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
 }
 
 .skeleton-artist {
     width: 50%;
     height: 0.75rem;
     border-radius: 4px;
+    background: linear-gradient(90deg, #1a1a1f 0%, #252530 50%, #1a1a1f 100%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
 }
 
 .skeleton-duration {
@@ -754,6 +760,9 @@ button:active { background: var(--feedback-color); }
     height: 0.75rem;
     margin-left: auto;
     border-radius: 4px;
+    background: linear-gradient(90deg, #1a1a1f 0%, #252530 50%, #1a1a1f 100%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
 }
 
 .skeleton-card { background: transparent; }
@@ -761,7 +770,8 @@ button:active { background: var(--feedback-color); }
 .skeleton-card-image {
     width: 100%;
     height: 0;
-    background: var(--bg-surface-light);
+    background: linear-gradient(90deg, #1a1a1f 0%, #252530 50%, #1a1a1f 100%);
+    background-size: 200% 100%;
     display: block;
     border-radius: 0.5rem 0.5rem 0 0;
     animation: skeleton-loading 1.5s infinite;
@@ -772,6 +782,8 @@ button:active { background: var(--feedback-color); }
     width: 80%;
     margin-bottom: 0.5rem;
     border-radius: 4px;
+    background: linear-gradient(90deg, #1a1a1f 0%, #252530 50%, #1a1a1f 100%);
+    background-size: 200% 100%;
     animation: skeleton-loading 1.5s infinite;
 }
 
@@ -779,6 +791,8 @@ button:active { background: var(--feedback-color); }
     height: 0.75rem;
     width: 60%;
     border-radius: 4px;
+    background: linear-gradient(90deg, #1a1a1f 0%, #252530 50%, #1a1a1f 100%);
+    background-size: 200% 100%;
     animation: skeleton-loading 1.5s infinite;
 }
 
