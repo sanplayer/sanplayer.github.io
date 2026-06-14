@@ -143,15 +143,13 @@ const networkState = {
         console.log(`[Network] Estado alterado: ${isOnline ? 'ONLINE' : 'OFFLINE'}`);
         this.online = isOnline;
 
-        const banner = document.getElementById('offline-banner');
-        if (banner) {
-            if (!isOnline) {
-                banner.classList.add('show');
-            } else {
-                banner.classList.remove('show');
-                // Recuperação automática se houver algo pendente
-                this.handleRecovery();
-            }
+        // 🆕 NÃO gerenciar banner aqui - deixar o listener de networkchange fazer isso
+        // O banner deve ter timeout (showOfflineAlert) e não ficar congelado
+        // Apenas notifica os listeners que o estado mudou
+        
+        // Recuperação automática se houver algo pendente
+        if (isOnline) {
+            this.handleRecovery();
         }
 
         // Notifica outros componentes se necessário
