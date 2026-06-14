@@ -317,8 +317,7 @@ document.addEventListener('networkchange', (ev) => {
                 }
             }
         }
-        
-        showFeedbackModal('Conexão restaurada', 3000);
+        // 🔔 Feedback de reconexão removido - já existe banner no PWA
     }
 });
 
@@ -1556,11 +1555,21 @@ function renderCard(data, config = {}) {
     const card = document.createElement('div');
     card.className = 'card';
     
+    // 🆕 WRAPPER: Contêiner para imagem com background placeholder
+    // Isso evita que o navegador mostre fundo vermelho enquanto imagem carrega
+    const imgWrapper = document.createElement('div');
+    imgWrapper.className = 'card-image-wrapper';
+    
     const img = document.createElement('img');
     img.src = data.src;
     img.alt = data.title;
     img.className = 'card-image';
-    img.addEventListener('error', () => { img.src = '/covers/artists/default.jpg'; });
+    img.addEventListener('error', () => { 
+        img.src = '/covers/artists/default.jpg';
+        img.classList.add('fallback-image');
+    });
+    
+    imgWrapper.appendChild(img);
     
     const body = document.createElement('div');
     body.className = 'card-body card-overlay';
@@ -1575,7 +1584,7 @@ function renderCard(data, config = {}) {
     
     body.appendChild(titleEl);
     body.appendChild(subtitleEl);
-    card.appendChild(img);
+    card.appendChild(imgWrapper);
     card.appendChild(body);
     
     // Adicionar botão kebab se tipo for fornecido
@@ -7072,11 +7081,20 @@ function displaySearchResults(results, query) {
             const card = document.createElement('div');
             card.className = 'card';
             
+            // 🆕 WRAPPER: Contêiner para imagem com background placeholder
+            const imgWrapper = document.createElement('div');
+            imgWrapper.className = 'card-image-wrapper';
+            
             const img = document.createElement('img');
             img.src = getArtistCoverUrl(result.video.artist);
             img.alt = result.video.artist;
             img.className = 'card-image';
-            img.addEventListener('error', () => { img.src = 'covers/artists/default.jpg'; });
+            img.addEventListener('error', () => { 
+                img.src = 'covers/artists/default.jpg';
+                img.classList.add('fallback-image');
+            });
+            
+            imgWrapper.appendChild(img);
             
             const cardBody = document.createElement('div');
             cardBody.className = 'card-body';
@@ -7091,7 +7109,7 @@ function displaySearchResults(results, query) {
             
             cardBody.appendChild(cardTitle);
             cardBody.appendChild(cardSubtitle);
-            card.appendChild(img);
+            card.appendChild(imgWrapper);
             card.appendChild(cardBody);
             card.addEventListener('click', async () => {
                 // Sincronizar estado favorito atual
