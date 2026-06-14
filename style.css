@@ -424,6 +424,7 @@ button:active { background: var(--feedback-color); }
     border-radius: var(--radius-lg);
     position: relative;
     overflow: hidden;
+    background-color: #000000;
 }
 
 .player-embed {
@@ -434,6 +435,7 @@ button:active { background: var(--feedback-color); }
     width: 100%;
     height: 135%;
     transform: translate(-50%, -50%);
+    background-color: #000000;
 }
 
 .video-wrapper img {
@@ -2249,7 +2251,7 @@ button:active { background: var(--feedback-color); }
     background-image: var(--offline-player-bg, url('./assets/offline.webp'));
     background-size: cover;
     background-position: center center;
-    z-index: 40; /* abaixo dos controles de UI que tenham z-index maior */
+    z-index: 999; /* Acima de todos os overlays do player (10, 11) */
     pointer-events: none; /* não bloquear interações */
     opacity: 0;
     transition: opacity 240ms ease-in-out;
