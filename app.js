@@ -190,6 +190,87 @@ window.addEventListener('online', () => networkState.update(true));
 window.addEventListener('offline', () => networkState.update(false));
 
 // ============================================================================
+// OFFLINE UI HELPERS
+// ============================================================================
+let offlineBannerTimeout = null;
+
+/**
+ * Garante que o placeholder do player exista no DOM e retorna o elemento
+ */
+function ensurePlayerPlaceholder() {
+    let placeholder = document.getElementById('player-offline-placeholder');
+    if (placeholder) return placeholder;
+
+    const wrapper = document.querySelector('.video-wrapper');
+    if (!wrapper) return null;
+
+    placeholder = document.createElement('div');
+    placeholder.id = 'player-offline-placeholder';
+    placeholder.className = 'offline-player-placeholder';
+    // Usamos imagem amigável do assets como background via CSS class
+    placeholder.setAttribute('aria-hidden', 'true');
+    wrapper.appendChild(placeholder);
+    return placeholder;
+}
+
+/**
+ * Exibe ou oculta o placeholder do player
+ * @param {boolean} show
+ */
+function showPlayerPlaceholder(show) {
+    const placeholder = ensurePlayerPlaceholder();
+    if (!placeholder) return;
+    if (show) placeholder.classList.add('show');
+    else placeholder.classList.remove('show');
+}
+
+/**
+ * Mostra o banner offline e garante que ele suma após 5s
+ */
+function showOfflineAlert() {
+    const banner = document.getElementById('offline-banner');
+    if (!banner) return;
+    banner.classList.add('show');
+    // limpar timer anterior
+    if (offlineBannerTimeout) clearTimeout(offlineBannerTimeout);
+    offlineBannerTimeout = setTimeout(() => {
+        banner.classList.remove('show');
+        offlineBannerTimeout = null;
+    }, 5000);
+}
+
+/**
+ * Oculta imediatamente o banner offline
+ */
+function hideOfflineAlert() {
+    const banner = document.getElementById('offline-banner');
+    if (!banner) return;
+    banner.classList.remove('show');
+    if (offlineBannerTimeout) {
+        clearTimeout(offlineBannerTimeout);
+        offlineBannerTimeout = null;
+    }
+}
+
+// Reage a eventos de rede disparados pelo networkState.update()
+document.addEventListener('networkchange', (ev) => {
+    const online = ev?.detail?.online === true;
+    if (!online) {
+        // Mostrar banner por 5s e placeholder no player
+        showOfflineAlert();
+        showPlayerPlaceholder(true);
+        // Feedback curto para o usuário
+        showFeedbackModal('Sem conexão para reproduzir este conteúdo.', 3000);
+    } else {
+        // Restaurado: remover placeholder e mostrar feedback de retorno
+        showPlayerPlaceholder(false);
+        hideOfflineAlert();
+        showFeedbackModal('Conexão restaurada', 3000);
+    }
+});
+
+
+// ============================================================================
 // ESTADO GLOBAL
 // ============================================================================
 

@@ -2238,6 +2238,28 @@ button:active { background: var(--feedback-color); }
     border-top-color: var(--accent-roxo-dark);
 }
 
+/* Placeholder amigável para o player quando estiver offline */
+.offline-player-placeholder {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: #0b0b0b;
+    background-image: var(--offline-player-bg, url('./assets/offline.webp'));
+    background-size: cover;
+    background-position: center center;
+    z-index: 40; /* abaixo dos controles de UI que tenham z-index maior */
+    pointer-events: none; /* não bloquear interações */
+    opacity: 0;
+    transition: opacity 240ms ease-in-out;
+}
+.offline-player-placeholder.show {
+    display: flex;
+    opacity: 1;
+}
+
+
 .update-content {
     display: flex;
     align-items: center;
