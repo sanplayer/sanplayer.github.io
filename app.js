@@ -193,6 +193,7 @@ window.addEventListener('offline', () => networkState.update(false));
 // OFFLINE UI HELPERS
 // ============================================================================
 let offlineBannerTimeout = null;
+let previousOnlineState = null;  // Rastreia estado anterior para detectar transições reais
 
 /**
  * Garante que o placeholder do player exista no DOM e retorna o elemento
@@ -255,16 +256,52 @@ function hideOfflineAlert() {
 // Reage a eventos de rede disparados pelo networkState.update()
 document.addEventListener('networkchange', (ev) => {
     const online = ev?.detail?.online === true;
+    
+    // 🔒 CRÍTICO: Detectar TRANSIÇÃO REAL (não apenas o estado inicial)
+    // previousOnlineState começa como null na primeira vez
+    // Só reagimos se houver mudança: offline->online ou online->offline
+    if (previousOnlineState === null) {
+        // Primeira vez: apenas registrar o estado inicial, sem feedback
+        previousOnlineState = online;
+        console.log('[NetworkChange] 🔧 Estado inicial registrado:', online ? 'ONLINE' : 'OFFLINE');
+        return;  // NÃO dispara feedback na inicialização
+    }
+    
+    // Houve mudança de estado?
+    if (previousOnlineState === online) {
+        // Nenhuma mudança real
+        return;
+    }
+    
+    // 🔄 TRANSIÇÃO REAL DETECTADA
+    previousOnlineState = online;
+    
     if (!online) {
-        // Mostrar banner por 5s e placeholder no player
+        // OFFLINE: Mostrar banner por 5s e placeholder no player
+        console.log('[NetworkChange] 📶 Desconectado - mostrando placeholder');
         showOfflineAlert();
         showPlayerPlaceholder(true);
         // Feedback curto para o usuário
         showFeedbackModal('Sem conexão para reproduzir este conteúdo.', 3000);
     } else {
-        // Restaurado: remover placeholder e mostrar feedback de retorno
+        // ONLINE: Restaurado - remover placeholder, recarregar vídeo e mostrar feedback
+        console.log('[NetworkChange] 🌐 Reconectado - recarregando vídeo');
         showPlayerPlaceholder(false);
         hideOfflineAlert();
+        
+        // 🔄 CRÍTICO: Recarregar o vídeo no YouTube player para limpar erro de conexão
+        if (ytPlayer && player.ytReady) {
+            const video = getCurrentPlayingVideo();
+            if (video) {
+                console.log('[NetworkChange] 📹 Recarregando vídeo:', video.title);
+                ytPlayer.cueVideoById(video.id);
+                // Se estava tocando antes, retomar
+                if (player.isPlaying) {
+                    ytPlayer.playVideo();
+                }
+            }
+        }
+        
         showFeedbackModal('Conexão restaurada', 3000);
     }
 });
