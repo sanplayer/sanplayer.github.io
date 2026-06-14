@@ -2635,14 +2635,14 @@ MOBILE CONFIG - MAX 768PX
         top: var(--safe-area-top);
     }
     .header-search.show-search form {
-    width: 90%;
+    width: 98%;
     left:0px;
     right:0px;
     margin: auto;
-    background: rgba(0, 0, 0, .8);
+    background: rgba(0, 0, 0, .9);
     padding: .6rem;
     position: fixed;
-    border: 1px solid var(--accent-roxo-dark);
+    border: 1px solid var(--accent-roxo);
     border-radius: 2rem;   
     }
     .overlay-layer {
