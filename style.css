@@ -1092,7 +1092,7 @@ button:active { background: var(--feedback-color); }
     width: clamp(36px, 8vw, 48px);
     height: clamp(36px, 8vw, 48px);
     border-radius: 50%;
-    background: #b71c1c;
+    background: #b300ff;
     color: white;
     display: flex;
     align-items: center;
@@ -1417,7 +1417,7 @@ button:active { background: var(--feedback-color); }
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #b71c1c;
+    background: var(--accent-roxo-dark);
     color: #fff;
     font-weight: 700;
     font-size: 1.08rem;

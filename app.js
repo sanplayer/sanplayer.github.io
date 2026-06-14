@@ -1554,7 +1554,7 @@ function renderCard(data, config = {}) {
     img.src = data.src;
     img.alt = data.title;
     img.className = 'card-image';
-    img.addEventListener('error', () => { img.src = 'covers/artists/default.jpg'; });
+    img.addEventListener('error', () => { img.src = '/covers/artists/default.jpg'; });
     
     const body = document.createElement('div');
     body.className = 'card-body card-overlay';
@@ -1686,7 +1686,7 @@ function renderPlaylistItem(video, index) {
     img.src = getArtistCoverUrl(video.artist);
     img.alt = video.artist;
     img.className = 'thumb-mini';
-    img.addEventListener('error', () => { img.src = 'covers/artists/default.jpg'; });
+    img.addEventListener('error', () => { img.src = '/covers/artists/default.jpg'; });
     
     const info = document.createElement('div');
     info.className = 'playlist-info';
@@ -3478,7 +3478,7 @@ function initPlayerUI() {
     const img = document.createElement('img');
     img.className = 'current-thumb';
     img.src = 'covers/artists/default.jpg';
-    img.addEventListener('error', () => { img.src = 'covers/artists/default.jpg'; });
+    img.addEventListener('error', () => { img.src = '/covers/artists/default.jpg'; });
     
     const currentDetails = document.createElement('div');
     currentDetails.className = 'current-details';
@@ -4154,7 +4154,7 @@ function restoreViewContext() {
 function getArtistCoverUrl(artistName) {
     // Preserva & e hífens para compatibilidade com arquivos já existentes
     const normalized = artistName.toLowerCase().trim().replace(/\s+/g, '-');
-    return `covers/artists/${normalized}.jpg`;
+    return `/covers/artists/${normalized}.jpg`;
 }
 
 // ============================================================================
@@ -4313,7 +4313,7 @@ function updatePlaylistCardsInModal() {
         }
 
         const card = renderCard({
-            src: `covers/playlists/${playlistMeta.cover}`,
+            src: `/covers/playlists/${playlistMeta.cover}`,
             title: playlistMeta.title || playlistMeta.name,
             subtitle: videoCount
         }, {
@@ -4571,7 +4571,7 @@ async function openArtistsModal() {
 
         artists.forEach(({ name: artist, count }) => {
             const artistCover = getArtistCoverUrl(artist);
-            const coverFileName = artistCover.replace('covers/artists/', '').replace('.jpg', '');
+            const coverFileName = artistCover.replace('/covers/artists/', '').replace('.jpg', '');
             const card = renderCard({
                 src: artistCover,
                 title: artist,
