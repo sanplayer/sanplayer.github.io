@@ -46,8 +46,8 @@
 // IMPORTS - Módulos Autônomos
 // ============================================================================
 
-import { shareVideo, sharePlaylist, shareArtist, handleShare, shareMusic, shareItem } from './adapters/share.js';
-import MediaBridge from './media/MediaBridge.js';
+import { shareVideo, sharePlaylist, shareArtist, handleShare, shareMusic, shareItem } from '/adapters/share.js';
+import MediaBridge from '/media/MediaBridge.js';
 
 //
 
@@ -1402,7 +1402,7 @@ const sidebarHistory = {
  */
 async function loadPlaylistsIndex() {
     try {
-        const response = await fetch('./data/playlists/index.json');
+        const response = await fetch('/data/playlists/index.json');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const index = await response.json();
         player.playlistsIndex = Array.isArray(index) ? index : [];
@@ -2976,7 +2976,7 @@ function clearActiveInput() {
 
 function initServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./service-worker.js').then((registration) => {
+        navigator.serviceWorker.register('/service-worker.js').then((registration) => {
             console.log('[App] ✅ Service Worker registrado:', registration.scope);
             
             // Escuta por novas atualizações sendo instaladas
