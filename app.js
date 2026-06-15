@@ -3001,7 +3001,7 @@ function clearActiveInput() {
 
 function initServiceWorker() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js').then((registration) => {
+        navigator.serviceWorker.register('./service-worker.js').then((registration) => {
             console.log('[App] ✅ Service Worker registrado:', registration.scope);
             
             // Escuta por novas atualizações sendo instaladas
