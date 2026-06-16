@@ -128,6 +128,61 @@ const USE_NEW_INIT_LOGIC = true;
 let playerInitialized = false;
 
 // ============================================================================
+// 🔄 WARM vs COLD START DETECTION (Android Intent Handling)
+// ============================================================================
+/**
+ * WARM START: App já estava em memória, apenas retomando
+ * - Activity existente é reusada (App Recentes)
+ * - OU nova Activity mas app estava rodando (Home Icon)
+ * - ytPlayer já existe em memória JavaScript
+ * - localStorage tem dados válidos
+ * - DOM pode ter sido recriado (WebView), mas JS está intacto
+ * 
+ * COLD START: App sendo iniciado pela primeira vez
+ * - Nova Activity criada
+ * - Nenhum ytPlayer em memória
+ * - localStorage vazio ou expirado
+ * - Tudo precisa ser inicializado do zero
+ */
+
+const isWarmStart = () => {
+    // ✅ Sinal 1: ytPlayer existe em memória (JS preservado)
+    if (typeof ytPlayer !== 'undefined' && ytPlayer !== null) {
+        console.log('[WarmStart] ✅ Sinal 1: ytPlayer em memória');
+        return true;
+    }
+    
+    // ✅ Sinal 2: player object tem contexto
+    if (typeof player !== 'undefined' && player.currentPlaylist) {
+        console.log('[WarmStart] ✅ Sinal 2: player.currentPlaylist existe');
+        return true;
+    }
+    
+    // ✅ Sinal 3: localStorage tem estado válido
+    const savedState = localStorage.getItem('sanplayer-state');
+    if (savedState) {
+        try {
+            const state = JSON.parse(savedState);
+            const age = Date.now() - state.timestamp;
+            if (age < 5 * 60 * 1000) {  // Menos de 5 minutos
+                console.log('[WarmStart] ✅ Sinal 3: localStorage válido');
+                return true;
+            }
+        } catch (e) {}
+    }
+    
+    // ✅ Sinal 4: Service Worker controller ativo
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        console.log('[WarmStart] ✅ Sinal 4: SW controller ativo');
+        return true;
+    }
+    
+    console.log('[WarmStart] ❌ COLD START detectado');
+    return false;
+};
+
+const APP_IS_WARM_START = isWarmStart();
+console.log('[Startup] 🔥 Inicialização:', APP_IS_WARM_START ? 'WARM' : 'COLD');
 // GERENCIADOR CENTRAL DE REDE
 // ============================================================================
 
@@ -2558,6 +2613,53 @@ async function initApp() {
     }
 
     console.log('[Init] 📱 Inicializando SanPlayer...');
+    
+    // ⚠️ WARM START DETECTION: Se app estava rodando, NÃO fazer init pesado
+    if (APP_IS_WARM_START) {
+        console.log('[Init] 🔄 WARM START DETECTADO - Pulando inicialização pesada');
+        console.log('[Init] ✅ Restaurando estado da memória (não refetch)...');
+        
+        // Caso 1: Tudo em memória, sem recriação DOM
+        if (player.currentPlaylist && ytPlayer && document.getElementById('player')?.querySelector('iframe')) {
+            console.log('[Init] 📀 Player e playlist já em memória - resumindo');
+            playerInitialized = true;
+            appInitComplete = true;
+            
+            // Apenas setup mínimo de listeners
+            setupEventListeners();
+            updateNotificationIconState();
+            setupNotificationButtonListener();
+            
+            // Sincronizar UI com estado existente
+            refreshPlayerUI();
+            
+            console.log('[Init] ✅ WARM START - App retomado com sucesso (sem reload)');
+            return;  // ← EXIT AQUI, não continuar init
+        }
+        
+        // Caso 2: JS preservado mas DOM foi recriado (WebView)
+        if (player.currentPlaylist && ytPlayer) {
+            console.log('[Init] 🔧 DOM recriado detectado - recriando YouTube player');
+            // Reset player flags para recriação
+            ytPlayerInitialized = false;
+            ytPlayer = null;
+            
+            // Recriar player do YouTube
+            onYouTubeIframeAPIReady();
+            
+            playerInitialized = true;
+            appInitComplete = true;
+            setupEventListeners();
+            updateNotificationIconState();
+            setupNotificationButtonListener();
+            refreshPlayerUI();
+            
+            console.log('[Init] ✅ WARM START - YouTube player recriado, app retomado');
+            return;  // ← EXIT
+        }
+    }
+
+    console.log('[Init] 🆕 COLD START - Inicialização completa...');
 
     // 📶 Sincronizar estado inicial de rede (CRÍTICO: deve ser feito ANTES de qualquer fetch)
     console.log('[Init] 📶 Verificando estado de rede...');
