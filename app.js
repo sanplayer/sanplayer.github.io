@@ -2589,8 +2589,6 @@ async function initApp() {
     // Assim quando updateFavoriteButton() for chamada, player.favorites já está populado
     loadFavorites();
     
-    await loadPlaylists();
-    
     // ============================================================================
     // NOVA LÓGICA DE INICIALIZAÇÃO (Feature-flagged)
     // ============================================================================
@@ -2598,7 +2596,13 @@ async function initApp() {
         console.log('[Init] 🆕 Using NEW initialization logic (v2)');
         console.log('[Init] Feature flag: USE_NEW_INIT_LOGIC =', USE_NEW_INIT_LOGIC);
         
-        // 🔥 NOVO FLUXO CORRETO: Restaurar PRIMEIRO, init SÓ se restauração falhar
+        // ⚠️ CRÍTICO: Carregar índice ANTES de restaurar (restorePlayerState precisa dele)
+        // Mas pular a seleção visual para evitar recarregamento
+        console.log('[Init] 📦 [PASSO 0] Carregando índice de playlists...');
+        await loadPlaylistsIndex();
+        
+        // 🔥 NOVO FLUXO CORRETO: Restaurar PRIMEIRO (ANTES de seleção visual), init SÓ se restauração falhar
+        // ⚠️ CRÍTICO: Restaurar ANTES de visualizar/selecionar para evitar recarregar lista visual
         console.log('[Init] 🔄 [PASSO 1] Tentando restaurar estado do localStorage...');
         const restored = await restorePlayerState();
         
