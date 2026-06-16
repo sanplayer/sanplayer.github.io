@@ -3466,6 +3466,23 @@ function initThemeColor() {
         }
     });
     
+    // 🔄 WEBVIEW RETOMANDO: Detectar quando o DOM foi recriado (WebView return)
+    // O evento 'pageshow' dispara quando a página retorna de suspensão (bfcache ou WebView resume)
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            // evento.persisted = true significa que voltou de bfcache/suspensão
+            console.log('[pageshow] 🔄 Página retomada do bfcache/suspensão (WebView Android)');
+            
+            // ⚠️ CRÍTICO: Se o ytPlayer está órfão (DOM foi recriado)
+            // Resetar para permitir recriação
+            if (ytPlayer && !document.getElementById('player')?.querySelector('iframe')) {
+                console.log('[pageshow] 🔧 Detectado iframe ausente - resetando ytPlayer');
+                ytPlayerInitialized = false;
+                ytPlayer = null;
+            }
+        }
+    });
+    
     // Verificar se está em modo standalone (PWA instalado)
     if (window.matchMedia('(display-mode: standalone)').matches) {
         console.log('[App] Executando em modo PWA standalone');
@@ -5793,6 +5810,14 @@ function loadVideo(video) {
         ytPlayer.cueVideoById(video.id);
         // playVideo() será chamado pelo handler CUED em onPlayerStateChange quando shouldPlayOnReady for true
     } else if (window.YT && window.YT.Player && !ytPlayer && !ytPlayerInitialized) {
+        onYouTubeIframeAPIReady();
+    } else if (window.YT && window.YT.Player && ytPlayer && !document.getElementById('player')?.querySelector('iframe')) {
+        // ⚠️ GUARDBRAIL WEBVIEW: Se ytPlayer existe mas o iframe desapareceu do DOM
+        // (isso acontece quando WebView retoma e recria o HTML)
+        // Resetar flag para permitir recriação
+        console.log('[loadVideo] 🔄 Detectado DOM recriado (WebView retomando) - resetando player...');
+        ytPlayerInitialized = false;
+        ytPlayer = null;
         onYouTubeIframeAPIReady();
     }
 
