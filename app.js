@@ -152,10 +152,14 @@ const isWarmStart = () => {
         return true;
     }
     
-    // ✅ Sinal 2: player object tem contexto
-    if (typeof player !== 'undefined' && player.currentPlaylist) {
-        console.log('[WarmStart] ✅ Sinal 2: player.currentPlaylist existe');
-        return true;
+    // ✅ Sinal 2: player object tem contexto (SAFE CHECK)
+    try {
+        if (typeof player !== 'undefined' && player && player.currentPlaylist) {
+            console.log('[WarmStart] ✅ Sinal 2: player.currentPlaylist existe');
+            return true;
+        }
+    } catch (e) {
+        // player ainda não definido, ignorar
     }
     
     // ✅ Sinal 3: localStorage tem estado válido
@@ -181,8 +185,9 @@ const isWarmStart = () => {
     return false;
 };
 
-const APP_IS_WARM_START = isWarmStart();
-console.log('[Startup] 🔥 Inicialização:', APP_IS_WARM_START ? 'WARM' : 'COLD');
+// ⚠️ NÃO CHAMAR AINDA - player não está definido
+// Será chamado depois que player for inicializado
+let APP_IS_WARM_START = null;
 // GERENCIADOR CENTRAL DE REDE
 // ============================================================================
 
@@ -2613,6 +2618,16 @@ async function initApp() {
     }
 
     console.log('[Init] 📱 Inicializando SanPlayer...');
+    
+    // 🔄 CALCULAR WARM/COLD START (depois que player já existe)
+    // ⚠️ DESABILITADO TEMPORARIAMENTE - causa freeze na primeira inicialização
+    // if (APP_IS_WARM_START === null) {
+    //     APP_IS_WARM_START = isWarmStart();
+    //     console.log('[Startup] 🔥 Inicialização:', APP_IS_WARM_START ? 'WARM' : 'COLD');
+    // }
+    
+    // ⚠️ FORÇAR COLD START para debug
+    APP_IS_WARM_START = false;
     
     // ⚠️ WARM START DETECTION: Se app estava rodando, NÃO fazer init pesado
     if (APP_IS_WARM_START) {
