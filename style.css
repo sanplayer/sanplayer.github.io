@@ -437,6 +437,7 @@ button:active { background: var(--feedback-color); }
 }
 
 .sidebar-nav li a {
+    --icon-size: var(--icon-btn-size);
     display: flex;
     align-items: center;
     gap: var(--gap-md);
@@ -1237,10 +1238,11 @@ button:active { background: var(--feedback-color); }
 .option-row:hover { background: rgba(255, 255, 255, 0.02); }
 
 .option-icon {
-    width: 44px;
-    height: 44px;
+    --icon-size: var(--icon-btn-size);
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--icon-btn-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1248,7 +1250,16 @@ button:active { background: var(--feedback-color); }
     flex-shrink: 0;
 }
 
-.option-icon svg.icon { width: 24px; height: 24px; }
+.option-icon svg.icon { width: var(--icon-size); height: var(--icon-size); }
+
+.option-icon:hover {
+    background: var(--icon-btn-bg-hover);
+}
+
+.option-icon:active {
+    background: var(--icon-btn-bg-active);
+    transform: scale(0.95);
+}
 
 .option-text {
     font-size: 1.05rem;
@@ -1257,20 +1268,33 @@ button:active { background: var(--feedback-color); }
 }
 
 .modal-close {
+    --icon-size: var(--icon-btn-size);
     background: none;
     border: none;
     color: var(--text-dim);
-    font-size: 1.5rem;
     cursor: pointer;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    border-radius: var(--icon-btn-border-radius);
 }
 
-.modal-close svg.icon { width: 1.5rem; height: 1.5rem; }
+.modal-close svg.icon { width: var(--icon-size); height: var(--icon-size); }
 
-.modal-close:hover { color: var(--text-main); }
+.modal-close:hover {
+    background: var(--icon-btn-bg-hover);
+    color: var(--text-main);
+}
+
+.modal-close:active {
+    background: var(--icon-btn-bg-active);
+    transform: scale(0.95);
+}
 
 .cards-grid {
     display: grid;
@@ -1732,20 +1756,32 @@ button:active { background: var(--feedback-color); }
 .native-header { justify-content: flex-start !important; }
 
 .modal-back-btn {
-    background: transparent !important;
+    --icon-size: var(--icon-btn-size);
+    background: var(--icon-btn-bg) !important;
     border: none !important;
-    font-size: 1.5rem !important;
-    padding: 0.5rem !important;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    border-radius: var(--icon-btn-border-radius);
     flex-shrink: 0;
+    transition: all 0.25s ease;
 }
 
-.modal-back-btn:hover { opacity: 0.8; }
+.modal-back-btn svg.icon { width: var(--icon-size); height: var(--icon-size); }
+
+.modal-back-btn:hover {
+    background: var(--icon-btn-bg-hover) !important;
+}
+
+.modal-back-btn:active {
+    background: var(--icon-btn-bg-active) !important;
+    transform: scale(0.95);
+}
 
 .about-modal-content {
     max-height: calc(100dvh - var(--header-height));
@@ -2092,25 +2128,24 @@ button:active { background: var(--feedback-color); }
 }
 
 .sidebar-nav-btn {
-    background: none;
+    --icon-size: var(--icon-btn-size);
+    background: var(--icon-btn-bg);
     border: none;
     color: var(--text-dim);
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
     flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    min-width: var(--touch-target);
-    min-height: var(--touch-target);
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    border-radius: var(--icon-btn-border-radius);
 }
 
-.sidebar-nav-btn {
-    --icon-size: var(--icon-btn-size);
-}
 .sidebar-nav-btn svg.icon { width: var(--icon-size); height: var(--icon-size); }
 .sidebar-nav-btn.hidden { display: none; pointer-events: none; }
 
