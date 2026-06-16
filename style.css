@@ -2609,15 +2609,11 @@ MOBILE CONFIG - MAX 768PX
         border-left: none;
         background: var(--bg-surface);
     }
-    .app-header {
-        width: 100%;
-        border-bottom: none;
-        display: flex;
-        align-items: center;
-        height: var(--header-height-mobile);
-        top: var(--safe-area-top);
-        padding: 0;
-    }
+    .app-header {width: 100%;border-bottom: none;display: flex;
+        align-items: center;height: var(--header-height-mobile);
+        top: var(--safe-area-top);padding: 0; }
+    .app-header button {background:rgba(0,0,0,0.3);margin:.2rem;}
+    
     .header-app-logo svg.icon { display: none; }
     .app-header .title-player { display: none; }
     .header-search { display: none; }
