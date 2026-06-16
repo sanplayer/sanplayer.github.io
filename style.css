@@ -325,8 +325,36 @@ button:active { background: var(--feedback-color); }
     display: flex;
     align-items: center;
     color: var(--text-main);
+    gap: var(--gap-sm);
 }
 
+/* === ESTILOS UNIFICADOS PARA ÍCONES DO HEADER === */
+.header-logo button,
+.header-actions button {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.header-logo button:hover,
+.header-actions button:hover {
+    opacity: 0.8;
+}
+
+.header-logo button svg.icon,
+.header-actions button svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+}
+
+/* === CLASSES ESPECÍFICAS (RETROCOMPATIBILIDADE) === */
 .btn-search-mobile { color: var(--text-main); }
 .profile-avatar {
     border-radius: 50%;
@@ -336,15 +364,6 @@ button:active { background: var(--feedback-color); }
 
 .notification-btn {
     position: relative;
-    background: none;
-    border: none;
-    color: var(--text-main);
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s ease;
 }
 
 .notification-btn:hover { opacity: 0.8; }
@@ -2612,7 +2631,7 @@ MOBILE CONFIG - MAX 768PX
     .app-header {width: 100%;border-bottom: none;display: flex;
         align-items: center;height: var(--header-height-mobile);
         top: var(--safe-area-top);padding: 0; }
-    .app-header button {background:rgba(0,0,0,0.3);margin:.2rem;}
+
     
     .header-app-logo svg.icon { display: none; }
     .app-header .title-player { display: none; }
@@ -2641,6 +2660,28 @@ MOBILE CONFIG - MAX 768PX
     border: 1px solid var(--accent-roxo);
     border-radius: .8rem;   
     }
+    
+    /* === MELHORIAS NOS ÍCONES DO HEADER === */
+    .header-logo button,
+    .header-actions button {
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+        transition: all 0.25s ease;
+    }
+    
+    .header-logo button:active,
+    .header-actions button:active {
+        background: rgba(0, 0, 0, 0.35);
+        transform: scale(0.95);
+    }
+    
+    .header-logo button svg.icon,
+    .header-actions button svg.icon {
+        width: 28px;
+        height: 28px;
+    }
+    
     .overlay-layer {
         background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgb(0 0 0 / 0%) 20%, rgb(0 0 0 / 0%) 100%);
     }
