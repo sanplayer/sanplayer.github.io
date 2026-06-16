@@ -3775,7 +3775,20 @@ window.addEventListener('hashchange', async () => {
 
 // 🔥 Load: fallback robusto para acesso direto via URL (?modal=playlists)
 // Alguns cenários de PWA/shortcuts não disparam hashchange no init
+// 
+// ⚠️ CRÍTICO WEBVIEW: Flag para evitar execução dupla do load event
+// Em WebView Android, o evento 'load' dispara novamente ao retomar do background
+// Esta flag garante que a navegação só executa UMA VEZ
+let loadEventProcessed = false;
+
 window.addEventListener('load', async () => {
+    // 🔒 GUARDRAIL: WebView Android - Pular se load já foi processado
+    // (WebView dispara load event novamente ao retomar do background)
+    if (loadEventProcessed) {
+        console.log('[load] ℹ️ Load event já foi processado (WebView Android retomando do background) - pulando');
+        return;
+    }
+    
     // 🔒 GUARDRAIL: Não processar roteamento durante inicialização
     if (!appInitComplete) {
         console.log('[load] 🔄 Ignorando - app ainda está inicializando (appInitComplete=false)');
@@ -3806,6 +3819,10 @@ window.addEventListener('load', async () => {
         // que PWA shortcuts diretos funcionam mesmo em casos edge
         await handleHashNavigation();
     }
+    
+    // ✅ Marcar como processado (impede re-execução ao retomar do background)
+    loadEventProcessed = true;
+    console.log('[load] ✅ Load event processado - flag marcada (bloqueará re-execução)');
 });
 
 // Garantir refresh ao focar na janela (reentrar no player)
