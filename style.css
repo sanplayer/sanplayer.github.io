@@ -2706,7 +2706,7 @@ button:active { background: var(--feedback-color); }
     width: 100%;
     padding: 14px 24px;
     margin-top: 12px;
-    margin-bottom: 4px;
+    margin-bottom: var(--safe-area-bottom);
     background: var(--accent-roxo-dark);
     color: #ffffff;
     border: none;
