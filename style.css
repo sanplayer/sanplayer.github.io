@@ -2600,7 +2600,7 @@ button:active { background: var(--feedback-color); }
 .modal.modal-fullscreen .modal-content {
     top: calc(var(--header-height) + var(--safe-area-top));
     height: 100%;
-    padding-bottom: calc(var(--safe-area-bottom) + 60px);
+    padding-bottom: calc(var(--safe-area-bottom) + 100px);
 }
 
 /* ============================================================================
