@@ -54,6 +54,15 @@
     --icon-size: clamp(1.25rem, 3vw, 1.8rem);
     --icon-size-main: clamp(1.75rem, 5vw, 2.25rem);
     --icon-size-sub: clamp(1.25rem, 3.5vw, 1.75rem);
+    
+    /* === PADRONIZAÇÃO DE BOTÕES E ÍCONES === */
+    --icon-btn-size: 28px;
+    --icon-btn-padding: 10px;
+    --icon-btn-bg: rgba(0, 0, 0, 0.2);
+    --icon-btn-bg-hover: rgba(0, 0, 0, 0.35);
+    --icon-btn-bg-active: rgba(0, 0, 0, 0.45);
+    --icon-btn-border-radius: 50%;
+    
     --touch-target: 42px;
     --feedback-color: rgba(255, 255, 255, 0.1);
     --btn-padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 1.5rem);
@@ -331,21 +340,33 @@ button:active { background: var(--feedback-color); }
 /* === ESTILOS UNIFICADOS PARA ÍCONES DO HEADER === */
 .header-logo button,
 .header-actions button {
-    background: none;
+    --icon-size: var(--icon-btn-size);
+    background: var(--icon-btn-bg);
     border: none;
     color: var(--text-main);
     cursor: pointer;
-    padding: 8px;
+    padding: var(--icon-btn-padding);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    border-radius: 8px;
+    transition: all 0.25s ease;
+    border-radius: var(--icon-btn-border-radius);
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    aspect-ratio: auto;
 }
 
 .header-logo button:hover,
 .header-actions button:hover {
-    opacity: 0.8;
+    background: var(--icon-btn-bg-hover);
+}
+
+.header-logo button:active,
+.header-actions button:active {
+    background: var(--icon-btn-bg-active);
+    transform: scale(0.95);
 }
 
 .header-logo button svg.icon,
@@ -367,6 +388,9 @@ button:active { background: var(--feedback-color); }
 }
 
 .notification-btn:hover { opacity: 0.8; }
+.notification-btn {
+    --icon-size: var(--icon-btn-size);
+}
 .notification-btn svg.icon { width: var(--icon-size); height: var(--icon-size); }
 
 .notification-btn.unread::after {
@@ -870,6 +894,9 @@ button:active { background: var(--feedback-color); }
     outline-offset: 2px;
 }
 
+.favorite-btn {
+    --icon-size: var(--icon-btn-size);
+}
 .favorite-btn svg.icon { width: var(--icon-size); height: var(--icon-size); }
 
 .favorite-btn:hover {
@@ -910,6 +937,9 @@ button:active { background: var(--feedback-color); }
     outline-offset: 2px;
 }
 
+.share-btn {
+    --icon-size: var(--icon-btn-size);
+}
 .share-btn svg.icon { width: var(--icon-size); height: var(--icon-size); }
 
 .share-btn:hover {
@@ -993,6 +1023,9 @@ button:active { background: var(--feedback-color); }
     min-height: var(--touch-target);
 }
 
+.kebab-btn {
+    --icon-size: var(--icon-btn-size);
+}
 .kebab-btn svg.icon { width: var(--icon-size); height: var(--icon-size); }
 
 .kebab-btn:hover {
@@ -2075,6 +2108,9 @@ button:active { background: var(--feedback-color); }
     min-height: var(--touch-target);
 }
 
+.sidebar-nav-btn {
+    --icon-size: var(--icon-btn-size);
+}
 .sidebar-nav-btn svg.icon { width: var(--icon-size); height: var(--icon-size); }
 .sidebar-nav-btn.hidden { display: none; pointer-events: none; }
 
@@ -2112,6 +2148,9 @@ button:active { background: var(--feedback-color); }
     color: var(--text-primary);
 }
 .back-button:active { transform: scale(0.95); }
+.back-button {
+    --icon-size: var(--icon-btn-size);
+}
 .back-button svg.icon { width: var(--icon-size); height: var(--icon-size); }
 
 .overlay-layer {
@@ -2145,8 +2184,44 @@ button:active { background: var(--feedback-color); }
     gap: .3rem;
 }
 
-.overlay-buttons-left button { background: rgba(0, 0, 0, 0.15); }
-.overlay-buttons-right button { background: rgba(0, 0, 0, 0.15); }
+/* === ESTILOS UNIFICADOS PARA BOTÕES DO OVERLAY === */
+.overlay-buttons-left button,
+.overlay-buttons-right button {
+    --icon-size: var(--icon-btn-size);
+    background: var(--icon-btn-bg);
+    border: none;
+    cursor: pointer;
+    color: var(--text-main);
+    padding: var(--icon-btn-padding);
+    border-radius: var(--icon-btn-border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    aspect-ratio: auto;
+}
+
+.overlay-buttons-left button:hover,
+.overlay-buttons-right button:hover {
+    background: var(--icon-btn-bg-hover);
+}
+
+.overlay-buttons-left button:active,
+.overlay-buttons-right button:active {
+    background: var(--icon-btn-bg-active);
+    transform: scale(0.95);
+}
+
+.overlay-buttons-left button svg.icon,
+.overlay-buttons-right button svg.icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    color: var(--text-main);
+}
 
 .overlay-buttons-right {
     display: flex;
@@ -2659,27 +2734,6 @@ MOBILE CONFIG - MAX 768PX
     position: fixed;
     border: 1px solid var(--accent-roxo);
     border-radius: .8rem;   
-    }
-    
-    /* === MELHORIAS NOS ÍCONES DO HEADER === */
-    .header-logo button,
-    .header-actions button {
-        padding: 10px;
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 50%;
-        transition: all 0.25s ease;
-    }
-    
-    .header-logo button:active,
-    .header-actions button:active {
-        background: rgba(0, 0, 0, 0.35);
-        transform: scale(0.95);
-    }
-    
-    .header-logo button svg.icon,
-    .header-actions button svg.icon {
-        width: 26px;
-        height: 26px;
     }
     
     .overlay-layer {
