@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre o San Player</title>
+    <style>
+        :root {
+            --bg-principal: #0f0f0f;
+            --bg-card: #1f1f1f;
+            --texto-principal: #ffffff;
+            --texto-secundario: #aaa;
+            --accent: #ff0000;
+            --espacamento: clamp(1rem, 4vw, 2rem);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto-principal);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: var(--espacamento);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--bg-card);
+            padding: calc(var(--espacamento) * 1.5);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+            border: 2px solid #333;
+            border-radius: 20px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-placeholder svg {
+            width: 40px;
+            height: 40px;
+            fill: var(--accent);
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .versao {
+            font-size: 0.9rem;
+            color: var(--texto-secundario);
+            background-color: #2f2f2f;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .descricao {
+            color: var(--texto-secundario);
+            font-size: 1rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .info-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .tag {
+            background: #2a2a2a;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-placeholder">
+            <svg viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+        </div>
+
+        <h1>San Player</h1>
+        <div class="versao">v1.0.3.0</div>
+
+        <div class="descricao">
+            <p>Reprodutor de mídia premium desenvolvido sob medida para entregar alta performance, interface minimalista e fluidez total no consumo de áudio e vídeo.</p>
+        </div>
+
+        <div class="info-tags">
+            <span class="tag">PWA Engine</span>
+            <span class="tag">Mobile-First</span>
+            <span class="tag">Premium UI</span>
+        </div>
+    </div>
+
+</body>
+</html>
