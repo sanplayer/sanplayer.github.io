@@ -17,7 +17,7 @@
     --bg-surface: radial-gradient(circle, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 100%);
     --bg-surface-light: #1e1e1e;
     --bg-footer-pink: #E91E63;
-    --bg-footer: radial-gradient(circle, rgb(43 16 91) 0%, rgba(0, 0, 0, 0.95) 100%);
+    --bg-footer: radial-gradient(circle, rgb(43, 16, 91) 0%, rgba(0, 0, 0, 0.95) 100%);
     --accent-roxo: #A238FF;
     --accent-gold: #E7CC7F;
     --accent-roxo-dark: #5c119e;
@@ -357,7 +357,7 @@ button:active { background: var(--feedback-color); }
     min-height: 48px;
     aspect-ratio: auto;
 }
-
+.header-logo .btn-hamburger{ display: none; }
 .header-logo button:hover,
 .header-actions button:hover {
     background: var(--icon-btn-bg-hover);
@@ -2741,7 +2741,7 @@ MOBILE CONFIG - MAX 768PX
         align-items: center;height: var(--header-height-mobile);
         top: var(--safe-area-top);padding: 0; }
 
-    
+    .header-logo .btn-hamburger{display: flex;}
     .header-app-logo svg.icon { display: none; }
     .app-header .title-player { display: none; }
     .header-search { display: none; }
