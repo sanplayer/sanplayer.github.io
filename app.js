@@ -146,38 +146,45 @@ let playerInitialized = false;
  */
 
 const isWarmStart = () => {
-    // ✅ Sinal 1: ytPlayer existe em memória (JS preservado)
-    if (typeof ytPlayer !== 'undefined' && ytPlayer !== null) {
-        console.log('[WarmStart] ✅ Sinal 1: ytPlayer em memória');
+    // ✅ Sinal 1: sessionStorage foi marcado por Android (onWarmStartResume)
+    // Esta é a forma mais confiável pois persiste dentro da mesma janela
+    if (sessionStorage.getItem('app-init-marker') === 'warm') {
+        console.log('[WarmStart] ✅ Sinal 1: sessionStorage marcado como warm');
         return true;
     }
     
-    // ✅ Sinal 2: player object tem contexto (SAFE CHECK)
+    // ✅ Sinal 2: ytPlayer existe em memória (JS preservado)
+    if (typeof ytPlayer !== 'undefined' && ytPlayer !== null) {
+        console.log('[WarmStart] ✅ Sinal 2: ytPlayer em memória');
+        return true;
+    }
+    
+    // ✅ Sinal 3: player object tem contexto (SAFE CHECK)
     try {
         if (typeof player !== 'undefined' && player && player.currentPlaylist) {
-            console.log('[WarmStart] ✅ Sinal 2: player.currentPlaylist existe');
+            console.log('[WarmStart] ✅ Sinal 3: player.currentPlaylist existe');
             return true;
         }
     } catch (e) {
         // player ainda não definido, ignorar
     }
     
-    // ✅ Sinal 3: localStorage tem estado válido
+    // ✅ Sinal 4: localStorage tem estado válido
     const savedState = localStorage.getItem('sanplayer-state');
     if (savedState) {
         try {
             const state = JSON.parse(savedState);
             const age = Date.now() - state.timestamp;
             if (age < 5 * 60 * 1000) {  // Menos de 5 minutos
-                console.log('[WarmStart] ✅ Sinal 3: localStorage válido');
+                console.log('[WarmStart] ✅ Sinal 4: localStorage válido (menos de 5 min)');
                 return true;
             }
         } catch (e) {}
     }
     
-    // ✅ Sinal 4: Service Worker controller ativo
+    // ✅ Sinal 5: Service Worker controller ativo
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        console.log('[WarmStart] ✅ Sinal 4: SW controller ativo');
+        console.log('[WarmStart] ✅ Sinal 5: SW controller ativo');
         return true;
     }
     
@@ -188,6 +195,57 @@ const isWarmStart = () => {
 // ⚠️ NÃO CHAMAR AINDA - player não está definido
 // Será chamado depois que player for inicializado
 let APP_IS_WARM_START = null;
+
+// ============================================================================
+// 🎯 CALLBACK DE ANDROID - Chamado em onNewIntent (warm start)
+// ============================================================================
+
+/**
+ * Função chamada pelo Android quando Activity retorna do background (onNewIntent)
+ * ⚠️ CRÍTICO: Deve ser executada SEM recriar o DOM
+ * 
+ * Comportamento esperado:
+ * - Audio continua tocando (MediaSession API no Android)
+ * - JavaScript global scope está intacto
+ * - DOM está intacto
+ * - Apenas chamar refreshPlayerUI() para sincronizar UI com estado
+ */
+window.onWarmStartResume = function() {
+    console.log('[WarmStart] 🎯 onWarmStartResume() chamado pelo Android');
+    
+    // 1. Marcar que é warm start (para detectar em initApp também)
+    sessionStorage.setItem('app-init-marker', 'warm');
+    APP_IS_WARM_START = true;
+    
+    // 2. Verificar se app foi inicializado
+    if (!playerInitialized) {
+        console.log('[WarmStart] ⚠️ Player ainda não foi inicializado - ignorando callback');
+        return;
+    }
+    
+    // 3. Sincronizar UI com estado existente (NUNCA recria DOM)
+    console.log('[WarmStart] 🔄 Sincronizando UI sem recrie de DOM...');
+    try {
+        // Chamar refreshPlayerUI() que já existe em app.js
+        if (typeof refreshPlayerUI === 'function') {
+            refreshPlayerUI();
+            console.log('[WarmStart] ✅ refreshPlayerUI() executado com sucesso');
+        } else {
+            console.warn('[WarmStart] ⚠️ refreshPlayerUI não está disponível');
+        }
+        
+        // Garantir que notificationState está em sync
+        updateNotificationIconState();
+        console.log('[WarmStart] ✅ Notificações sincronizadas');
+        
+    } catch (e) {
+        console.error('[WarmStart] ❌ Erro ao sincronizar UI:', e);
+    }
+    
+    console.log('[WarmStart] ✅ onWarmStartResume completado - sem visual reload!');
+};
+
+// ============================================================================
 // GERENCIADOR CENTRAL DE REDE
 // ============================================================================
 
@@ -2619,15 +2677,20 @@ async function initApp() {
 
     console.log('[Init] 📱 Inicializando SanPlayer...');
     
-    // 🔄 CALCULAR WARM/COLD START (depois que player já existe)
-    // ⚠️ DESABILITADO TEMPORARIAMENTE - causa freeze na primeira inicialização
-    // if (APP_IS_WARM_START === null) {
-    //     APP_IS_WARM_START = isWarmStart();
-    //     console.log('[Startup] 🔥 Inicialização:', APP_IS_WARM_START ? 'WARM' : 'COLD');
-    // }
-    
-    // ⚠️ FORÇAR COLD START para debug
-    APP_IS_WARM_START = false;
+    // 🔄 DETECÇÃO DE WARM/COLD START - PRIMEIRA VEZ AQUI
+    if (APP_IS_WARM_START === null) {
+        // 🎯 Primeiro DOMContentLoaded: marcar cold start
+        if (!sessionStorage.getItem('app-init-marker')) {
+            sessionStorage.setItem('app-init-marker', 'cold');
+            APP_IS_WARM_START = false;
+            console.log('[Init] 🆕 COLD START - Primeira inicialização');
+        } else {
+            // Página recarregou mas onWarmStartResume não foi chamado
+            // (pode acontecer em caso de erro)
+            APP_IS_WARM_START = isWarmStart();
+            console.log('[Init] 🔄 Inicialização:', APP_IS_WARM_START ? 'WARM' : 'COLD');
+        }
+    }
     
     // ⚠️ WARM START DETECTION: Se app estava rodando, NÃO fazer init pesado
     if (APP_IS_WARM_START) {
