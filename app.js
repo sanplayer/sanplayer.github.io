@@ -204,14 +204,20 @@ let APP_IS_WARM_START = null;
  * Função chamada pelo Android quando Activity retorna do background (onNewIntent)
  * ⚠️ CRÍTICO: Deve ser executada SEM recriar o DOM
  * 
+ * Parâmetro newUrl é opcional:
+ * - newUrl = null/undefined → warm start vazio, apenas sincronizar UI
+ * - newUrl = "index.html?videoId=..." → link compartilhado, reprocessar rota
+ * 
  * Comportamento esperado:
  * - Audio continua tocando (MediaSession API no Android)
  * - JavaScript global scope está intacto
  * - DOM está intacto
- * - Apenas chamar refreshPlayerUI() para sincronizar UI com estado
+ * - Se há URL compartilhada: reprocessar a rota
+ * - Se vazio: apenas chamar refreshPlayerUI() para sincronizar UI com estado
  */
-window.onWarmStartResume = function() {
+window.onWarmStartResume = function(newUrl = null) {
     console.log('[WarmStart] 🎯 onWarmStartResume() chamado pelo Android');
+    console.log('[WarmStart] 📡 Parâmetro newUrl:', newUrl || '(none)');
     
     // 1. Marcar que é warm start (para detectar em initApp também)
     sessionStorage.setItem('app-init-marker', 'warm');
@@ -223,8 +229,61 @@ window.onWarmStartResume = function() {
         return;
     }
     
-    // 3. Sincronizar UI com estado existente (NUNCA recria DOM)
-    console.log('[WarmStart] 🔄 Sincronizando UI sem recrie de DOM...');
+    // 🎯 NOVO: Se recebeu URL compartilhada, reprocessar a rota
+    if (newUrl && typeof newUrl === 'string') {
+        console.log('[WarmStart] 🔗 URL compartilhada recebida - reprocessando rota...');
+        
+        try {
+            // Atualizar window.location.search para que getRoutingParams() capture os parâmetros novos
+            // Mas CUIDADO: não fazer reload, apenas atualizar o state de routing
+            const url = new URL(newUrl, window.location.origin);
+            const newParams = url.search; // Ex: "?videoId=xyz123"
+            
+            console.log('[WarmStart] 🔧 New routing params:', newParams);
+            
+            // ⚠️ CRÍTICO: Atualizar window.location.search sem reload
+            // Usamos history.replaceState para atualizar a URL na barra sem reload
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, '', window.location.pathname + newParams);
+                console.log('[WarmStart] ✅ URL atualizada no history');
+            }
+            
+            // Agora chamar resolveInitialTrack novamente para processar os parâmetros novos
+            console.log('[WarmStart] 🔄 Chamando resolveInitialTrack para processar rota nova...');
+            
+            // Chamar resolveInitialTrack() que é async
+            resolveInitialTrack().then(result => {
+                console.log('[WarmStart] 📊 resolveInitialTrack() retornou:', result);
+                
+                // Se há trackId para tocar (não é modal-only)
+                if (result && result.trackId && !result.skipTrackPlayback) {
+                    console.log('[WarmStart] ▶️ Tocando vídeo compartilhado:', result.trackId);
+                    playTrackById(result.trackId);
+                } else {
+                    // Modal-only ou sem track
+                    console.log('[WarmStart] 📋 Modal ou sem track - apenas sincronizar UI');
+                    refreshPlayerUI();
+                }
+                
+                // Sincronizar UI
+                updateNotificationIconState();
+                console.log('[WarmStart] ✅ onWarmStartResume com URL compartilhada - completo!');
+            }).catch(e => {
+                console.error('[WarmStart] ❌ Erro ao processar URL compartilhada:', e);
+                // Fallback: ao menos sincronizar UI
+                refreshPlayerUI();
+                updateNotificationIconState();
+            });
+            
+            return; // Sair aqui, não fazer sincronização normal abaixo
+        } catch (e) {
+            console.error('[WarmStart] ❌ Erro ao processar URL compartilhada:', e);
+            // Continuar com sincronização normal
+        }
+    }
+    
+    // 3. Sincronizar UI com estado existente (NUNCA recria DOM) - warm start vazio
+    console.log('[WarmStart] 🔄 Sincronizando UI sem recrie de DOM (warm start vazio)...');
     try {
         // Chamar refreshPlayerUI() que já existe em app.js
         if (typeof refreshPlayerUI === 'function') {
