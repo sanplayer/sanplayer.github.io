@@ -257,8 +257,22 @@ window.onWarmStartResume = function(newUrl = null) {
                 
                 // Se há trackId para tocar (não é modal-only)
                 if (result && result.trackId && !result.skipTrackPlayback) {
-                    console.log('[WarmStart] ▶️ Tocando vídeo compartilhado:', result.trackId);
-                    playTrackById(result.trackId);
+                    console.log('[WarmStart] ▶️ Vídeo compartilhado detectado:', result.trackId);
+                    
+                    // 🔥 CRÍTICO: Verificar se é o MESMO vídeo que já está tocando
+                    // Se for o mesmo, apenas sincronizar UI (não chamar playTrackById que pausa)
+                    const currentVideoId = getCurrentPlayingVideoId();
+                    const isSameVideo = currentVideoId === result.trackId;
+                    
+                    if (isSameVideo) {
+                        // Mesmo vídeo já está tocando - NÃO pausar
+                        console.log('[WarmStart] ✅ Mesmo vídeo já tocando (' + result.trackId + ') - apenas sincronizar UI (não pausar)');
+                        refreshPlayerUI();
+                    } else {
+                        // Vídeo diferente - trocar
+                        console.log('[WarmStart] ▶️ Vídeo diferente - trocando para:', result.trackId);
+                        playTrackById(result.trackId);
+                    }
                 } else {
                     // Modal-only ou sem track
                     console.log('[WarmStart] 📋 Modal ou sem track - apenas sincronizar UI');
