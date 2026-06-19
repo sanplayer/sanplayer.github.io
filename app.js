@@ -229,70 +229,116 @@ window.onWarmStartResume = function(newUrl = null) {
         return;
     }
     
-    // 🎯 NOVO: Se recebeu URL compartilhada, reprocessar a rota
+    // 🎯 NOVO: Se recebeu URL, processar dependendo do tipo
     if (newUrl && typeof newUrl === 'string') {
-        console.log('[WarmStart] 🔗 URL compartilhada recebida - reprocessando rota...');
+        console.log('[WarmStart] 🔗 URL recebida - analisando tipo...');
         
         try {
-            // Atualizar window.location.search para que getRoutingParams() capture os parâmetros novos
-            // Mas CUIDADO: não fazer reload, apenas atualizar o state de routing
             const url = new URL(newUrl, window.location.origin);
+            const searchParams = url.searchParams;
             const newParams = url.search; // Ex: "?videoId=xyz123"
             
             console.log('[WarmStart] 🔧 New routing params:', newParams);
             
+            // Extrair parâmetros para análise
+            const hasVideoId = searchParams.has('videoId');
+            const hasPlaylistId = searchParams.has('playlistId');
+            const hasArtistId = searchParams.has('artistId');
+            const hasModal = searchParams.has('modal');
+            const hasContentParams = hasVideoId || hasPlaylistId || hasArtistId;
+            
+            console.log('[WarmStart] 📋 Análise de parâmetros:', {
+                hasVideoId, hasPlaylistId, hasArtistId, hasModal, hasContentParams
+            });
+            
             // ⚠️ CRÍTICO: Atualizar window.location.search sem reload
-            // Usamos history.replaceState para atualizar a URL na barra sem reload
             if (window.history && window.history.replaceState) {
                 window.history.replaceState({}, '', window.location.pathname + newParams);
                 console.log('[WarmStart] ✅ URL atualizada no history');
             }
             
-            // Agora chamar resolveInitialTrack novamente para processar os parâmetros novos
-            console.log('[WarmStart] 🔄 Chamando resolveInitialTrack para processar rota nova...');
-            
-            // Chamar resolveInitialTrack() que é async
-            resolveInitialTrack().then(result => {
-                console.log('[WarmStart] 📊 resolveInitialTrack() retornou:', result);
+            // 🎯 CASO 1: SHORTCUT MODAL (apenas ?modal=... SEM videoId/playlistId/artistId)
+            if (hasModal && !hasContentParams) {
+                console.log('[WarmStart] 🎨 SHORTCUT MODAL detectado - abrindo modal:', searchParams.get('modal'));
                 
-                // Se há trackId para tocar (não é modal-only)
-                if (result && result.trackId && !result.skipTrackPlayback) {
-                    console.log('[WarmStart] ▶️ Vídeo compartilhado detectado:', result.trackId);
+                // Carregar música anterior (normal) + abrir modal por cima
+                // resolveInitialTrack vai ignorar o modal e carregar localStorage/fallback
+                console.log('[WarmStart] 🔄 Chamando resolveInitialTrack (carrega música anterior)...');
+                
+                resolveInitialTrack().then(result => {
+                    console.log('[WarmStart] 📊 resolveInitialTrack() retornou:', result);
                     
-                    // 🔥 CRÍTICO: Verificar se é o MESMO vídeo que já está tocando
-                    // Se for o mesmo, apenas sincronizar UI (não chamar playTrackById que pausa)
-                    const currentVideoId = getCurrentPlayingVideoId();
-                    const isSameVideo = currentVideoId === result.trackId;
+                    // Garantir que modal será processado
+                    console.log('[WarmStart] 🎯 Chamando handleHashNavigation() para processar modal...');
                     
-                    if (isSameVideo) {
-                        // Mesmo vídeo já está tocando - NÃO pausar
-                        console.log('[WarmStart] ✅ Mesmo vídeo já tocando (' + result.trackId + ') - apenas sincronizar UI (não pausar)');
-                        refreshPlayerUI();
-                    } else {
-                        // Vídeo diferente - trocar
-                        console.log('[WarmStart] ▶️ Vídeo diferente - trocando para:', result.trackId);
-                        playTrackById(result.trackId);
-                    }
-                } else {
-                    // Modal-only ou sem track
-                    console.log('[WarmStart] 📋 Modal ou sem track - apenas sincronizar UI');
+                    // Sincronizar UI primeiro
                     refreshPlayerUI();
-                }
+                    updateNotificationIconState();
+                    
+                    // Depois processar o modal
+                    handleHashNavigation().then(() => {
+                        console.log('[WarmStart] ✅ onWarmStartResume com SHORTCUT MODAL - completo!');
+                    }).catch(e => {
+                        console.error('[WarmStart] ❌ Erro ao processar handleHashNavigation:', e);
+                    });
+                }).catch(e => {
+                    console.error('[WarmStart] ❌ Erro ao processar URL shortcut modal:', e);
+                    refreshPlayerUI();
+                    updateNotificationIconState();
+                });
                 
-                // Sincronizar UI
-                updateNotificationIconState();
-                console.log('[WarmStart] ✅ onWarmStartResume com URL compartilhada - completo!');
-            }).catch(e => {
-                console.error('[WarmStart] ❌ Erro ao processar URL compartilhada:', e);
-                // Fallback: ao menos sincronizar UI
-                refreshPlayerUI();
-                updateNotificationIconState();
-            });
+                return; // Sair aqui, processar apenas o modal
+            }
             
-            return; // Sair aqui, não fazer sincronização normal abaixo
+            // 🎯 CASO 2: LINK COMPARTILHADO (tem videoId, playlistId ou artistId)
+            if (hasContentParams) {
+                console.log('[WarmStart] 🎬 LINK COMPARTILHADO detectado');
+                
+                console.log('[WarmStart] 🔄 Chamando resolveInitialTrack para processar rota nova...');
+                
+                resolveInitialTrack().then(result => {
+                    console.log('[WarmStart] 📊 resolveInitialTrack() retornou:', result);
+                    
+                    // Se há trackId para tocar (não é modal-only)
+                    if (result && result.trackId && !result.skipTrackPlayback) {
+                        console.log('[WarmStart] ▶️ Vídeo compartilhado detectado:', result.trackId);
+                        
+                        // 🔥 CRÍTICO: Verificar se é o MESMO vídeo que já está tocando
+                        const currentVideoId = getCurrentPlayingVideoId();
+                        const isSameVideo = currentVideoId === result.trackId;
+                        
+                        if (isSameVideo) {
+                            // Mesmo vídeo já está tocando - NÃO pausar
+                            console.log('[WarmStart] ✅ Mesmo vídeo já tocando (' + result.trackId + ') - apenas sincronizar UI');
+                            refreshPlayerUI();
+                        } else {
+                            // Vídeo diferente - trocar
+                            console.log('[WarmStart] ▶️ Vídeo diferente - trocando para:', result.trackId);
+                            playTrackById(result.trackId);
+                        }
+                    } else {
+                        // Modal-only ou sem track
+                        console.log('[WarmStart] 📋 Modal ou sem track - apenas sincronizar UI');
+                        refreshPlayerUI();
+                    }
+                    
+                    // Sincronizar UI
+                    updateNotificationIconState();
+                    console.log('[WarmStart] ✅ onWarmStartResume com LINK COMPARTILHADO - completo!');
+                }).catch(e => {
+                    console.error('[WarmStart] ❌ Erro ao processar URL compartilhada:', e);
+                    refreshPlayerUI();
+                    updateNotificationIconState();
+                });
+                
+                return; // Sair aqui
+            }
+            
+            // Se chegou aqui, URL não tem parâmetros reconhecidos
+            console.log('[WarmStart] ℹ️ URL sem parâmetros reconhecidos - warm start vazio');
+            
         } catch (e) {
-            console.error('[WarmStart] ❌ Erro ao processar URL compartilhada:', e);
-            // Continuar com sincronização normal
+            console.error('[WarmStart] ❌ Erro ao processar URL:', e);
         }
     }
     
