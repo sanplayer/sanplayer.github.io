@@ -40,25 +40,25 @@
   ],
   "screenshots": [
     {
-      "src": "./screenshots/tela1.jpg",
+      "src": "/screenshots/tela1.jpg",
       "sizes": "1080x1920",
       "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "./screenshots/tela2.jpg",
+      "src": "/screenshots/tela2.jpg",
       "sizes": "1080x1920",
       "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "./screenshots/tela3.jpg",
+      "src": "/screenshots/tela3.jpg",
       "sizes": "1080x1920",
       "type": "image/jpeg",
       "form_factor": "narrow"
     },
     {
-      "src": "./screenshots/screenshot-wide.jpg",
+      "src": "/screenshots/screenshot-wide.jpg",
       "sizes": "1920x1080",
       "type": "image/jpeg",
       "form_factor": "wide"
@@ -66,25 +66,25 @@
   ],
   "icons": [
     {
-      "src": "./icons/icon192.png",
+      "src": "/icons/icon192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/icon192.png",
+      "src": "/icons/icon192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "./icons/icon512.png",
+      "src": "/icons/icon512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/icon512.png",
+      "src": "/icons/icon512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -106,7 +106,7 @@
       "url": "/index.html?modal=playlists",
       "icons": [
         {
-          "src": "./shortcuts/playlist.png",
+          "src": "/shortcuts/playlist.png",
           "sizes": "128x128",
           "type": "image/png"
         }
@@ -132,7 +132,7 @@
       "url": "/index.html?modal=favorites",
       "icons": [
         {
-          "src": "./shortcuts/favorite.png",
+          "src": "/shortcuts/favorite.png",
           "sizes": "128x128",
           "type": "image/png"
         }
