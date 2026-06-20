@@ -259,50 +259,32 @@ window.onWarmStartResume = function(newUrl = null) {
             
             // 🎯 CASO 1: SHORTCUT MODAL (apenas ?modal=... SEM videoId/playlistId/artistId)
             if (hasModal && !hasContentParams) {
-                console.error('[WarmStart] 🎨 SHORTCUT MODAL DETECTED:', searchParams.get('modal'));
-                alert('[WarmStart] CASO 1 - SHORTCUT MODAL DETECTADO: ' + searchParams.get('modal'));
                 console.log('[WarmStart] 🎨 SHORTCUT MODAL detectado - abrindo modal:', searchParams.get('modal'));
-                
-                // 🔒 CRÍTICO: Bloquear PAUSED events durante warm start modal
-                // Se ytPlayer foi resetado (pageshow), onYouTubeIframeAPIReady() pode disparar
-                // e YouTube emitirá PAUSED durante cueVideoById() → QUEREMOS IGNORAR ISSO
-                console.error('[WarmStart] 🔒 SETTING _ignorePlaybackEvents=true (SHORTCUT MODAL) - vamos bloquear PAUSED');
-                player._ignorePlaybackEvents = true;
                 
                 // Carregar música anterior (normal) + abrir modal por cima
                 // resolveInitialTrack vai ignorar o modal e carregar localStorage/fallback
                 console.log('[WarmStart] 🔄 Chamando resolveInitialTrack (carrega música anterior)...');
                 
                 resolveInitialTrack().then(result => {
-                    console.error('[WarmStart] ⚠️ CASE 1: resolveInitialTrack() returned, now calling refreshPlayerUI()');
                     console.log('[WarmStart] 📊 resolveInitialTrack() retornou:', result);
                     
-                    // Sincronizar UI (IMPORTANTE: sem chamar playTrackById que pausa o vídeo)
-                    console.log('[WarmStart] 🔄 Sincronizando UI...');
+                    // Garantir que modal será processado
+                    console.log('[WarmStart] 🎯 Chamando handleHashNavigation() para processar modal...');
+                    
+                    // Sincronizar UI primeiro
                     refreshPlayerUI();
                     updateNotificationIconState();
                     
-                    // Garantir que modal será processado
-                    console.error('[WarmStart] ⚠️ CASE 1: About to call handleHashNavigation()');
-                    console.log('[WarmStart] 🎯 Chamando handleHashNavigation() para processar modal...');
+                    // Depois processar o modal
                     handleHashNavigation().then(() => {
-                        console.error('[WarmStart] ✅ CASE 1: COMPLETE - modal is now open, audio continues');
-                        console.log('[WarmStart] ✅ onWarmStartResume com SHORTCUT MODAL - completo! (vídeo continua tocando)');
-                        
-                        // 🔓 LIMPAR: Desbloquear PAUSED events agora que modal está aberto
-                        console.error('[WarmStart] 🔓 CLEARING _ignorePlaybackEvents=false (SHORTCUT MODAL COMPLETE)');
-                        player._ignorePlaybackEvents = false;
+                        console.log('[WarmStart] ✅ onWarmStartResume com SHORTCUT MODAL - completo!');
                     }).catch(e => {
                         console.error('[WarmStart] ❌ Erro ao processar handleHashNavigation:', e);
-                        // 🔓 LIMPAR mesmo em caso de erro
-                        player._ignorePlaybackEvents = false;
                     });
                 }).catch(e => {
                     console.error('[WarmStart] ❌ Erro ao processar URL shortcut modal:', e);
                     refreshPlayerUI();
                     updateNotificationIconState();
-                    // 🔓 LIMPAR mesmo em caso de erro
-                    player._ignorePlaybackEvents = false;
                 });
                 
                 return; // Sair aqui, processar apenas o modal
@@ -2180,9 +2162,7 @@ async function loadLastState() {
         // Se tinha playlist normal, restaurar
         if (state.playlistIndex !== null && state.playlistIndex !== undefined && state.playlistIndex >= 0) {
             if (state.playlistIndex < player.playlistsIndex.length) {
-                // ⚠️ CRÍTICO: Passar skipAutoLoad=true para não auto-tocar durante warm start
-                // O vídeo específico será restaurado logo abaixo via loadVideo()
-                await selectPlaylistByIndex(state.playlistIndex, true);
+                await selectPlaylistByIndex(state.playlistIndex);
                 
                 // Restaurar posição do vídeo se existir
                 if (state.videoIndex >= 0 && state.videoIndex < player.currentPlaylist.videos.length) {
@@ -2450,8 +2430,7 @@ async function restorePlaylistState(context) {
         if (context.playlistIndex >= 0 && context.playlistIndex < player.playlistsIndex.length) {
             console.log(`[Init] 📋 Restoring playlist state: index=${context.playlistIndex}, video=${context.videoIndex}`);
             
-            // ⚠️ CRÍTICO: Passar skipAutoLoad=true para não auto-tocar durante warm start
-            await selectPlaylistByIndex(context.playlistIndex, true);
+            await selectPlaylistByIndex(context.playlistIndex);
             
             // Restaurar posição do vídeo se válida
             if (context.videoIndex >= 0 && context.videoIndex < player.currentPlaylist.videos.length) {
@@ -3034,19 +3013,12 @@ async function initApp() {
     // Setup de listeners para inputs/textareas em modais
     // Detecta quando um input ganha/perde foco para controlar scroll
     document.addEventListener('focus', (e) => {
-        // Apenas logar se NÃO é um input (para evitar spam)
-        if (!e.target || (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA')) {
-            console.error('[focus] 🔔 DOCUMENT FOCUS - target=' + (e.target?.tagName || 'document') + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
-            alert('[focus] DOCUMENT GOT FOCUS - shouldPlayOnReady=' + player.shouldPlayOnReady);
-        }
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
             ensureInputVisible();
         }
     }, true);
     
     document.addEventListener('blur', (e) => {
-        console.error('[blur] 🔔 DOCUMENT BLUR - target=' + (e.target?.tagName || 'document') + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
-        alert('[blur] DOCUMENT LOST FOCUS - shouldPlayOnReady=' + player.shouldPlayOnReady);
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
             clearActiveInput();
         }
@@ -3058,15 +3030,11 @@ async function initApp() {
     // Sincronizar estado favorito atual
     // Importante para PWA: manter posição exata quando usuário volta
     window.addEventListener('pagehide', () => {
-        console.error('[pagehide] 🔔 EVENT FIRED - shouldPlayOnReady=' + player.shouldPlayOnReady);
-        alert('[pagehide] DISPARADO - shouldPlayOnReady=' + player.shouldPlayOnReady);
         saveCurrentState();
     });
     
     // Fallback para navegadores que não suportam pagehide
     window.addEventListener('beforeunload', () => {
-        console.error('[beforeunload] 🔔 EVENT FIRED - shouldPlayOnReady=' + player.shouldPlayOnReady);
-        alert('[beforeunload] DISPARADO - shouldPlayOnReady=' + player.shouldPlayOnReady);
         saveCurrentState();
     });
 
@@ -3789,11 +3757,8 @@ function initThemeColor() {
     
     // Aplicar quando app entra em foco (voltando do background)
     document.addEventListener('visibilitychange', () => {
-        console.error('[visibilitychange] 🔔 EVENT FIRED - document.hidden=' + document.hidden);
-        alert('[visibilitychange] DISPARADO - hidden=' + document.hidden + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
         if (!document.hidden) {
             // App voltou do background
-            console.error('[visibilitychange] 🎯 App returned from background - calling setThemeColor');
             setTimeout(() => {
                 setThemeColor(THEME_COLOR);
             }, 10);
@@ -3803,8 +3768,6 @@ function initThemeColor() {
     // 🔄 WEBVIEW RETOMANDO: Detectar quando o DOM foi recriado (WebView return)
     // O evento 'pageshow' dispara quando a página retorna de suspensão (bfcache ou WebView resume)
     window.addEventListener('pageshow', (event) => {
-        console.error('[pageshow] 🔔 EVENT FIRED - persisted=' + event.persisted + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
-        alert('[pageshow] DISPARADO - persisted=' + event.persisted + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
         if (event.persisted) {
             // evento.persisted = true significa que voltou de bfcache/suspensão
             console.log('[pageshow] 🔄 Página retomada do bfcache/suspensão (WebView Android)');
@@ -4010,16 +3973,8 @@ function getRoutingParams() {
  *    ❌ Remover a verificação de params.has('modal')
  */
 async function handleHashNavigation() {
-    console.log('[handleHashNavigation] 🎯 INICIADO');
     const params = getRoutingParams();
     const hash = window.location.hash;
-    
-    console.log('[handleHashNavigation] 📋 Parâmetros:', {
-        videoId: params.get('videoId'),
-        playlistId: params.get('playlistId'),
-        artistId: params.get('artistId'),
-        modal: params.get('modal')
-    });
     
     const videoId = params.get('videoId');
     const playlistId = params.get('playlistId');
@@ -4028,37 +3983,16 @@ async function handleHashNavigation() {
     
     // ✨ Suporte a atalhos de modais (PWA shortcuts) - via query string OU hash
     if (modal === 'playlists') {
-        console.log('[handleHashNavigation] 🎨 Modal PLAYLISTS detectado - clicando botão');
         const btn = document.getElementById('link-playlists');
-        if (btn) {
-            console.log('[handleHashNavigation] ✅ Botão link-playlists encontrado, executando click()');
-            btn.click();
-            console.log('[handleHashNavigation] ✅ click() executado');
-        } else {
-            console.warn('[handleHashNavigation] ⚠️ Botão link-playlists NÃO encontrado');
-        }
+        if (btn) btn.click();
         return;
     } else if (modal === 'artists') {
-        console.log('[handleHashNavigation] 🎨 Modal ARTISTS detectado - clicando botão');
         const btn = document.getElementById('link-artistas');
-        if (btn) {
-            console.log('[handleHashNavigation] ✅ Botão link-artistas encontrado, executando click()');
-            btn.click();
-            console.log('[handleHashNavigation] ✅ click() executado');
-        } else {
-            console.warn('[handleHashNavigation] ⚠️ Botão link-artistas NÃO encontrado');
-        }
+        if (btn) btn.click();
         return;
     } else if (modal === 'favorites') {
-        console.log('[handleHashNavigation] 🎨 Modal FAVORITES detectado - clicando botão');
         const btn = document.getElementById('link-favoritos');
-        if (btn) {
-            console.log('[handleHashNavigation] ✅ Botão link-favoritos encontrado, executando click()');
-            btn.click();
-            console.log('[handleHashNavigation] ✅ click() executado');
-        } else {
-            console.warn('[handleHashNavigation] ⚠️ Botão link-favoritos NÃO encontrado');
-        }
+        if (btn) btn.click();
         return;
     }
     
@@ -4066,7 +4000,7 @@ async function handleHashNavigation() {
     // (Nota: videoId, playlistId, artistId já foram extraídos acima)
     
     if (videoId) {
-        console.log('[handleHashNavigation] 🎬 videoId detectado:', videoId);
+        
         try {
             // Buscar vídeo em cache e playlists
             const result = await findVideoById(videoId);
@@ -4085,7 +4019,7 @@ async function handleHashNavigation() {
             console.error('Erro ao navegar para vídeo:', error);
         }
     } else if (playlistId) {
-        console.log('[handleHashNavigation] 📋 playlistId detectado:', playlistId);
+        
         try {
             // Encontrar índice da playlist com matching robusto (case-insensitive)
             const index = player.playlistsIndex.findIndex(p => {
@@ -4113,7 +4047,7 @@ async function handleHashNavigation() {
             window.location.replace(window.location.pathname);
         }
     } else if (artistId) {
-        console.log('[handleHashNavigation] 👤 artistId detectado:', artistId);
+        
         try {
             // 🔒 GUARDRAIL: artistId já está DECODIFICADO
             // ❌ NUNCA faça: selectArtist(decodeURIComponent(artistId))
@@ -4216,14 +4150,6 @@ window.addEventListener('focus', () => {
 
 // Atualiza UI completa de player sem fazer novo fetch pesado
 function refreshPlayerUI() {
-    console.log('[refreshPlayerUI] 🔄 INICIADO');
-    console.log('[refreshPlayerUI] Estado atual:', {
-        isPlaying: player.isPlaying,
-        shouldPlayOnReady: player.shouldPlayOnReady,
-        currentVideoId: getCurrentPlayingVideoId(),
-        ytReady: player.ytReady
-    });
-    
     updateCurrentVideoDisplay();
     updatePlayPauseButton();
     updateProgressBar();
@@ -4235,8 +4161,6 @@ function refreshPlayerUI() {
         player.currentTime = ytPlayer.getCurrentTime();
         player.currentDuration = ytPlayer.getDuration();
     }
-    
-    console.log('[refreshPlayerUI] ✅ CONCLUÍDO');
 }
 
 // ============================================================================
@@ -4436,19 +4360,8 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
  * 
  * @param {Number} index - índice no playlistsIndex
  */
-async function selectPlaylistByIndex(index, skipAutoLoad = false) {
-    console.error('[selectPlaylistByIndex] 🚨 CALLED: index=' + index + ' skipAutoLoad=' + skipAutoLoad);
-    console.log('[selectPlaylistByIndex] 📋 INICIADO - index:', index, 'skipAutoLoad:', skipAutoLoad);
-    console.log('[selectPlaylistByIndex] Estado ANTES:', {
-        isPlaying: player.isPlaying,
-        shouldPlayOnReady: player.shouldPlayOnReady,
-        currentVideoId: getCurrentPlayingVideoId()
-    });
-    
-    if (index < 0 || index >= player.playlistsIndex.length) {
-        console.log('[selectPlaylistByIndex] ❌ Índice inválido, retornando');
-        return;
-    }
+async function selectPlaylistByIndex(index) {
+    if (index < 0 || index >= player.playlistsIndex.length) return;
 
     const playlistMeta = player.playlistsIndex[index];
     if (!playlistMeta.url) return;
@@ -4462,17 +4375,7 @@ async function selectPlaylistByIndex(index, skipAutoLoad = false) {
             player.currentVideoIndex = 0;
             player.playOrder = [...Array(playlist.videos.length).keys()];
             player.originalOrder = [...player.playOrder];
-            // ⚠️ NÃO autotocar se for shortcut modal (skipAutoLoad=true)
-            player.shouldPlayOnReady = !skipAutoLoad;
-            
-            console.error('[selectPlaylistByIndex] ⚠️ shouldPlayOnReady SET TO: ' + player.shouldPlayOnReady + ' (skipAutoLoad=' + skipAutoLoad + ')');
-
-            
-            console.log('[selectPlaylistByIndex] 📝 Estado ALTERADO:', {
-                currentPlaylistIndex: player.currentPlaylistIndex,
-                currentVideoIndex: player.currentVideoIndex,
-                shouldPlayOnReady: player.shouldPlayOnReady
-            });
+            player.shouldPlayOnReady = true;
             player.viewingFavorites = false;
             
             // Sincronizar estado favorito atual
@@ -4492,13 +4395,9 @@ async function selectPlaylistByIndex(index, skipAutoLoad = false) {
             updatePlaylistCardsInModal();
             
             closePlaylistsModal();
-            console.log('[selectPlaylistByIndex] 🔒 Modal fechado');
-            
             sidebarHistory.updateButtons();
             
-            console.log('[selectPlaylistByIndex] 📹 Chamando loadFirstVideo()...');
             loadFirstVideo();
-            console.log('[selectPlaylistByIndex] ✅ loadFirstVideo() retornou');
             
             // Persist current state
             saveCurrentState();
@@ -6180,8 +6079,6 @@ function loadPlaylistVideos() {
 }
 
 function loadFirstVideo() {
-    console.error('[loadFirstVideo] 🎬 CALLED - shouldPlayOnReady=' + player.shouldPlayOnReady + ' isPlaying=' + player.isPlaying);
-    
     const video = player.currentPlaylist.videos[player.currentVideoIndex];
     loadVideo(video);
     updateCurrentVideoDisplay();
@@ -6192,19 +6089,6 @@ function loadFirstVideo() {
 // ============================================================================
 
 function loadVideo(video) {
-    console.error('[loadVideo] 🎥 CALLED - video=' + video?.id + ' shouldPlayOnReady=' + player.shouldPlayOnReady);
-    console.log('[loadVideo] 📹 INICIADO');
-    console.log('[loadVideo] Vídeo a carregar:', {
-        id: video?.id,
-        title: video?.title,
-        artist: video?.artist
-    });
-    console.log('[loadVideo] Estado ANTES:', {
-        isPlaying: player.isPlaying,
-        ytReady: player.ytReady,
-        shouldPlayOnReady: player.shouldPlayOnReady
-    });
-    
     // Player container já existe no HTML, não precisa recriá-lo
 
     // 🆕 VALIDAÇÃO: Se tentar tocar offline, mostrar feedback
@@ -6222,9 +6106,7 @@ function loadVideo(video) {
     }
 
     if (ytPlayer && typeof ytPlayer.cueVideoById === 'function') {
-        console.log('[loadVideo] ▶️ Chamando ytPlayer.cueVideoById(' + video.id + ')');
         ytPlayer.cueVideoById(video.id);
-        console.log('[loadVideo] ✅ cueVideoById executado (playVideo() será chamado por onPlayerStateChange se shouldPlayOnReady=true)');
         // playVideo() será chamado pelo handler CUED em onPlayerStateChange quando shouldPlayOnReady for true
     } else if (window.YT && window.YT.Player && !ytPlayer && !ytPlayerInitialized) {
         onYouTubeIframeAPIReady();
@@ -6254,13 +6136,6 @@ function loadVideo(video) {
     
     // 💾 NEW: Salvar vídeo/contexto no localStorage quando muda de música
     persistPlayerState();
-    
-    console.log('[loadVideo] ✅ CONCLUÍDO');
-    console.log('[loadVideo] Estado DEPOIS:', {
-        isPlaying: player.isPlaying,
-        shouldPlayOnReady: player.shouldPlayOnReady,
-        currentVideoId: getCurrentPlayingVideoId()
-    });
 }
 
 function onYouTubeIframeAPIReady() {
@@ -6375,26 +6250,9 @@ function onPlayerStateChange(event) {
     // =================================================================
     
     const state = event.data;
-    const stateNames = {
-        '-1': 'UNSTARTED',
-        '0': 'ENDED',
-        '1': 'PLAYING',
-        '2': 'PAUSED',
-        '3': 'BUFFERING',
-        '5': 'CUED'
-    };
-
-    // 🔍 DEBUG: Se há flag de ignore, não processar
-    if (player._ignorePlaybackEvents && state !== YT.PlayerState.CUED) {
-        console.error('[onPlayerStateChange] 🔒 IGNORING ' + stateNames[state] + ' (ignorePlaybackEvents=true)');
-        return;
-    }
-
-    console.log('[onPlayerStateChange] 📡 EVENTO YouTube Player:', stateNames[state] || 'UNKNOWN (' + state + ')');
 
     // YT.State: -1 unstarted, 0 ended, 1 playing, 2 paused, 3 buffering, 5 cued
     if (state === YT.PlayerState.PLAYING) {
-        console.log('[onPlayerStateChange] ▶️ PLAYING detectado');
         player.isPlaying = true;
         player.currentDuration = ytPlayer.getDuration();
         player.currentTime = ytPlayer.getCurrentTime();
@@ -6404,13 +6262,9 @@ function onPlayerStateChange(event) {
         updatePlayingIndicatorAnimationState();
         MediaBridge.setPlaybackState(true);
         MediaBridge.updateProgress(player.currentTime, player.currentDuration);
-        console.log('[onPlayerStateChange] ✅ player.isPlaying = true');
         // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
         // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.PAUSED) {
-        console.error('[onPlayerStateChange] ⏸️ PAUSED EVENT - This is being called!');
-        console.log('[onPlayerStateChange] ⏸️ PAUSED detectado');
-        
         player.isPlaying = false;
         player.currentTime = ytPlayer.getCurrentTime();
         updatePlayPauseButton();
@@ -6419,12 +6273,9 @@ function onPlayerStateChange(event) {
         updatePlayingIndicatorAnimationState();
         MediaBridge.setPlaybackState(false);
         MediaBridge.updateProgress(player.currentTime, player.currentDuration);
-        console.log('[onPlayerStateChange] ✅ player.isPlaying = false');
         // 💾 NOTA: persistPlayerState() é chamada pelo throttle em setInterval()
         // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.CUED) {
-        console.error('[onPlayerStateChange] 📌 CUED EVENT - shouldPlayOnReady=' + player.shouldPlayOnReady);
-        console.log('[onPlayerStateChange] 📌 CUED detectado');
         // Player entrou em CUED após cueVideoById()
         // 💾 NEW: Se restaurando do localStorage, aplicar seek + auto-play
         if (player._restoreTime !== undefined && player._restoreTime > 0) {
@@ -6443,17 +6294,10 @@ function onPlayerStateChange(event) {
         // Player entrou em CUED após cueVideoById()
         // Se shouldPlayOnReady for true, é o momento correto para chamar playVideo()
         if (player.shouldPlayOnReady && ytPlayer && player.ytReady) {
-            console.error('[onPlayerStateChange] 🎬 CALLING playVideo() - shouldPlayOnReady=true');
-            console.log('[onPlayerStateChange] 🎬 shouldPlayOnReady=true, chamando ytPlayer.playVideo()');
             ytPlayer.playVideo();
             player.shouldPlayOnReady = false;
-            console.log('[onPlayerStateChange] ✅ playVideo() chamado');
-        } else {
-            console.error('[onPlayerStateChange] ⏸️ NOT calling playVideo() - shouldPlayOnReady=' + player.shouldPlayOnReady + ' ytReady=' + player.ytReady);
-            console.log('[onPlayerStateChange] ⏸️ shouldPlayOnReady=' + player.shouldPlayOnReady + ' (ytReady=' + player.ytReady + ') - NÃO tocando automaticamente');
         }
     } else if (state === YT.PlayerState.BUFFERING) {
-        console.log('[onPlayerStateChange] 🔄 BUFFERING');
         MediaBridge.notifyBuffering();
     } else if (state === YT.PlayerState.ENDED) {
         player.isPlaying = false;
