@@ -260,30 +260,33 @@ window.onWarmStartResume = function(newUrl = null) {
             // 🎯 CASO 1: SHORTCUT MODAL (apenas ?modal=... SEM videoId/playlistId/artistId)
             if (hasModal && !hasContentParams) {
                 console.log('[WarmStart] 🎨 SHORTCUT MODAL detectado - abrindo modal:', searchParams.get('modal'));
-                console.log('[WarmStart] 🔒 ISOLAMENTO: Não mexer com player state (vídeo continua tocando)');
                 
-                // 🔥 CRÍTICO: Em warm start com modal, NUNCA chamar:
-                // ❌ resolveInitialTrack() - mexeria com player state
-                // ❌ refreshPlayerUI() - sincronizaria state completo
-                // ✅ APENAS: handleHashNavigation() - abre o modal visualmente
-                // ✅ APENAS: updateNotificationIconState() - sincroniza notificação
+                // Carregar música anterior (normal) + abrir modal por cima
+                // resolveInitialTrack vai ignorar o modal e carregar localStorage/fallback
+                console.log('[WarmStart] 🔄 Chamando resolveInitialTrack (carrega música anterior)...');
                 
-                try {
+                resolveInitialTrack().then(result => {
+                    console.log('[WarmStart] 📊 resolveInitialTrack() retornou:', result);
+                    
+                    // Sincronizar UI (IMPORTANTE: sem chamar playTrackById que pausa o vídeo)
+                    console.log('[WarmStart] 🔄 Sincronizando UI...');
+                    refreshPlayerUI();
+                    updateNotificationIconState();
+                    
+                    // Garantir que modal será processado
                     console.log('[WarmStart] 🎯 Chamando handleHashNavigation() para processar modal...');
-                    
-                    await handleHashNavigation();
-                    
-                    // Sincronizar apenas a notificação, não o player state
+                    handleHashNavigation().then(() => {
+                        console.log('[WarmStart] ✅ onWarmStartResume com SHORTCUT MODAL - completo! (vídeo continua tocando)');
+                    }).catch(e => {
+                        console.error('[WarmStart] ❌ Erro ao processar handleHashNavigation:', e);
+                    });
+                }).catch(e => {
+                    console.error('[WarmStart] ❌ Erro ao processar URL shortcut modal:', e);
+                    refreshPlayerUI();
                     updateNotificationIconState();
-                    
-                    console.log('[WarmStart] ✅ onWarmStartResume com SHORTCUT MODAL - completo! (vídeo não foi pausado)');
-                } catch (e) {
-                    console.error('[WarmStart] ❌ Erro ao processar SHORTCUT MODAL:', e);
-                    // Fallback: ao menos sincronizar notificação
-                    updateNotificationIconState();
-                }
+                });
                 
-                return; // Sair aqui, processar apenas o modal (isolado)
+                return; // Sair aqui, processar apenas o modal
             }
             
             // 🎯 CASO 2: LINK COMPARTILHADO (tem videoId, playlistId ou artistId)
