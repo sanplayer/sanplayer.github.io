@@ -263,6 +263,12 @@ window.onWarmStartResume = function(newUrl = null) {
                 alert('[WarmStart] CASO 1 - SHORTCUT MODAL DETECTADO: ' + searchParams.get('modal'));
                 console.log('[WarmStart] 🎨 SHORTCUT MODAL detectado - abrindo modal:', searchParams.get('modal'));
                 
+                // 🔒 CRÍTICO: Bloquear PAUSED events durante warm start modal
+                // Se ytPlayer foi resetado (pageshow), onYouTubeIframeAPIReady() pode disparar
+                // e YouTube emitirá PAUSED durante cueVideoById() → QUEREMOS IGNORAR ISSO
+                console.error('[WarmStart] 🔒 SETTING _ignorePlaybackEvents=true (SHORTCUT MODAL) - vamos bloquear PAUSED');
+                player._ignorePlaybackEvents = true;
+                
                 // Carregar música anterior (normal) + abrir modal por cima
                 // resolveInitialTrack vai ignorar o modal e carregar localStorage/fallback
                 console.log('[WarmStart] 🔄 Chamando resolveInitialTrack (carrega música anterior)...');
@@ -282,13 +288,21 @@ window.onWarmStartResume = function(newUrl = null) {
                     handleHashNavigation().then(() => {
                         console.error('[WarmStart] ✅ CASE 1: COMPLETE - modal is now open, audio continues');
                         console.log('[WarmStart] ✅ onWarmStartResume com SHORTCUT MODAL - completo! (vídeo continua tocando)');
+                        
+                        // 🔓 LIMPAR: Desbloquear PAUSED events agora que modal está aberto
+                        console.error('[WarmStart] 🔓 CLEARING _ignorePlaybackEvents=false (SHORTCUT MODAL COMPLETE)');
+                        player._ignorePlaybackEvents = false;
                     }).catch(e => {
                         console.error('[WarmStart] ❌ Erro ao processar handleHashNavigation:', e);
+                        // 🔓 LIMPAR mesmo em caso de erro
+                        player._ignorePlaybackEvents = false;
                     });
                 }).catch(e => {
                     console.error('[WarmStart] ❌ Erro ao processar URL shortcut modal:', e);
                     refreshPlayerUI();
                     updateNotificationIconState();
+                    // 🔓 LIMPAR mesmo em caso de erro
+                    player._ignorePlaybackEvents = false;
                 });
                 
                 return; // Sair aqui, processar apenas o modal
@@ -6167,20 +6181,10 @@ function loadPlaylistVideos() {
 
 function loadFirstVideo() {
     console.error('[loadFirstVideo] 🎬 CALLED - shouldPlayOnReady=' + player.shouldPlayOnReady + ' isPlaying=' + player.isPlaying);
-    alert('[loadFirstVideo] CHAMADO! shouldPlayOnReady=' + player.shouldPlayOnReady);
-    // 🔒 GUARD: Impedir que eventos PAUSED disparem durante cueVideoById
-    // Quando skipAutoLoad=true (shortcut modal), não queremos que a pausa interrumpa
-    player._ignorePlaybackEvents = true;
     
     const video = player.currentPlaylist.videos[player.currentVideoIndex];
     loadVideo(video);
     updateCurrentVideoDisplay();
-    
-    // ⏱️ Limpar flag após um pequeno delay para permitir que CUED dispare
-    setTimeout(() => {
-        player._ignorePlaybackEvents = false;
-        console.error('[loadFirstVideo] 🎬 Playback events re-enabled after cueVideoById()');
-    }, 100);
 }
 
 // ============================================================================
@@ -6405,11 +6409,7 @@ function onPlayerStateChange(event) {
         // NÃO chamar aqui para evitar spam desnecessário
     } else if (state === YT.PlayerState.PAUSED) {
         console.error('[onPlayerStateChange] ⏸️ PAUSED EVENT - This is being called!');
-        console.log('[onPlayerStateChange] ⏸️ PAUSED detectado - Investigando causa...');
-        console.log('[onPlayerStateChange] Stack trace:', new Error().stack);
-        
-        // 🔍 DEBUG: alert para visualizar na WebView
-        alert('[onPlayerStateChange] PAUSED event disparado. shouldPlayOnReady=' + player.shouldPlayOnReady + ', player.isPlaying=' + player.isPlaying);
+        console.log('[onPlayerStateChange] ⏸️ PAUSED detectado');
         
         player.isPlaying = false;
         player.currentTime = ytPlayer.getCurrentTime();
