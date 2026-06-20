@@ -6150,9 +6150,19 @@ function loadPlaylistVideos() {
 
 function loadFirstVideo() {
     console.error('[loadFirstVideo] 🎬 CALLED - shouldPlayOnReady=' + player.shouldPlayOnReady + ' isPlaying=' + player.isPlaying);
+    // 🔒 GUARD: Impedir que eventos PAUSED disparem durante cueVideoById
+    // Quando skipAutoLoad=true (shortcut modal), não queremos que a pausa interrumpa
+    player._ignorePlaybackEvents = true;
+    
     const video = player.currentPlaylist.videos[player.currentVideoIndex];
     loadVideo(video);
     updateCurrentVideoDisplay();
+    
+    // ⏱️ Limpar flag após um pequeno delay para permitir que CUED dispare
+    setTimeout(() => {
+        player._ignorePlaybackEvents = false;
+        console.error('[loadFirstVideo] 🎬 Playback events re-enabled after cueVideoById()');
+    }, 100);
 }
 
 // ============================================================================
@@ -6351,6 +6361,12 @@ function onPlayerStateChange(event) {
         '3': 'BUFFERING',
         '5': 'CUED'
     };
+
+    // 🔍 DEBUG: Se há flag de ignore, não processar
+    if (player._ignorePlaybackEvents && state !== YT.PlayerState.CUED) {
+        console.error('[onPlayerStateChange] 🔒 IGNORING ' + stateNames[state] + ' (ignorePlaybackEvents=true)');
+        return;
+    }
 
     console.log('[onPlayerStateChange] 📡 EVENTO YouTube Player:', stateNames[state] || 'UNKNOWN (' + state + ')');
 
