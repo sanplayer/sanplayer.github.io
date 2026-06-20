@@ -3020,12 +3020,19 @@ async function initApp() {
     // Setup de listeners para inputs/textareas em modais
     // Detecta quando um input ganha/perde foco para controlar scroll
     document.addEventListener('focus', (e) => {
+        // Apenas logar se NÃO é um input (para evitar spam)
+        if (!e.target || (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA')) {
+            console.error('[focus] 🔔 DOCUMENT FOCUS - target=' + (e.target?.tagName || 'document') + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
+            alert('[focus] DOCUMENT GOT FOCUS - shouldPlayOnReady=' + player.shouldPlayOnReady);
+        }
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
             ensureInputVisible();
         }
     }, true);
     
     document.addEventListener('blur', (e) => {
+        console.error('[blur] 🔔 DOCUMENT BLUR - target=' + (e.target?.tagName || 'document') + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
+        alert('[blur] DOCUMENT LOST FOCUS - shouldPlayOnReady=' + player.shouldPlayOnReady);
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
             clearActiveInput();
         }
@@ -3037,11 +3044,15 @@ async function initApp() {
     // Sincronizar estado favorito atual
     // Importante para PWA: manter posição exata quando usuário volta
     window.addEventListener('pagehide', () => {
+        console.error('[pagehide] 🔔 EVENT FIRED - shouldPlayOnReady=' + player.shouldPlayOnReady);
+        alert('[pagehide] DISPARADO - shouldPlayOnReady=' + player.shouldPlayOnReady);
         saveCurrentState();
     });
     
     // Fallback para navegadores que não suportam pagehide
     window.addEventListener('beforeunload', () => {
+        console.error('[beforeunload] 🔔 EVENT FIRED - shouldPlayOnReady=' + player.shouldPlayOnReady);
+        alert('[beforeunload] DISPARADO - shouldPlayOnReady=' + player.shouldPlayOnReady);
         saveCurrentState();
     });
 
@@ -3764,8 +3775,11 @@ function initThemeColor() {
     
     // Aplicar quando app entra em foco (voltando do background)
     document.addEventListener('visibilitychange', () => {
+        console.error('[visibilitychange] 🔔 EVENT FIRED - document.hidden=' + document.hidden);
+        alert('[visibilitychange] DISPARADO - hidden=' + document.hidden + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
         if (!document.hidden) {
             // App voltou do background
+            console.error('[visibilitychange] 🎯 App returned from background - calling setThemeColor');
             setTimeout(() => {
                 setThemeColor(THEME_COLOR);
             }, 10);
@@ -3775,6 +3789,8 @@ function initThemeColor() {
     // 🔄 WEBVIEW RETOMANDO: Detectar quando o DOM foi recriado (WebView return)
     // O evento 'pageshow' dispara quando a página retorna de suspensão (bfcache ou WebView resume)
     window.addEventListener('pageshow', (event) => {
+        console.error('[pageshow] 🔔 EVENT FIRED - persisted=' + event.persisted + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
+        alert('[pageshow] DISPARADO - persisted=' + event.persisted + ' | shouldPlayOnReady=' + player.shouldPlayOnReady);
         if (event.persisted) {
             // evento.persisted = true significa que voltou de bfcache/suspensão
             console.log('[pageshow] 🔄 Página retomada do bfcache/suspensão (WebView Android)');
