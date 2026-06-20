@@ -260,6 +260,7 @@ window.onWarmStartResume = function(newUrl = null) {
             // 🎯 CASO 1: SHORTCUT MODAL (apenas ?modal=... SEM videoId/playlistId/artistId)
             if (hasModal && !hasContentParams) {
                 console.error('[WarmStart] 🎨 SHORTCUT MODAL DETECTED:', searchParams.get('modal'));
+                alert('[WarmStart] CASO 1 - SHORTCUT MODAL DETECTADO: ' + searchParams.get('modal'));
                 console.log('[WarmStart] 🎨 SHORTCUT MODAL detectado - abrindo modal:', searchParams.get('modal'));
                 
                 // Carregar música anterior (normal) + abrir modal por cima
@@ -6150,6 +6151,7 @@ function loadPlaylistVideos() {
 
 function loadFirstVideo() {
     console.error('[loadFirstVideo] 🎬 CALLED - shouldPlayOnReady=' + player.shouldPlayOnReady + ' isPlaying=' + player.isPlaying);
+    alert('[loadFirstVideo] CHAMADO! shouldPlayOnReady=' + player.shouldPlayOnReady);
     // 🔒 GUARD: Impedir que eventos PAUSED disparem durante cueVideoById
     // Quando skipAutoLoad=true (shortcut modal), não queremos que a pausa interrumpa
     player._ignorePlaybackEvents = true;
@@ -6389,6 +6391,10 @@ function onPlayerStateChange(event) {
         console.error('[onPlayerStateChange] ⏸️ PAUSED EVENT - This is being called!');
         console.log('[onPlayerStateChange] ⏸️ PAUSED detectado - Investigando causa...');
         console.log('[onPlayerStateChange] Stack trace:', new Error().stack);
+        
+        // 🔍 DEBUG: alert para visualizar na WebView
+        alert('[onPlayerStateChange] PAUSED event disparado. shouldPlayOnReady=' + player.shouldPlayOnReady + ', player.isPlaying=' + player.isPlaying);
+        
         player.isPlaying = false;
         player.currentTime = ytPlayer.getCurrentTime();
         updatePlayPauseButton();
