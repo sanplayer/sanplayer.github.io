@@ -2723,7 +2723,8 @@ button:active { background: var(--feedback-color); }
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: 90%;
+    margin: 0 auto;
     padding: 14px 24px;
     margin-top: 12px;
     margin-bottom: var(--keyboard-offset);
