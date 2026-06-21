@@ -484,8 +484,13 @@ function baixarAPK() {
       <!-- MODAL DE RESULTADOS DE BUSCA -->
       <div id="searchModal" class="modal modal-fullscreen">
          <div class="modal-content">
-            <div class="modal-header">
-               <h2 id="searchTitle">Resultados de busca</h2>
+            <div class="modal-header modal-header--search-input">
+               <div class="modal-search">
+                  <input type="search" placeholder="Pesquise músicas, artistas..." id="searchModalInput" class="modal-search-input">
+                  <svg class="icon search-icon">
+                     <use href="/icons/package.svg#search-case"></use>
+                  </svg>
+               </div>
             </div>
             <div id="searchResultsContainer" class="search-results"></div>
             <button class="modal-close-footer" type="button" onclick="closeSearchModal()">Fechar</button>

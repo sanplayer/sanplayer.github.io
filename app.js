@@ -4974,7 +4974,9 @@ function closeArtistsModal() {
 
 function closeSearchModal() {
     const searchInput = document.getElementById('searchInput');
+    const searchModalInput = document.getElementById('searchModalInput');
     if (searchInput) searchInput.value = '';
+    if (searchModalInput) searchModalInput.value = '';
     
     closeModalWithAnimation('searchModal');
 }
@@ -7347,13 +7349,13 @@ function setupMobileSearch() {
     const headerSearch = document.querySelector('.header-search');
     const btnSearchMobile = document.querySelector('.btn-search-mobile');
     const searchModal = document.getElementById('searchModal');
+    const searchModalInput = document.getElementById('searchModalInput');
     let searchTimeout;
     
-    // Mobile: mostrar barra ao clicar no ícone de busca
+    // Mobile: abrir modal direto ao clicar no ícone de busca (sem input isolado)
     if (btnSearchMobile) {
         btnSearchMobile.addEventListener('click', () => {
-            headerSearch.classList.add('show-search');
-            searchInput.focus();
+            openModal('searchModal', { focusSelector: '#searchModalInput' });
         });
     }
     
@@ -7364,7 +7366,7 @@ function setupMobileSearch() {
         }
     });
     
-    // Busca em tempo real: digitar qualquer coisa mostra resultados
+    // Busca em tempo real: digitar qualquer coisa mostra resultados (no header)
     searchInput.addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
         const query = e.target.value.trim();
@@ -7378,6 +7380,23 @@ function setupMobileSearch() {
             searchMusics(query);
         }, 700);
     });
+    
+    // Busca dentro do modal (novo input)
+    if (searchModalInput) {
+        searchModalInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length === 0) {
+                document.getElementById('searchResultsContainer').innerHTML = '';
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                searchMusics(query);
+            }, 700);
+        });
+    }
     
     // Fechar barra ao selecionar um resultado (no mobile)
     if (searchModal) {
@@ -7474,8 +7493,13 @@ async function buildSearchIndex() {
 function displaySearchResults(results, query) {
     const container = document.getElementById('searchResultsContainer');
     const modal = document.getElementById('searchModal');
+    const searchModalInput = document.getElementById('searchModalInput');
+    const headerSearchInput = document.getElementById('searchInput');
     
-    document.getElementById('searchTitle').textContent = `Resultados para "${query}"`;
+    // Sincronizar inputs: copiar texto do header input para o modal input
+    if (searchModalInput && headerSearchInput && headerSearchInput.value.trim() === query) {
+        searchModalInput.value = query;
+    }
     
     if (results.length === 0) {
         container.innerHTML = '';
@@ -7485,43 +7509,58 @@ function displaySearchResults(results, query) {
         container.appendChild(noResultsDiv);
     } else {
         container.innerHTML = '';
-        results.forEach((result) => {
-            const card = document.createElement('div');
-            card.className = 'card';
+        results.forEach((result, idx) => {
+            const item = document.createElement('div');
+            item.className = 'playlist-item';
+            item.setAttribute('data-video-index', idx);
+            item.setAttribute('data-video-id', result.video.id);
             
-            // 🆕 WRAPPER: Contêiner para imagem com background placeholder
-            const imgWrapper = document.createElement('div');
-            imgWrapper.className = 'card-image-wrapper';
-            
+            // Thumbnail
             const img = document.createElement('img');
             img.src = getArtistCoverUrl(result.video.artist);
             img.alt = result.video.artist;
-            img.className = 'card-image';
+            img.className = 'thumb-mini';
             img.addEventListener('error', () => { 
-                img.src = 'covers/artists/default.jpg';
-                img.classList.add('fallback-image');
+                img.src = '/covers/artists/default.jpg';
             });
             
-            imgWrapper.appendChild(img);
+            // Info (título + artista)
+            const info = document.createElement('div');
+            info.className = 'playlist-info';
             
-            const cardBody = document.createElement('div');
-            cardBody.className = 'card-body';
+            const titleEl = document.createElement('span');
+            titleEl.className = 'm-title';
+            titleEl.textContent = result.video.title;
             
-            const cardTitle = document.createElement('div');
-            cardTitle.className = 'card-title';
-            cardTitle.textContent = result.video.title;
+            const artistEl = document.createElement('span');
+            artistEl.className = 'm-artist';
+            artistEl.textContent = result.video.artist;
             
-            const cardSubtitle = document.createElement('div');
-            cardSubtitle.className = 'card-subtitle';
-            cardSubtitle.textContent = result.video.artist;
+            info.appendChild(titleEl);
+            info.appendChild(artistEl);
             
-            cardBody.appendChild(cardTitle);
-            cardBody.appendChild(cardSubtitle);
-            card.appendChild(imgWrapper);
-            card.appendChild(cardBody);
-            card.addEventListener('click', async () => {
-                // Sincronizar estado favorito atual
-                // Isso garante que o equalizer aparece no vídeo selecionado, não no primeiro
+            // Kebab button
+            const kebabBtn = document.createElement('button');
+            kebabBtn.className = 'kebab-btn';
+            kebabBtn.setAttribute('title', 'Opções');
+            kebabBtn.appendChild(createSvgIcon('more-vert-case'));
+            kebabBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Abrir menu de opções
+                openItemOptionsModal({
+                    video: result.video,
+                    playlistIndex: result.playlistIndex,
+                    videoIndex: result.videoIndex
+                });
+            });
+            
+            // Montar item
+            item.appendChild(img);
+            item.appendChild(info);
+            item.appendChild(kebabBtn);
+            
+            // Click handler para tocar
+            item.addEventListener('click', async () => {
                 try {
                     const playlistMeta = player.playlistsIndex[result.playlistIndex];
                     if (!playlistMeta?.url) return;
@@ -7532,7 +7571,7 @@ function displaySearchResults(results, query) {
                     // 🔥 Setar TUDO corretamente ANTES de renderizar lista
                     player.currentPlaylist = playlist;
                     player.currentPlaylistIndex = result.playlistIndex;
-                    player.currentVideoIndex = result.videoIndex;  // ✅ Índice correto AGORA
+                    player.currentVideoIndex = result.videoIndex;
                     player.shouldPlayOnReady = true;
                     player.viewingFavorites = false;
                     player.playOrder = [...Array(playlist.videos.length).keys()];
@@ -7546,7 +7585,7 @@ function displaySearchResults(results, query) {
                     closePlaylistsModal();
                     loadPlaylistVideos();
                     
-                    // Carregar o vídeo correto (não o primeiro!)
+                    // Carregar o vídeo correto
                     const video = player.currentPlaylist.videos[player.currentVideoIndex];
                     loadVideo(video);
                     updateActivePlaylistItem();
@@ -7554,18 +7593,19 @@ function displaySearchResults(results, query) {
                     // Persist current state
                     saveCurrentState();
                     
-                    // Fechar modal de busca com limpeza de scrim
+                    // Fechar modal de busca
                     closeModalWithAnimation('searchModal');
                 } catch (error) {
                     console.error('Erro ao tocar música da busca:', error);
                 }
             });
-            container.appendChild(card);
+            
+            container.appendChild(item);
         });
     }
     
     // Usar openModal() para gerenciar scrim automaticamente
-    openModal('searchModal');
+    openModal('searchModal', { focusSelector: '#searchModalInput' });
 }
 
 // ============================================================================
@@ -7573,14 +7613,8 @@ function displaySearchResults(results, query) {
 // ============================================================================
 
 function setupSidbarMobile() {
-    const btnSearchMobile = document.querySelector('.btn-search-mobile');
     const headerSearch = document.querySelector('.header-search');
     const searchForm = headerSearch.querySelector('form');
-    
-    btnSearchMobile.addEventListener('click', () => {
-        headerSearch.classList.add('show-search');
-        searchForm.querySelector('input').focus();
-    });
     
     searchForm.querySelector('input').addEventListener('blur', (e) => {
         if (window.innerWidth <= 1023) {
