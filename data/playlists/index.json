@@ -98,6 +98,13 @@
     "url": "./data/playlists/deepchill-melody.json"
   },
   {
+    "id": "filmes",
+    "title": "Filmes",
+    "name": "Filmes",
+    "cover": "filmes.jpg",
+    "url": "./data/playlists/filmes.json"
+  },
+  {
     "id": "music-brokers",
     "title": "Music Brokers",
     "name": "Music Brokers",
