@@ -1820,7 +1820,7 @@ button:active { background: var(--feedback-color); }
 
 .about-modal-content .modal-footer {
     flex-shrink: 0;
-    padding: 1rem 1.25rem !important;
+    /*padding: 1rem 1.25rem !important;*/
 }
 
 .about-hero {
@@ -2621,9 +2621,11 @@ button:active { background: var(--feedback-color); }
     padding-bottom: calc(10px + var(--keyboard-offset, 0px));
 }
 .modal.modal-fullscreen .modal-content {
-    top: calc(var(--header-height) + var(--safe-area-top));
+    /*top: calc(var(--header-height) + var(--safe-area-top));*/
+    top: var(--safe-area-top);
     height: 100%;
-    padding-bottom: calc(var(--safe-area-bottom) + 100px);
+    bottom: 0;
+    padding-bottom: calc(var(--safe-area-bottom) + 20px);
 }
 
 /* ============================================================================
