@@ -2764,7 +2764,7 @@ MOBILE CONFIG - MAX 768PX
     }
     .app-header {width: 100%;border-bottom: none;display: flex;
         align-items: center;height: var(--header-height-mobile);
-        top: var(--safe-area-top);padding: 0; }
+        top: var(--safe-area-top);padding: 0 10px; }
 
     .header-logo .btn-hamburger{display: flex;}
     .header-app-logo svg.icon { display: none; }
