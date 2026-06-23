@@ -2233,7 +2233,7 @@ button:active { background: var(--feedback-color); }
     align-items: center;
     justify-content: flex-start;
     gap: var(--gap-md);
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
 .overlay-buttons-left {
