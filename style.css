@@ -23,7 +23,7 @@
     --accent-roxo-dark: #5c119e;
     --text-main: #EEF1F6;
     --text-dim: #ABABAB;
-    --border-rgba: rgba(255, 255, 255, 0.1);
+    --border-rgba: rgba(255, 255, 255, 0.05);
     --border-video: #1a1a1a;
     --gradient-top: #1f1f1f;
     --gradient-bottom: #070707;
@@ -58,7 +58,7 @@
     /* === PADRONIZAÇÃO DE BOTÕES E ÍCONES === */
     --icon-btn-size: 28px;
     --icon-btn-padding: 10px;
-    --icon-btn-bg: rgba(0, 0, 0, 0.1);
+    --icon-btn-bg: rgba(0, 0, 0, 0.2);
     --icon-btn-bg-hover: rgba(0, 0, 0, 0.35);
     --icon-btn-bg-active: rgba(0, 0, 0, 0.45);
     --icon-btn-border-radius: 50%;
@@ -573,6 +573,7 @@ button:active { background: var(--feedback-color); }
     padding-bottom: calc(var(--safe-area-bottom) + 10px);
     transition: transform var(--transition-base) ease;
     background: none;
+    z-index: 2;
 }
 
 .app-player-footer.keyboard-open {
@@ -681,7 +682,8 @@ button:active { background: var(--feedback-color); }
     aspect-ratio: 4 / 3;
     border-radius: 4px;
     flex-shrink: 0;
-    background: #333;
+    background-image: url(/icons/icon192.png);
+    background-repeat: no-repeat;
     object-fit: cover;
 }
 
@@ -1820,7 +1822,7 @@ button:active { background: var(--feedback-color); }
 
 .about-modal-content .modal-footer {
     flex-shrink: 0;
-    /*padding: 1rem 1.25rem !important;*/
+    padding: 1rem 1.25rem !important;
 }
 
 .about-hero {
@@ -2233,7 +2235,7 @@ button:active { background: var(--feedback-color); }
     align-items: center;
     justify-content: flex-start;
     gap: var(--gap-md);
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
 .overlay-buttons-left {
@@ -2621,10 +2623,9 @@ button:active { background: var(--feedback-color); }
     padding-bottom: calc(10px + var(--keyboard-offset, 0px));
 }
 .modal.modal-fullscreen .modal-content {
-    /*top: calc(var(--header-height) + var(--safe-area-top));*/
-    top: var(--safe-area-top);
+    top: calc(var(--header-height) + var(--safe-area-top));
     height: 100%;
-    padding-bottom: calc(var(--safe-area-bottom) + 50px);
+    padding-bottom: calc(var(--safe-area-bottom) + 100px);
 }
 
 /* ============================================================================
@@ -2724,7 +2725,7 @@ button:active { background: var(--feedback-color); }
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: 90%;
     margin: 0 auto;
     padding: 14px 24px;
     margin-top: 12px;
@@ -2760,11 +2761,11 @@ MOBILE CONFIG - MAX 768PX
         flex: 1 1 auto;
         min-height: 0;
         border-left: none;
-        background: var(--bg-surface);
+        /*background: var(--bg-surface);*/
     }
     .app-header {width: 100%;border-bottom: none;display: flex;
         align-items: center;height: var(--header-height-mobile);
-        top: var(--safe-area-top);padding: 0 10px; }
+        top: var(--safe-area-top);padding: 0; }
 
     .header-logo .btn-hamburger{display: flex;}
     .header-app-logo svg.icon { display: none; }
