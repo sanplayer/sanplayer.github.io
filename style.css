@@ -573,7 +573,7 @@ button:active { background: var(--feedback-color); }
     padding-bottom: calc(var(--safe-area-bottom) + 10px);
     transition: transform var(--transition-base) ease;
     background: none;
-    z-index: 2;
+    z-index: 0;
 }
 
 .app-player-footer.keyboard-open {
@@ -2725,7 +2725,7 @@ button:active { background: var(--feedback-color); }
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
     padding: 14px 24px;
     margin-top: 12px;
@@ -2874,7 +2874,7 @@ LANDSCAPE CONFIG
     .overlay-buttons-left { padding-top: calc(var(--safe-area-top) + 10px); padding-left: calc(var(--safe-area-left) + 10px); padding-right: calc(var(--safe-area-right) + 10px); padding-bottom: var(--safe-area-bottom); right: 0; top: 0; flex-direction: column; justify-content: flex-start; height: 100%; position: fixed; }
     .app-sidebar { display: none; }
     .playlist-aside { display: none; }
-    .app-player-footer { padding-left: var(--safe-area-left); padding-right: var(--safe-area-right); z-index: 10 !important; background: linear-gradient(180deg, rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.20) 100%); }
+    .app-player-footer { padding-left: var(--safe-area-left); padding-right: var(--safe-area-right); background: linear-gradient(180deg, rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.20) 100%); }
     .progress-time-labels { color: var(--text-main); }
     .block-info { width: 100%; }
     .block-controls { background: none; }
