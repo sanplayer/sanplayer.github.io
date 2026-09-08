@@ -506,7 +506,7 @@ button:active { background: var(--feedback-color); }
 
 .playlist-item {
     display: flex;
-    gap: var(--gap-md);
+    gap: var(--gap-sm);
     align-items: center;
     padding: var(--gap-sm);
     border-bottom: 1px solid var(--border-rgba);
