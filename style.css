@@ -2,15 +2,16 @@
 1. TIPOGRAFIA
 ============================================================================= */
 
-@font-face {
+/*@font-face {
     font-display: swap;
     font-family: 'Roboto Flex';
     font-style: normal;
     font-weight: 400;
     src: url('/fonts/roboto-flex-v30-latin-regular.woff2') format('woff2');
-}
+}*/
 
 :root {
+    --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --bg-main: #070708;
     --bg-modal: #181c1f;
     --bg-modal-content: #2c3134;
@@ -126,7 +127,7 @@
 html, body { background-color: #0f0d12; }
 
 body {
-    font-family: 'Roboto Flex', sans-serif;
+    font-family: var(--font);
     background: var(--bg-main);
     background-attachment: fixed;
     color: var(--text-main);
