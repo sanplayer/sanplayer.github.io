@@ -1,0 +1,116 @@
+{
+  "playlists": [
+    {
+      "name": "As 20 Melhores - Legião Urbana",
+      "slug": "as-20-melhores-legiao-urbana",
+      "cover": "as-20-melhores-legiao-urbana.jpg",
+      "videos": [
+        {
+          "id": "UbNDLB0-zMQ",
+          "title": "Daniel Na Cova Dos Leões",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "lk_EXr9xEr0",
+          "title": "Quase Sem Querer",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "zpzoG5KGaHg",
+          "title": "Tempo Perdido",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "imxipUZv_Yo",
+          "title": "Há Tempos",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "DEwLqT669Do",
+          "title": "Pais E Filhos",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "F07_73xAD_Y",
+          "title": "Quando O Sol Bater Na Janela Do Teu Quarto",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "VUc-ND1Cb3Q",
+          "title": "Meninos E Meninas",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "dSoYQrpTGNo",
+          "title": "Se Fiquei Esperando Meu Amor Passar",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "2CnxonDrhdE",
+          "title": "Será",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "roxJ912UAwU",
+          "title": "Ainda É Cedo",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "MXwYl1Xfc08",
+          "title": "Geração Coca-Cola",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "O_T4ekKCD1U",
+          "title": "Teorema",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "kFpkyT_KPpc",
+          "title": "Que Pais É Este",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "meLVH_x0UIM",
+          "title": "Eu Sei",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "g80YcUJPIoA",
+          "title": "Faroeste Caboclo",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "kQIRu34HpUw",
+          "title": "Mais Do Mesmo",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "BF-yWPdQUmY",
+          "title": "Metal Contra As Nuvens",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "CpP62L3hKmM",
+          "title": "O Teatro Dos Vampiros",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "8XbHp0HWJtk",
+          "title": "Vento No Litoral",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "d0esIs-hsJU",
+          "title": "Perfeição",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "XTU4dgDTbIQ",
+          "title": "De Chão Batido",
+          "artist": "Legião Urbana"
+        }
+      ]
+    }
+  ]
+}

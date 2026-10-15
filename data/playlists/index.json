@@ -21,6 +21,13 @@
     "url": "./data/playlists/nacionais-romanticas.json"
   },
   {
+    "id": "as-20-melhores-legiao-urbana",
+    "title": "As 20 Melhores da Legião Urbana",
+    "name": "As 20 Melhores da Legião Urbana",
+    "cover": "as-20-melhores-legiao-urbana.jpg",
+    "url": "./data/playlists/as-20-melhores-legiao-urbana.json"
+  },
+  {
     "id": "boleros",
     "title": "DVD Priscila Senna 15 Anos",
     "name": "DVD Priscila Senna 15 Anos",
