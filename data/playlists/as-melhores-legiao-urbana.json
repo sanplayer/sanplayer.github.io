@@ -6,8 +6,43 @@
       "cover": "as-melhores-legiao-urbana.jpg",
       "videos": [
         {
+          "id": "6bqM9kT9f0E",
+          "title": "Índios",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "rvL05KRFEbA",
+          "title": "A Via Láctea",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "VUc-ND1Cb3Q",
+          "title": "Meninos E Meninas",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "8XbHp0HWJtk",
+          "title": "Vento No Litoral",
+          "artist": "Legião Urbana"
+        },
+        {
           "id": "UbNDLB0-zMQ",
           "title": "Daniel Na Cova Dos Leões",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "kQIRu34HpUw",
+          "title": "Mais Do Mesmo",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "imxipUZv_Yo",
+          "title": "Há Tempos",
+          "artist": "Legião Urbana"
+        },
+        {
+          "id": "kFpkyT_KPpc",
+          "title": "Que Pais É Este",
           "artist": "Legião Urbana"
         },
         {
@@ -21,11 +56,6 @@
           "artist": "Legião Urbana"
         },
         {
-          "id": "imxipUZv_Yo",
-          "title": "Há Tempos",
-          "artist": "Legião Urbana"
-        },
-        {
           "id": "DEwLqT669Do",
           "title": "Pais E Filhos",
           "artist": "Legião Urbana"
@@ -33,11 +63,6 @@
         {
           "id": "F07_73xAD_Y",
           "title": "Quando O Sol Bater Na Janela Do Teu Quarto",
-          "artist": "Legião Urbana"
-        },
-        {
-          "id": "VUc-ND1Cb3Q",
-          "title": "Meninos E Meninas",
           "artist": "Legião Urbana"
         },
         {
@@ -66,11 +91,6 @@
           "artist": "Legião Urbana"
         },
         {
-          "id": "kFpkyT_KPpc",
-          "title": "Que Pais É Este",
-          "artist": "Legião Urbana"
-        },
-        {
           "id": "meLVH_x0UIM",
           "title": "Eu Sei",
           "artist": "Legião Urbana"
@@ -78,11 +98,6 @@
         {
           "id": "g80YcUJPIoA",
           "title": "Faroeste Caboclo",
-          "artist": "Legião Urbana"
-        },
-        {
-          "id": "kQIRu34HpUw",
-          "title": "Mais Do Mesmo",
           "artist": "Legião Urbana"
         },
         {
@@ -96,11 +111,6 @@
           "artist": "Legião Urbana"
         },
         {
-          "id": "8XbHp0HWJtk",
-          "title": "Vento No Litoral",
-          "artist": "Legião Urbana"
-        },
-        {
           "id": "d0esIs-hsJU",
           "title": "Perfeição",
           "artist": "Legião Urbana"
@@ -108,16 +118,6 @@
         {
           "id": "XTU4dgDTbIQ",
           "title": "De Chão Batido",
-          "artist": "Legião Urbana"
-        },
-        {
-          "id": "6bqM9kT9f0E",
-          "title": "Índios",
-          "artist": "Legião Urbana"
-        },
-        {
-          "id": "rvL05KRFEbA",
-          "title": "A Via Láctea",
           "artist": "Legião Urbana"
         }
       ]
