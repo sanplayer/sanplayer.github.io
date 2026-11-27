@@ -2,16 +2,17 @@
 1. TIPOGRAFIA
 ============================================================================= */
 
-/*@font-face {
+@font-face {
     font-display: swap;
     font-family: 'Roboto Flex';
     font-style: normal;
     font-weight: 400;
     src: url('/fonts/roboto-flex-v30-latin-regular.woff2') format('woff2');
-}*/
+}
 
 :root {
-    --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+             Roboto, Helvetica, Arial, sans-serif;
     --bg-main: #070708;
     --bg-modal: #181c1f;
     --bg-modal-content: #2c3134;
@@ -57,14 +58,20 @@
     --icon-size-sub: clamp(1.25rem, 3.5vw, 1.75rem);
     
     /* === PADRONIZAÇÃO DE BOTÕES E ÍCONES === */
-    --icon-btn-size: 28px;
-    --icon-btn-padding: 10px;
-    --icon-btn-bg: rgba(0, 0, 0, 0.2);
-    --icon-btn-bg-hover: rgba(0, 0, 0, 0.35);
-    --icon-btn-bg-active: rgba(0, 0, 0, 0.45);
+    --icon-btn-size: clamp(1.25rem, 1.6vw, 1.75rem);
+    --icon-btn-padding: 0;
+    --icon-btn-bg: transparent;
+    --icon-btn-bg-hover: rgba(255, 255, 255, 0.08);
+    --icon-btn-bg-active: rgba(255, 255, 255, 0.12);
     --icon-btn-border-radius: 50%;
+
+    --control-size: clamp(44px, 3.5vw, 48px);
+    --icon-size-sm: clamp(18px, 1.4vw, 20px);
+    --icon-size-md: clamp(20px, 1.6vw, 24px);
+    --icon-size-lg: clamp(24px, 2vw, 28px);
+    --icon-size-xl: clamp(28px, 3vw, 36px);
     
-    --touch-target: 42px;
+    --touch-target: 44px;
     --feedback-color: rgba(255, 255, 255, 0.1);
     --btn-padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 1.5rem);
     --btn-border-radius: 8px;
@@ -446,7 +453,7 @@ button:active { background: var(--feedback-color); }
     color: var(--text-main);
     text-decoration: none;
     font-size: var(--font-md);
-    font-weight: 600;
+    font-weight: 500;
     transition: background 0.2s;
 }
 
@@ -761,6 +768,63 @@ button:active { background: var(--feedback-color); }
 .btn-play-pause:hover { background: transparent; }
 .btn-play-pause:active { background: transparent; }
 
+/* Controles circulares existentes: área de toque uniforme sem alterar o Play/Pause. */
+.current-actions button,
+.block-controls button:not(.btn-play-pause) {
+    width: var(--control-size);
+    height: var(--control-size);
+    min-width: var(--control-size);
+    min-height: var(--control-size);
+    padding: 0;
+}
+
+.current-actions button svg.icon,
+.block-controls button:not(.btn-play-pause) svg.icon {
+    width: var(--icon-size-lg);/*temporariamente*/
+    height: var(--icon-size-lg);/*temporariamente*/
+}
+
+.header-logo button,
+.header-actions button,
+.sidebar-nav-btn,
+.modal-close,
+.modal-back-btn,
+.overlay-buttons-left button,
+.overlay-buttons-right button {
+    width: var(--control-size);
+    height: var(--control-size);
+    min-width: var(--control-size);
+    min-height: var(--control-size);
+    padding: 0;
+}
+
+.header-logo button svg.icon,
+.header-actions button svg.icon,
+.sidebar-nav-btn svg.icon,
+.modal-close svg.icon,
+.modal-back-btn svg.icon,
+.overlay-buttons-left button svg.icon,
+.overlay-buttons-right button svg.icon {
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+}
+
+.favorite-btn:focus-visible,
+.share-btn:focus-visible,
+.kebab-btn:focus-visible,
+.icon-btn:focus-visible,
+.back-button:focus-visible,
+.sidebar-nav-btn:focus-visible,
+.modal-close:focus-visible,
+.modal-back-btn:focus-visible,
+.overlay-buttons-left button:focus-visible,
+.overlay-buttons-right button:focus-visible,
+.block-controls button:focus-visible,
+.current-actions button:focus-visible {
+    outline: 2px solid var(--accent-roxo);
+    outline-offset: 3px;
+}
+
 /* =============================================================================
 7. COMPONENTES (SKELETON, CARDS, FAVORITES, SIDEBAR, USER MENU, MODAIS, TOASTS)
 ============================================================================= */
@@ -887,7 +951,11 @@ button:active { background: var(--feedback-color); }
 .favorite-btn {
     background: none;
     border: none;
-    padding: clamp(0.5rem, 1vw, 0.75rem);
+    padding: 0;
+    width: var(--control-size);
+    height: var(--control-size);
+    min-width: var(--control-size);
+    min-height: var(--control-size);
     cursor: pointer;
     font-size: var(--icon-size);
     color: var(--text-dim);
@@ -930,7 +998,11 @@ button:active { background: var(--feedback-color); }
 .share-btn {
     background: none;
     border: none;
-    padding: clamp(0.5rem, 1vw, 0.75rem);
+    padding: 0;
+    width: var(--control-size);
+    height: var(--control-size);
+    min-width: var(--control-size);
+    min-height: var(--control-size);
     cursor: pointer;
     font-size: var(--icon-size);
     color: var(--text-dim);
@@ -1024,8 +1096,10 @@ button:active { background: var(--feedback-color); }
     border-radius: 50%;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease;
-    min-width: var(--touch-target);
-    min-height: var(--touch-target);
+    width: var(--control-size);
+    height: var(--control-size);
+    min-width: var(--control-size);
+    min-height: var(--control-size);
 }
 
 .kebab-btn {
@@ -1047,8 +1121,10 @@ button:active { background: var(--feedback-color); }
     background: transparent;
     border: none;
     color: var(--text-dim);
-    min-width: var(--touch-target);
-    min-height: var(--touch-target);
+    width: var(--control-size);
+    height: var(--control-size);
+    min-width: var(--control-size);
+    min-height: var(--control-size);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -2191,17 +2267,19 @@ button:active { background: var(--feedback-color); }
     border: none;
     color: var(--text-dim);
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 50%;
     transition: all 0.2s ease;
     flex-shrink: 0;
     opacity: 1;
     pointer-events: auto;
-    width: 40px;
-    height: 40px;
+    width: var(--control-size);
+    height: var(--control-size);
+    min-width: var(--control-size);
+    min-height: var(--control-size);
 }
 
 .back-button.hidden { display: none; pointer-events: none; }
