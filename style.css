@@ -37,7 +37,7 @@
     --font-xs: clamp(0.75rem, 1.5vw, 0.9rem);
     --font-mt: clamp(.938rem, 2.5vw, 1.3rem);
     --font-sm: clamp(.875rem, 2vw, 1.2rem);
-    --font-md: clamp(1rem, 2.5vw, 1.25rem);
+    --font-md: clamp(1.1rem, 2.5vw, 1.25rem);
     --font-lg: clamp(1.1rem, 3vw, 1.4rem);
     --font-xl: clamp(1.3rem, 4vw, 1.8rem);
     --gap-xs: clamp(0.25rem, 1vw, 0.5rem);
@@ -446,6 +446,7 @@ button:active { background: var(--feedback-color); }
     color: var(--text-main);
     text-decoration: none;
     font-size: var(--font-md);
+    font-weight: 600;
     transition: background 0.2s;
 }
 
