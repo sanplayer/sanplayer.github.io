@@ -3852,7 +3852,7 @@ function initPlayerUI() {
     artistEl.style.cursor = 'pointer';
     artistEl.addEventListener('click', (e) => {
         const artistName = e.target.textContent?.trim();
-        if (artistName) {
+        if (artistName && artistName !== 'Músicas para os seus ouvidos' && artistName !== 'Música para os seus ouvidos' && artistName !== 'Desconhecido') {
             selectArtist(artistName);
         }
     });
@@ -5872,44 +5872,34 @@ async function selectArtist(artist) {
         // 🔒 MATCHING ROBUSTO: Usa normalize() para comparar
         // Isso garante que "Fábio Jr." === "fabio jr" após normalização
         const artistVideos = [];
-        allPlaylists.forEach(playlist => {
-            playlist.videos?.forEach(video => {
-                // ✅ FORMA CORRETA: normalize em ambos os lados
-                const videoArtistNormalized = normalize(video.artist);
-                const parameterNormalized = normalize(artist);
-                const matches = videoArtistNormalized === parameterNormalized;
-                
-                // 🔍 DEBUG: Mostrar comparação para "Fábio Jr." 
-                if (video.artist && (video.artist.includes('Fábio') || artist.includes('Fábio'))) {
-                    console.log('[SelectArtist] 🔍 DEBUG comparação "Fábio Jr.":', {
-                        videoArtist: video.artist,
-                        videoNormalized: videoArtistNormalized,
-                        parameterArtist: artist,
-                        parameterNormalized: parameterNormalized,
-                        matches: matches
-                    });
-                }
-                
-                if (matches) {
-                    artistVideos.push({
-                        ...video,
-                        playlistName: playlist.name
+        if (Array.isArray(allPlaylists)) {
+            allPlaylists.forEach(playlist => {
+                if (playlist && Array.isArray(playlist.videos)) {
+                    playlist.videos.forEach(video => {
+                        if (video && video.artist) {
+                            const videoArtistNormalized = normalize(video.artist);
+                            const parameterNormalized = normalize(artist);
+                            if (videoArtistNormalized === parameterNormalized) {
+                                artistVideos.push({
+                                    ...video,
+                                    playlistName: playlist.name || ''
+                                });
+                            }
+                        }
                     });
                 }
             });
-        });
+        }
 
         console.log('[SelectArtist] ✅ Vídeos encontrados para artista:', {
             total: artistVideos.length,
             artistRequested: artist
         });
 
-        // Validação: artista sem vídeos → fallback para home
+        // Validação: artista sem vídeos
         if (artistVideos.length === 0) {
             console.warn(`[SelectArtist] ❌ Nenhum vídeo encontrado para: "${artist}"`);
             showToast(`Nenhuma música encontrada: "${artist}"`);
-            await loadHome(); // ✅ Garante UI válida
-            window.location.replace(window.location.pathname); // Limpar URL inválida
             return;
         }
 
@@ -5957,10 +5947,14 @@ async function selectArtist(artist) {
         });
         
         console.log('[SelectArtist] Fechando modal de artistas...');
-        closeArtistsModal();
+        if (typeof closeArtistsModal === 'function') {
+            closeArtistsModal();
+        }
         
         console.log('[SelectArtist] View de artista ativa. Histórico registrado automaticamente');
-        sidebarHistory.updateButtons();
+        if (typeof sidebarHistory !== 'undefined' && sidebarHistory.updateButtons) {
+            sidebarHistory.updateButtons();
+        }
 
         console.log('[SelectArtist] Refreshing player UI...');
         refreshPlayerUI();
@@ -5972,11 +5966,10 @@ async function selectArtist(artist) {
         console.log('[SelectArtist] ✅ COMPLETO - Visualização atualizada (música continua tocando se estava)');
     } catch (error) {
         console.error('[SelectArtist] ❌ ERRO CRÍTICO:', error, {
-            message: error.message,
-            stack: error.stack
+            message: error?.message,
+            stack: error?.stack
         });
         showToast('Erro ao carregar artista');
-        await loadHome(); // ✅ Garante UI válida no erro
     }
 }
 
@@ -6079,7 +6072,10 @@ function loadPlaylistVideos() {
 }
 
 function loadFirstVideo() {
-    const video = player.currentPlaylist.videos[player.currentVideoIndex];
+    if (!player.currentPlaylist?.videos || player.currentPlaylist.videos.length === 0) return;
+    const idx = player.currentVideoIndex || 0;
+    const video = player.currentPlaylist.videos[idx];
+    if (!video) return;
     loadVideo(video);
     updateCurrentVideoDisplay();
 }
@@ -6089,6 +6085,7 @@ function loadFirstVideo() {
 // ============================================================================
 
 function loadVideo(video) {
+    if (!video || !video.id) return;
     // Player container já existe no HTML, não precisa recriá-lo
 
     // 🆕 VALIDAÇÃO: Se tentar tocar offline, mostrar feedback
@@ -6370,24 +6367,28 @@ function playerPause() {
 
 function updateCurrentVideoDisplay() {
     // ⚠️ Validação defensiva: evitar erro se currentPlaylist ainda não está pronto
-    if (!player.currentPlaylist || !player.currentPlaylist.videos) {
+    if (!player.currentPlaylist || !Array.isArray(player.currentPlaylist.videos)) {
         return;
     }
     
-    const video = player.currentPlaylist.videos[player.currentVideoIndex];
+    const idx = player.currentVideoIndex || 0;
+    const video = player.currentPlaylist.videos[idx];
+    if (!video) return;
     
     // Atualizar apenas os dados, sem recriar DOM
     const thumb = document.querySelector('.current-thumb');
     const title = document.querySelector('.c-title');
     const artist = document.querySelector('.c-artist');
     
-    thumb.src = getArtistCoverUrl(video.artist);
-    title.textContent = video.title;
-    artist.textContent = video.artist;
+    if (thumb) thumb.src = getArtistCoverUrl(video.artist || '');
+    if (title) title.textContent = video.title || '';
+    if (artist) artist.textContent = video.artist || '';
     
     // Detectar se título precisa de marquee após renderização
     setTimeout(() => {
-        checkIfTitleNeedsTruncation(title);
+        if (title && typeof checkIfTitleNeedsTruncation === 'function') {
+            checkIfTitleNeedsTruncation(title);
+        }
     }, 0);
 }
 
