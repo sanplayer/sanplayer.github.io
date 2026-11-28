@@ -4304,7 +4304,7 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
         
         if (!estaTocanduAlgo) {
             // Nada tocando → OK mudar contexto de reprodução
-            console.log('[SelectPlaylist] Nada tocando - pode mudar contexto de reprodução');
+            console.log('[SelectPlaylist] Nada tocando - configurando e carregando primeiro vídeo da playlist');
             player.currentPlaylist = playlist;
             player.currentPlaylistIndex = index;
             player.currentVideoIndex = 0;
@@ -4314,6 +4314,9 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
             if (startPlaying) {
                 player.shouldPlayOnReady = true;
             }
+
+            // 🔥 CRÍTICO: Carregar o primeiro vídeo da playlist se nada estava tocando
+            loadFirstVideo();
         } else {
             // Algo tocando → NUNCA muda player.currentPlaylist
             console.log('[SelectPlaylist] ✅ Música tocando - player.currentPlaylist PRESERVADO');
@@ -4332,19 +4335,10 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
         
         console.log('[SelectPlaylist] View atualizada e histórico registrado automaticamente');
 
-        // ⚠️ REMOVIDO: updatePlaylistCardsInModal() é chamado AUTOMATICAMENTE por preloadPlaylistsInBackground()
-        // Não precisa chamar aqui também - evita race conditions
-        
         // Fechar modal ANTES de atualizar sidebar
         console.log('[SelectPlaylist] Fechando modal...');
         closePlaylistsModal();
-        
-        // Se era primeira vez (no init), carregar primeiro vídeo
-        if (!player.ytReady) {
-            console.log('[SelectPlaylist] YouTube ainda não está pronto, carregando primeiro vídeo...');
-            loadFirstVideo();
-        }
-        
+
         // Salvar estado
         console.log('[SelectPlaylist] Salvando estado...');
         saveCurrentState();
@@ -5928,7 +5922,7 @@ async function selectArtist(artist) {
         
         if (!estaTocanduAlgo) {
             // Nada tocando → OK mudar contexto de reprodução
-            console.log('[SelectArtist] Nada tocando - pode mudar contexto de reprodução');
+            console.log('[SelectArtist] Nada tocando - configurando e carregando primeiro vídeo do artista');
             
             // Criar uma playlist temporária para o artista
             player.currentPlaylist = {
@@ -5940,7 +5934,9 @@ async function selectArtist(artist) {
             player.currentVideoIndex = 0;
             player.playOrder = [...Array(artistVideos.length).keys()];
             player.originalOrder = [...player.playOrder];
-            player.shouldPlayOnReady = true;
+
+            // 🔥 CRÍTICO: Carregar o primeiro vídeo do artista no player
+            loadFirstVideo();
         } else {
             // Algo tocando → NUNCA muda player.currentPlaylist
             console.log('[SelectArtist] ✅ Música tocando - player.currentPlaylist PRESERVADO');
@@ -5965,14 +5961,7 @@ async function selectArtist(artist) {
         
         console.log('[SelectArtist] View de artista ativa. Histórico registrado automaticamente');
         sidebarHistory.updateButtons();
-        
-        console.log('[SelectArtist] Verificando se YouTube está pronto...');
-        // Se era primeira vez (no init), carregar primeiro vídeo
-        if (!player.ytReady) {
-            console.log('[SelectArtist] YouTube não pronto - carregando primeiro vídeo...');
-            loadFirstVideo();
-        }
-        
+
         console.log('[SelectArtist] Refreshing player UI...');
         refreshPlayerUI();
         
@@ -6514,9 +6503,8 @@ function playVideo(video) {
     
     console.log('[PlayVideo] Índice encontrado:', player.currentVideoIndex);
     
-    // 🔒 GARANTIR: NÃO toca automáticamente ao clicar
-    // Usuário vai clicar em play/pause para controlar
-    player.shouldPlayOnReady = false;
+    // 🎯 Quando o usuário clica diretamente em um vídeo da lista, reproduzir!
+    player.shouldPlayOnReady = true;
     
     loadVideo(video);
     updateActivePlaylistItem();
