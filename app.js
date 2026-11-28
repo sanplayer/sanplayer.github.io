@@ -317,18 +317,9 @@ window.onWarmStartResume = function(newUrl = null) {
                             playTrackById(result.trackId);
                         }
                     } else {
-                        // Modal-only ou sem track (Playlist / Artista compartilhado)
-                        console.log('[WarmStart] 📋 Playlist ou Artista compartilhado detectado - chamando handleHashNavigation()...');
+                        // Modal-only ou sem track
+                        console.log('[WarmStart] 📋 Modal ou sem track - apenas sincronizar UI');
                         refreshPlayerUI();
-
-                        // 🎯 CHAMA ROTEADOR PARA ABRIR O ARTISTA OU PLAYLIST SEM INTERROMPER O PLAYER
-                        if (typeof handleHashNavigation === 'function') {
-                            handleHashNavigation().then(() => {
-                                console.log('[WarmStart] ✅ handleHashNavigation() processou o modal/artista/playlist com sucesso!');
-                            }).catch(e => {
-                                console.error('[WarmStart] ❌ Erro ao processar handleHashNavigation em WarmStart:', e);
-                            });
-                        }
                     }
                     
                     // Sincronizar UI
@@ -3852,7 +3843,7 @@ function initPlayerUI() {
     artistEl.style.cursor = 'pointer';
     artistEl.addEventListener('click', (e) => {
         const artistName = e.target.textContent?.trim();
-        if (artistName && artistName !== 'Músicas para os seus ouvidos' && artistName !== 'Música para os seus ouvidos' && artistName !== 'Desconhecido') {
+        if (artistName) {
             selectArtist(artistName);
         }
     });
@@ -4304,7 +4295,7 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
         
         if (!estaTocanduAlgo) {
             // Nada tocando → OK mudar contexto de reprodução
-            console.log('[SelectPlaylist] Nada tocando - configurando e carregando primeiro vídeo da playlist');
+            console.log('[SelectPlaylist] Nada tocando - pode mudar contexto de reprodução');
             player.currentPlaylist = playlist;
             player.currentPlaylistIndex = index;
             player.currentVideoIndex = 0;
@@ -4314,9 +4305,6 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
             if (startPlaying) {
                 player.shouldPlayOnReady = true;
             }
-
-            // 🔥 CRÍTICO: Carregar o primeiro vídeo da playlist se nada estava tocando
-            loadFirstVideo();
         } else {
             // Algo tocando → NUNCA muda player.currentPlaylist
             console.log('[SelectPlaylist] ✅ Música tocando - player.currentPlaylist PRESERVADO');
@@ -4335,10 +4323,19 @@ async function selectPlaylistForVisualization(index, startPlaying = false) {
         
         console.log('[SelectPlaylist] View atualizada e histórico registrado automaticamente');
 
+        // ⚠️ REMOVIDO: updatePlaylistCardsInModal() é chamado AUTOMATICAMENTE por preloadPlaylistsInBackground()
+        // Não precisa chamar aqui também - evita race conditions
+        
         // Fechar modal ANTES de atualizar sidebar
         console.log('[SelectPlaylist] Fechando modal...');
         closePlaylistsModal();
-
+        
+        // Se era primeira vez (no init), carregar primeiro vídeo
+        if (!player.ytReady) {
+            console.log('[SelectPlaylist] YouTube ainda não está pronto, carregando primeiro vídeo...');
+            loadFirstVideo();
+        }
+        
         // Salvar estado
         console.log('[SelectPlaylist] Salvando estado...');
         saveCurrentState();
@@ -5872,34 +5869,44 @@ async function selectArtist(artist) {
         // 🔒 MATCHING ROBUSTO: Usa normalize() para comparar
         // Isso garante que "Fábio Jr." === "fabio jr" após normalização
         const artistVideos = [];
-        if (Array.isArray(allPlaylists)) {
-            allPlaylists.forEach(playlist => {
-                if (playlist && Array.isArray(playlist.videos)) {
-                    playlist.videos.forEach(video => {
-                        if (video && video.artist) {
-                            const videoArtistNormalized = normalize(video.artist);
-                            const parameterNormalized = normalize(artist);
-                            if (videoArtistNormalized === parameterNormalized) {
-                                artistVideos.push({
-                                    ...video,
-                                    playlistName: playlist.name || ''
-                                });
-                            }
-                        }
+        allPlaylists.forEach(playlist => {
+            playlist.videos?.forEach(video => {
+                // ✅ FORMA CORRETA: normalize em ambos os lados
+                const videoArtistNormalized = normalize(video.artist);
+                const parameterNormalized = normalize(artist);
+                const matches = videoArtistNormalized === parameterNormalized;
+                
+                // 🔍 DEBUG: Mostrar comparação para "Fábio Jr." 
+                if (video.artist && (video.artist.includes('Fábio') || artist.includes('Fábio'))) {
+                    console.log('[SelectArtist] 🔍 DEBUG comparação "Fábio Jr.":', {
+                        videoArtist: video.artist,
+                        videoNormalized: videoArtistNormalized,
+                        parameterArtist: artist,
+                        parameterNormalized: parameterNormalized,
+                        matches: matches
+                    });
+                }
+                
+                if (matches) {
+                    artistVideos.push({
+                        ...video,
+                        playlistName: playlist.name
                     });
                 }
             });
-        }
+        });
 
         console.log('[SelectArtist] ✅ Vídeos encontrados para artista:', {
             total: artistVideos.length,
             artistRequested: artist
         });
 
-        // Validação: artista sem vídeos
+        // Validação: artista sem vídeos → fallback para home
         if (artistVideos.length === 0) {
             console.warn(`[SelectArtist] ❌ Nenhum vídeo encontrado para: "${artist}"`);
             showToast(`Nenhuma música encontrada: "${artist}"`);
+            await loadHome(); // ✅ Garante UI válida
+            window.location.replace(window.location.pathname); // Limpar URL inválida
             return;
         }
 
@@ -5912,7 +5919,7 @@ async function selectArtist(artist) {
         
         if (!estaTocanduAlgo) {
             // Nada tocando → OK mudar contexto de reprodução
-            console.log('[SelectArtist] Nada tocando - configurando e carregando primeiro vídeo do artista');
+            console.log('[SelectArtist] Nada tocando - pode mudar contexto de reprodução');
             
             // Criar uma playlist temporária para o artista
             player.currentPlaylist = {
@@ -5924,9 +5931,7 @@ async function selectArtist(artist) {
             player.currentVideoIndex = 0;
             player.playOrder = [...Array(artistVideos.length).keys()];
             player.originalOrder = [...player.playOrder];
-
-            // 🔥 CRÍTICO: Carregar o primeiro vídeo do artista no player
-            loadFirstVideo();
+            player.shouldPlayOnReady = true;
         } else {
             // Algo tocando → NUNCA muda player.currentPlaylist
             console.log('[SelectArtist] ✅ Música tocando - player.currentPlaylist PRESERVADO');
@@ -5947,15 +5952,18 @@ async function selectArtist(artist) {
         });
         
         console.log('[SelectArtist] Fechando modal de artistas...');
-        if (typeof closeArtistsModal === 'function') {
-            closeArtistsModal();
-        }
+        closeArtistsModal();
         
         console.log('[SelectArtist] View de artista ativa. Histórico registrado automaticamente');
-        if (typeof sidebarHistory !== 'undefined' && sidebarHistory.updateButtons) {
-            sidebarHistory.updateButtons();
+        sidebarHistory.updateButtons();
+        
+        console.log('[SelectArtist] Verificando se YouTube está pronto...');
+        // Se era primeira vez (no init), carregar primeiro vídeo
+        if (!player.ytReady) {
+            console.log('[SelectArtist] YouTube não pronto - carregando primeiro vídeo...');
+            loadFirstVideo();
         }
-
+        
         console.log('[SelectArtist] Refreshing player UI...');
         refreshPlayerUI();
         
@@ -5966,10 +5974,11 @@ async function selectArtist(artist) {
         console.log('[SelectArtist] ✅ COMPLETO - Visualização atualizada (música continua tocando se estava)');
     } catch (error) {
         console.error('[SelectArtist] ❌ ERRO CRÍTICO:', error, {
-            message: error?.message,
-            stack: error?.stack
+            message: error.message,
+            stack: error.stack
         });
         showToast('Erro ao carregar artista');
+        await loadHome(); // ✅ Garante UI válida no erro
     }
 }
 
@@ -6072,10 +6081,7 @@ function loadPlaylistVideos() {
 }
 
 function loadFirstVideo() {
-    if (!player.currentPlaylist?.videos || player.currentPlaylist.videos.length === 0) return;
-    const idx = player.currentVideoIndex || 0;
-    const video = player.currentPlaylist.videos[idx];
-    if (!video) return;
+    const video = player.currentPlaylist.videos[player.currentVideoIndex];
     loadVideo(video);
     updateCurrentVideoDisplay();
 }
@@ -6085,7 +6091,6 @@ function loadFirstVideo() {
 // ============================================================================
 
 function loadVideo(video) {
-    if (!video || !video.id) return;
     // Player container já existe no HTML, não precisa recriá-lo
 
     // 🆕 VALIDAÇÃO: Se tentar tocar offline, mostrar feedback
@@ -6367,28 +6372,24 @@ function playerPause() {
 
 function updateCurrentVideoDisplay() {
     // ⚠️ Validação defensiva: evitar erro se currentPlaylist ainda não está pronto
-    if (!player.currentPlaylist || !Array.isArray(player.currentPlaylist.videos)) {
+    if (!player.currentPlaylist || !player.currentPlaylist.videos) {
         return;
     }
     
-    const idx = player.currentVideoIndex || 0;
-    const video = player.currentPlaylist.videos[idx];
-    if (!video) return;
+    const video = player.currentPlaylist.videos[player.currentVideoIndex];
     
     // Atualizar apenas os dados, sem recriar DOM
     const thumb = document.querySelector('.current-thumb');
     const title = document.querySelector('.c-title');
     const artist = document.querySelector('.c-artist');
     
-    if (thumb) thumb.src = getArtistCoverUrl(video.artist || '');
-    if (title) title.textContent = video.title || '';
-    if (artist) artist.textContent = video.artist || '';
+    thumb.src = getArtistCoverUrl(video.artist);
+    title.textContent = video.title;
+    artist.textContent = video.artist;
     
     // Detectar se título precisa de marquee após renderização
     setTimeout(() => {
-        if (title && typeof checkIfTitleNeedsTruncation === 'function') {
-            checkIfTitleNeedsTruncation(title);
-        }
+        checkIfTitleNeedsTruncation(title);
     }, 0);
 }
 
@@ -6504,8 +6505,9 @@ function playVideo(video) {
     
     console.log('[PlayVideo] Índice encontrado:', player.currentVideoIndex);
     
-    // 🎯 Quando o usuário clica diretamente em um vídeo da lista, reproduzir!
-    player.shouldPlayOnReady = true;
+    // 🔒 GARANTIR: NÃO toca automáticamente ao clicar
+    // Usuário vai clicar em play/pause para controlar
+    player.shouldPlayOnReady = false;
     
     loadVideo(video);
     updateActivePlaylistItem();
