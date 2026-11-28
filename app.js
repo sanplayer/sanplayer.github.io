@@ -317,9 +317,18 @@ window.onWarmStartResume = function(newUrl = null) {
                             playTrackById(result.trackId);
                         }
                     } else {
-                        // Modal-only ou sem track
-                        console.log('[WarmStart] 📋 Modal ou sem track - apenas sincronizar UI');
+                        // Modal-only ou sem track (Playlist / Artista compartilhado)
+                        console.log('[WarmStart] 📋 Playlist ou Artista compartilhado detectado - chamando handleHashNavigation()...');
                         refreshPlayerUI();
+
+                        // 🎯 CHAMA ROTEADOR PARA ABRIR O ARTISTA OU PLAYLIST SEM INTERROMPER O PLAYER
+                        if (typeof handleHashNavigation === 'function') {
+                            handleHashNavigation().then(() => {
+                                console.log('[WarmStart] ✅ handleHashNavigation() processou o modal/artista/playlist com sucesso!');
+                            }).catch(e => {
+                                console.error('[WarmStart] ❌ Erro ao processar handleHashNavigation em WarmStart:', e);
+                            });
+                        }
                     }
                     
                     // Sincronizar UI
